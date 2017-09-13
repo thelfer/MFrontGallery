@@ -1,0 +1,7 @@
+@MFM_JAVA_PACKAGE_IMPORT@
+
+public class VanadiumAlloy_YoungModulus_SRMA_TestJava {
+    public static void main(String[] args) {
+	System.out.println("E="+Double.toString(@MFM_JAVA_PACKAGE_SUFFIX@VanadiumAlloy.YoungModulus_SRMA(400.)));
+    }
+}

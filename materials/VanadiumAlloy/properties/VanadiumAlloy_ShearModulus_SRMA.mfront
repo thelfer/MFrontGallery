@@ -1,0 +1,32 @@
+@Parser   MaterialLaw;
+@Material VanadiumAlloy;
+@Law      ShearModulus_SRMA;
+@Author   T. Helfer;
+@Date     2015-07-21;
+
+@Description
+{
+  "Test de dépendances entre propriétés matériaux"
+}
+
+@Output G;
+G.setGlossaryName("ShearModulus");
+
+@Input T;
+T.setGlossaryName("Temperature");
+@PhysicalBounds T in [0:*[;
+@Bounds T in [293.15:973.15];
+
+@MaterialLaw{"VanadiumAlloy_YoungModulus_SRMA.mfront"};
+@MaterialLaw{"VanadiumAlloy_PoissonRatio_SRMA.mfront"};
+
+@Includes{
+#include"TFEL/Material/Lame.hxx"
+}
+			   
+@Function
+{
+  const auto E  = VanadiumAlloy_YoungModulus_SRMA(T);
+  const auto nu = VanadiumAlloy_PoissonRatio_SRMA(T);
+  G = tfel::material::computeMu(E,nu);
+}

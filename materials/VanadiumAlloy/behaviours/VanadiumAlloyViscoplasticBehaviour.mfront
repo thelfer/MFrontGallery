@@ -1,0 +1,24 @@
+@Parser    MultipleIsotropicMisesFlows;
+@Material  VanadiumAlloy;
+@Behaviour ViscoplasticBehaviour;
+@Author    É. Brunon;
+@Date      26/06/09;
+
+@ElasticMaterialProperties {"VanadiumAlloy_YoungModulus_SRMA.mfront",
+    "VanadiumAlloy_PoissonRatio_SRMA.mfront"};
+
+@Parameter A0 = 14.e-30;
+@Parameter T0 = 4.1722e+04;
+@Parameter n0 = 4.9;
+
+@LocalVariable real A;
+
+@InitLocalVariables{
+  A = A0*exp(-T0/(T+theta*dT));
+}
+
+@FlowRule Creep{
+  const auto tmp = A*pow(seq,n0-1);
+  df_dseq  = n0*tmp;
+  f        = seq*tmp;
+}

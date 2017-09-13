@@ -1,0 +1,2 @@
+set(ABAQUS_CPPFLAGS)
+

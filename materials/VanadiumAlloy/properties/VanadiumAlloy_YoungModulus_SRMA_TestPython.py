@@ -1,0 +1,2 @@
+from vanadiumalloy import VanadiumAlloy_YoungModulus_SRMA
+print(VanadiumAlloy_YoungModulus_SRMA(350.))
