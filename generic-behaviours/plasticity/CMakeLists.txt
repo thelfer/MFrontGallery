@@ -1,4 +1,3 @@
 mfront_behaviours_library(Plasticity
-  OrthotropicLinearHardeningPlasticity
   IsotropicLinearHardeningPlasticity
   IsotropicLinearKinematicHardeningPlasticity)

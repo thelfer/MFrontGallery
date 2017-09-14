@@ -20,27 +20,36 @@
 @Epsilon 1.e-16;
 @Brick StandardElasticity;
 
-@ElasticMaterialProperties {150e9,0.3};
+@MaterialProperty stress young;
+young.setGlossaryName("YoungModulus");
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+@MaterialProperty real A;
+A.setEntryName("NortonCoefficient");
+@MaterialProperty real E;
+E.setEntryName("NortonExponent");
+
 @StateVariable strain p;
 p.setGlossaryName("EquivalentViscoplasticStrain");
 
-@Parameter A = 8.e-67;
-A.setEntryName("NortonCoefficient");
-@Parameter E = 8.2;
-E.setEntryName("NortonExponent");
+@LocalVariable stress mu;
+
+@InitLocalVariables{
+  mu = computeMu(young,nu);
+}
 
 @Integrator{
   const real eps = 1.e-12;
   const auto seq = sigmaeq(sig);
-  const auto tmp = A*pow(seq,E-1.);
-  const auto df_dseq = E*tmp;
+  const auto vp = A*pow(seq,E);
   const auto iseq = 1/max(seq,eps*young);
-  const Stensor n = 3*deviator(sig)*iseq/2;
+  const auto df_dseq = E*vp*iseq;
+  const auto n = eval(3*deviator(sig)*iseq/2);
   // implicit system
   feel += dp*n;
-  fp   -= tmp*seq*dt;
+  fp   -= vp*dt;
   // jacobian
-  dfeel_ddeel += 2.*mu*theta*dp*iseq*(Stensor4::M()-(n^n));
+  dfeel_ddeel += 2*mu*theta*dp*iseq*(Stensor4::M()-(n^n));
   dfeel_ddp    = n;
-  dfp_ddeel    = -2*mu*theta*df_dseq*dt*n;
+  dfp_ddeel   -= 2*mu*theta*df_dseq*dt*n;
 } // end of @Integrator

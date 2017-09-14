@@ -6,8 +6,8 @@
   resolution implicite NEWTON classique
 }
 
-@Epsilon 1.e-15;
 @Theta 1;
+@Epsilon 1.e-15;
 
 @MaterialProperty stress young; 
 young.setGlossaryName("YoungModulus");

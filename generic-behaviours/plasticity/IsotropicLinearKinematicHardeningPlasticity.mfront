@@ -11,14 +11,13 @@
 eel.setGlossaryName("ElasticStrain");
 @StateVariable StrainStensor a;
 
-@Parameter young =  70.e9;
+@MaterialProperty stress young;
 young.setGlossaryName("YoungModulus");
-@Parameter nu    =   0.34;
+@MaterialProperty real nu;
 nu.setGlossaryName("PoissonRatio");
-@Parameter s0    = 300.e6;
+@MaterialProperty stress s0;
 s0.setGlossaryName("YieldStress");
-@Parameter C     =  10.e9;
-C.setEntryName("HardeningSlope");
+@MaterialProperty stress C;
 
 @LocalVariable StressStensor sig0; //<! Stress at the beginning of the time step
 @LocalVariable Stensor n;      //<! Von Mises normal

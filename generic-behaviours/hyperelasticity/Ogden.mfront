@@ -5,11 +5,11 @@
 @Description{
 }
 
-@Parameter alpha =     28.8;
-// 2*0.4e6/28.8
-@Parameter mu    =    27778;
-// 2*0.4e6/28.8*2.5e3
-@Parameter K     = 69444444;
+@MaterialProperty stress K;
+K.setGlossaryName("BulkModulus");
+@MaterialProperty stress mu;
+mu.setGlossaryName("ShearModulus");
+@MaterialProperty real alpha;
 
 @LocalVariable StiffnessTensor dS_dC;
 

@@ -10,15 +10,15 @@
   "Référence R5.03.18 du Code_Aster (révision 10413). 2016"
 }
 
+@MaterialProperty stress young;
+young.setGlossaryName("YoungModulus");
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+@MaterialProperty real Yw;
+@MaterialProperty real g;
+
 @StateVariable real d;
 d.setGlossaryName("Damage");
-
-@Parameter young = 150e9;
-young.setGlossaryName("YoungModulus");
-@Parameter nu    = 0.3;
-nu.setGlossaryName("PoissonRatio");
-@Parameter Yw = 75e3;
-@Parameter g  = 0.2;
 
 @LocalVariable stress lambda;
 @LocalVariable stress mu;

@@ -2,6 +2,7 @@
 @Behaviour IsotropicLinearHardeningPlasticity;
 @Author Thomas Helfer;
 @Date   14/10/2016;
+
 @Description{
   An implicit implementation of a simple
   isotropic plasticity behaviour with
@@ -13,19 +14,19 @@
   "\]"
 }
 
+@MaterialProperty stress young;
+young.setGlossaryName("YoungModulus");
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+@MaterialProperty stress H;
+H.setEntryName("HardeningSlope");
+@MaterialProperty stress s0;
+s0.setGlossaryName("YieldStress");
+
 @StateVariable StrainStensor eel;
 eel.setGlossaryName("ElasticStrain");
 @StateVariable strain p;
 p.setGlossaryName("EquivalentPlasticStrain");
-
-@Parameter young =  70.e9;
-young.setGlossaryName("YoungModulus");
-@Parameter nu    =   0.34;
-nu.setGlossaryName("PoissonRatio");
-@Parameter H     =  10.e9;
-H.setEntryName("HardeningSlope");
-@Parameter s0    =  300.e6;
-s0.setGlossaryName("YieldStress");
 
 /*!
  * computation of the prediction operator: we only provide the elastic

@@ -7,10 +7,10 @@
   hyperelastic behaviour
 }
 
-@Parameter K   = 2.939e9;
-@Parameter C10 = 2.668e6;
-@Parameter C20 = 0.446e6;
-@Parameter C01 = 0.271e6;
+@MaterialProperty stress K;
+@MaterialProperty stress C10;
+@MaterialProperty stress C20;
+@MaterialProperty stress C01;
 
 @LocalVariable StiffnessTensor dS_dC;
 
