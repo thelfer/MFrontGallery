@@ -1,5 +1,9 @@
 mfront_behaviours_library(Viscoplasticity
+  IsotropicViscoplasticityAmstrongFredericKinematicHardening
   ImplicitNorton
   ChabocheViscoplasticity
   Hayhurst
-  IsotropicViscoplasticityAmstrongFredericKinematicHardening)
+  JohnsonCook_ssr
+  JohnsonCook_ssrt
+  RusinekKlepaczko_ssrt)
+

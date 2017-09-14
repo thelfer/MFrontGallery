@@ -1,3 +1,4 @@
 mfront_behaviours_library(Plasticity
   IsotropicLinearHardeningPlasticity
-  IsotropicLinearKinematicHardeningPlasticity)
+  IsotropicLinearKinematicHardeningPlasticity
+  JohnsonCook_s)
