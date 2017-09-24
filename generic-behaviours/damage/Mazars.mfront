@@ -55,32 +55,33 @@ Y.setEntryName("DamageDrivingForce");
   strain e1,e2,e3;
   e.computeEigenValues(e1,e2,e3);
   // eigen values of s0
-  const stress s1   = 2*mu*e1+lambda*tr;
-  const stress s2   = 2*mu*e2+lambda*tr;
-  const stress s3   = 2*mu*e3+lambda*tr;
-  const stress sn   = max(abs(s1),max(abs(s2),abs(s3)));
-  const strain ppe1 = max(strain(0),e1);
-  const strain ppe2 = max(strain(0),e2);
-  const strain ppe3 = max(strain(0),e3);
-  const stress pps1 = max(stress(0),s1);
-  const stress pps2 = max(stress(0),s2);
-  const stress pps3 = max(stress(0),s3);
+  const auto s1   = 2*mu*e1+lambda*tr;
+  const auto s2   = 2*mu*e2+lambda*tr;
+  const auto s3   = 2*mu*e3+lambda*tr;
+  const auto sn   = max(abs(s1),max(abs(s2),abs(s3)));
+  const auto ppe1 = max(strain(0),e1);
+  const auto ppe2 = max(strain(0),e2);
+  const auto ppe3 = max(strain(0),e3);
+  const auto pps1 = max(stress(0),s1);
+  const auto pps2 = max(stress(0),s2);
+  const auto pps3 = max(stress(0),s3);
   real r=1;
-  if (sn>1.e-6*young){
+  if (sn>real(1.e-6)*young){
     r=(pps1+pps2+pps3)/(abs(s1)+abs(s2)+abs(s3));
   }
   g=1;
-  if ((min(s1,min(s2,s3))<0)&&(r==0)){
-    const stress pns1 = min(stress(0),s1);
-    const stress pns2 = min(stress(0),s2);
-    const stress pns3 = min(stress(0),s3);
+  if ((min(s1,min(s2,s3))<stress(0))&&
+      (r==real(0))){
+    const auto pns1 = min(stress(0),s1);
+    const auto pns2 = min(stress(0),s2);
+    const auto pns3 = min(stress(0),s3);
     g=-sqrt(pns1*pns1+pns2*pns2+pns3*pns3)/(pns1+pns2+pns3);
   }
-  const real eeqc = sqrt(ppe1*ppe1+ppe2*ppe2+ppe3*ppe3);
+  const auto eeqc = sqrt(ppe1*ppe1+ppe2*ppe2+ppe3*ppe3);
   eeqcor = max(g*eeqc,eeqcor);
   A  = At*(2*r*r*(1-2*k)-r*(1-4*k))+Ac*(2*r*r-3*r+1);
   B  = r*r*Bt+(1-r*r)*Bc;    
-  const real Y1 = max(ed0,eeqcor);
+  const auto Y1 = max(ed0,eeqcor);
   Y=max(Y1,Y);
   d=max(d,1-(1-A)*ed0/Y-A*exp(-B*(Y-ed0)));
   d=min(dmax,d);

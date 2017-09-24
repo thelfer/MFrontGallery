@@ -107,5 +107,7 @@ H.setEntryName("ViscoplasticStress");
 }
 
 @TangentOperator<DS_DC>{
+  // silent "unused parameter" warning
+  static_cast<void>(smt);
   Dt = dS_dC;
 }

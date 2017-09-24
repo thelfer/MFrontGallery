@@ -34,6 +34,8 @@ s0.setGlossaryName("YieldStress");
 }
 
 @PredictionOperator{
+  // silent "unused parameter" warning
+  static_cast<void>(smt);
   Dt = lambda*Stensor4::IxI()+2*mu*Stensor4::Id();
 }
 

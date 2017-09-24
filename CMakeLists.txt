@@ -17,6 +17,8 @@ execute_process(COMMAND svnversion
                 OUTPUT_VARIABLE PLEIADES_SVN_REVISION 
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+option(enable-developer-warnings "add warnings mostly useful for TFEL developers" OFF)
+	      
 #find the tfel package
 include(cmake/modules/tfel.cmake)
 include(cmake/modules/mfront-query.cmake)
@@ -157,7 +159,7 @@ option(enable-europlexus   "generate europlexus-interface for mechanical behavio
 if(enable-europlexus)
   set(MFM_EUROPLEXUS_INTERFACE ON)
   find_tfel_library(EuroplexusInterface)
-  set(mfront-behaviours-interfaces "europlexus" ${mfront-behaviours-interfaces})
+  set(mfront-behaviours-interfaces "epx" ${mfront-behaviours-interfaces})
   include(cmake/modules/europlexus.cmake)
 endif(enable-europlexus)
 

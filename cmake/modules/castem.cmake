@@ -60,3 +60,7 @@ if(CASTEMHOME)
 else(CASTEMHOME)
   message(FATAL_ERROR "no CASTEMHOME defined")
 endif(CASTEMHOME)
+
+function(getCastemBehaviourName name)
+  set(lib "${name}Behaviours" PARENT_SCOPE)
+endfunction(getCastemBehaviourName)

@@ -37,6 +37,8 @@ p.setGlossaryName("EquivalentPlasticStrain");
  * occured at the previous time step.
  */
 @PredictionOperator{
+  // silent "unused parameter" warning
+  static_cast<void>(smt);
   const auto lambda = computeLambda(young,nu);
   const auto mu     = computeMu(young,nu);
   Dt = lambda*Stensor4::IxI()+2*mu*Stensor4::Id();
