@@ -26,7 +26,7 @@ macro(mfront_properties_excel_internal_library mat)
     add_custom_command(
       OUTPUT  "${mfront_def_file}"
       COMMAND "${MFRONT}"
-      ARGS    "--def-file=lib${lib}"
+      ARGS    "--def-file=${lib}"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
       ARGS    "--interface=excel-internal" ${mfront_sources}
       DEPENDS ${mfront_sources}

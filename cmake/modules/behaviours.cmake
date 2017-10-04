@@ -250,11 +250,13 @@ macro(add_mtest interface lib)
 	  get_property(${mplib}BuildPath TARGET ${mplib} PROPERTY LOCATION_${conf})
 	endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
 	configure_file(${test}.mtest.in ${test}-${conf}.mtest @ONLY)
-	add_test(NAME ${test}_${conf}_mtest
-	  COMMAND mtest --verbose=level0 --xml-output=true --result-file-output=false ${test}-${conf}.mtest
+	foreach(rm ${IEEE754_ROUNDING_MODES})
+	  add_test(NAME ${test}_${conf}_${rm}_mtest
+	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 --xml-output=true --result-file-output=false ${test}-${conf}.mtest
 	  CONFIGURATIONS ${conf})
-        set_property(TEST ${test}_${conf}_mtest
+          set_property(TEST ${test}_${conf}_${rm}_mtest
           PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
+	endforeach(rm ${IEEE754_ROUNDING_MODES})
       endforeach(conf ${CMAKE_CONFIGURATION_TYPES})
     else(CMAKE_CONFIGURATION_TYPES)
       get_property(${lib}BuildPath TARGET ${lib} PROPERTY LOCATION)
@@ -262,10 +264,12 @@ macro(add_mtest interface lib)
 	get_property(${mplib}BuildPath TARGET ${mplib} PROPERTY LOCATION)
       endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
       configure_file(${test}.mtest.in	${test}.mtest @ONLY)
-      add_test(NAME ${test}_mtest
-	COMMAND mtest --verbose=level0 --xml-output=true --result-file-output=false ${test}.mtest)
-      set_property(TEST ${test}_mtest
+      foreach(rm ${IEEE754_ROUNDING_MODES})
+	add_test(NAME ${test}_${rm}_mtest
+	  COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 --xml-output=true --result-file-output=false ${test}.mtest)
+	set_property(TEST ${test}_${rm}_mtest
 	PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
+      endforeach(rm ${IEEE754_ROUNDING_MODES})
     endif(CMAKE_CONFIGURATION_TYPES)
   endforeach(test ${_TESTS})
 endmacro(add_mtest interface lib file)

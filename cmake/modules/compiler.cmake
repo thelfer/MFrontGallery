@@ -81,6 +81,8 @@ MACRO (TFEL_CHECK_CXX_COMPILER_FLAG _FLAG _RESULT)
    TFEL_CHECK_CXX_SOURCE_COMPILES("int main() { return 0;}" ${_RESULT}
      # Some compilers do not fail with a bad flag
      FAIL_REGEX "unrecognized .*option"                     # GNU
+     FAIL_REGEX "unknown warning option"                    # CLANG
+     FAIL_REGEX "warning: optimization flag"                # CLANG
      FAIL_REGEX "ignoring unknown option"                   # MSVC
      FAIL_REGEX "[Uu]nknown option"                         # HP
      FAIL_REGEX "[Ww]arning: [Oo]ption"                     # SunPro
@@ -129,6 +131,7 @@ set(OPTIMISATION_FLAGS "")
 set(COMPILER_FLAGS  "-DMFRONT_COMPILING")
 set(COMPILER_WARNINGS  "")
 
+option(enable-fast-math "enable -ffast-math compiler flag" OFF)
 option(PATHSCALE_COMPILER "set true if using the PathScale compiler" OFF)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -148,8 +151,29 @@ else(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   message(FATAL_ERROR "unsupported compiler id")
 endif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
-set(CMAKE_C_FLAGS "${COMPILER_FLAGS}")
-set(CMAKE_CXX_FLAGS "${VISIBILITY_FLAGS} ${COMPILER_WARNINGS} ${COMPILER_FLAGS}")
+file(WRITE "${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.cxx"
+  "[[ noreturn ]] void f(void);
+   int main(){return 0;}")
+try_compile(HAVE_NORETURN_ATTRIBUTE
+      ${CMAKE_BINARY_DIR}
+      ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.cxx
+      COMPILE_DEFINITIONS ${COMPILER_CXXFLAGS})
+if(HAVE_NORETURN_ATTRIBUTE)
+  MESSAGE(STATUS "enabling [[ noreturn ]] attribute")
+  set(COMPILER_CXXFLAGS "${COMPILER_CXXFLAGS} -DTFEL_HAVE_NORETURN_ATTRIBUTE")
+else(HAVE_NORETURN_ATTRIBUTE)
+  MESSAGE(STATUS "disabling [[ noreturn ]] attribute")
+endif(HAVE_NORETURN_ATTRIBUTE)
+			  
+add_definitions("-DOPTIMISATION_FLAGS0=\\\"\"${VISIBILITY_FLAGS} ${OPTIMISATION_FLAGS}\"\\\"")
+add_definitions("-DOPTIMISATION_FLAGS=\\\"\"${OPTIMISATION_FLAGS_MARCH}\"\\\"")
+add_definitions("-DOPTIMISATION_FLAGS2=\\\"\"${OPTIMISATION_FLAGS2}\"\\\"")
+add_definitions("-DCOMPILER_WARNINGS=\\\"\"${COMPILER_WARNINGS}\"\\\"")
+add_definitions("-DCOMPILER_FLAGS=\\\"\"${COMPILER_FLAGS}\"\\\"")
+add_definitions("-DCOMPILER_CXXFLAGS=\\\"\"${COMPILER_CXXFLAGS}\"\\\"")
+
+set(CMAKE_C_FLAGS "${COMPILER_FLAGS} ${COMPILER_CFLAGS}")
+set(CMAKE_CXX_FLAGS "${VISIBILITY_FLAGS} ${COMPILER_WARNINGS} ${COMPILER_FLAGS} ${COMPILER_CXXFLAGS}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Profiling")
   set(CMAKE_CXX_FLAGS_PROFILING "${OPTIMISATION_FLAGS} ${CMAKE_CXX_FLAGS_PROFILING}")
@@ -164,6 +188,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 else(CMAKE_BUILD_TYPE STREQUAL "Profiling")
   set(CMAKE_CXX_FLAGS           "${OPTIMISATION_FLAGS} ${CMAKE_CXX_FLAGS}")
   if(NOT enable-portable-build)
-    set(CMAKE_CXX_FLAGS_RELEASE "${OPTIMISATION_FLAGS_MARCH} ${CMAKE_CXX_FLAGS_RELEASE}")
+    set(CMAKE_CXX_FLAGS "${OPTIMISATION_FLAGS_MARCH} ${CMAKE_CXX_FLAGS}")
   endif(NOT enable-portable-build)
 endif(CMAKE_BUILD_TYPE STREQUAL "Profiling")

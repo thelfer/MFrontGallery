@@ -33,7 +33,12 @@ if(WIN32)
   endif(CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif(WIN32)
 
+if(enable-fast-math)
+  tfel_enable_cxx_compiler_flag(OPTIMISATION_FLAGS  "ffast-math")
+else(enable-fast-math)
+  tfel_enable_cxx_compiler_flag(OPTIMISATION_FLAGS  "fno-fast-math")
 tfel_enable_cxx_compiler_flag(OPTIMISATION_FLAGS2 "ffast-math")
+endif(enable-fast-math)
 
 option(enable-sanitize-options "enable various gcc sanitize options (undefined, address,...)" OFF)
 

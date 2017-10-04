@@ -79,19 +79,18 @@ Temp.setEntryName("Adiabatic_heating_dT");
   brcp = 1.e6*beta/(rhoc*cp);
   // Update temperature and related factors
   Tn  = T0 + Temp;
-  itm = 1./Tm;
-  real rT_ = Tn*itm;
+  itm = 1/Tm;
   const stress rEE0 = (1.-Tn*itm*exp(thetas*(1.-Tm/Tn)));
   lambda = computeLambda(young*rEE0,nu);
   mu     = computeMu(young*rEE0,nu);
   // Modulus of plasticity - no plastic increment -> dp/dt = eDmin
-  const real B = B0*pow(Tn*itm*log10(eDmax/eDmin),-nu_rk);
+  const auto B = B0*pow(Tn*itm*log10(eDmax/eDmin),-nu_rk);
   // Internal stress
-  const real smu = B*pow(e0+p,n0);
+  const auto smu = B*pow(e0+p,n0);
   // Flow stress - ss is zero if no plastic strain increment.
-  const stress Rp = rEE0*smu;
+  const auto Rp = rEE0*smu;
   // Elastic prediction
-  StressStensor sigel(lambda*trace(eel+deto)*Stensor::Id()+2.*mu*(eel+deto));
+  StressStensor sigel(lambda*trace(eel+deto)*Stensor::Id()+2*mu*(eel+deto));
   Fel = sigmaeq(sigel) - Rp;
 }
 
@@ -106,9 +105,9 @@ Temp.setEntryName("Adiabatic_heating_dT");
   }
     
   // Flow direction
-  StressStensor sr_ = deviator(sig);
-  stress       seq_ = max(sigmaeq(sr_),seq_eps*young);
-  const Stensor  n_ = 1.5*sr_/seq_;
+  const auto seq   = sigmaeq(sig);
+  const auto iseq  = 1/max(seq,stress(seq_eps*young));
+  const auto n_    = eval(3*deviator(sig)*(iseq/2));
 
   // Plastic increment
   const real p_ = max(0.,p + theta*dp);
@@ -191,7 +190,7 @@ Temp.setEntryName("Adiabatic_heating_dT");
   const auto drp_ddT = (smu+ss)*drEE0_ddT + rEE0*(dsmu_ddT+dss_ddT);
 
   // System of equations and partial derivatives
-  fp         = (seq_-rp)/young;
+  fp         = (seq-rp)/young;
   dfp_ddp    = -drp_ddp/young;  
   dfp_ddTemp = -drp_ddT/young;
   dfp_ddeel  = 2.*mu*theta/young*n_;
@@ -201,7 +200,7 @@ Temp.setEntryName("Adiabatic_heating_dT");
   dfTemp_ddTemp = (1.-brcp*drp_ddT*dp)*itm; 
 
   feel         = deel - deto + dp*n_;		
-  dfeel_ddeel += (Stensor4::M()-(n_^n_))*2.*mu*theta*dp/seq_;
+  dfeel_ddeel += (Stensor4::M()-(n_^n_))*2.*mu*theta*dp*iseq;
   dfeel_ddp    = n_ ;
 } 
 
