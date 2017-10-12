@@ -1,6 +1,10 @@
 message(STATUS "looking for castem library.")
 option(enable-castem-pleiades "use a pleiades version of castem" OFF)
 
+find_path(CASTEM_HEADER castem.h
+    HINTS ${TFEL_INCLUDE_PATH})
+
+if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
 if(CASTEM_INSTALL_PATH)
   set(CASTEMHOME "${CASTEM_INSTALL_PATH}")
 else(CASTEM_INSTALL_PATH)
@@ -60,6 +64,7 @@ if(CASTEMHOME)
 else(CASTEMHOME)
   message(FATAL_ERROR "no CASTEMHOME defined")
 endif(CASTEMHOME)
+endif(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
 
 function(getCastemBehaviourName name)
   set(lib "${name}Behaviours" PARENT_SCOPE)

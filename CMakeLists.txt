@@ -7,6 +7,8 @@ cmake_policy(SET CMP0026 OLD)
 cmake_policy(SET CMP0007 NEW)
 
 include(cmake/modules/generalmacros.cmake)
+# load the list of rounding modes defined by the IEEE754 standard
+include(cmake/modules/ieee754.cmake)
 
 # compatibility with autotools
 include(cmake/modules/autotools.cmake)
@@ -64,11 +66,15 @@ endif(enable-python)
 if(TFEL_PYTHON_BINDINGS OR enable-python)
   if(TFEL_PYTHON_BINDINGS)
     if(Python_ADDITIONAL_VERSIONS)
-      if(NOT Python_ADDITIONAL_VERSIONS VERSION_EQUAL TFEL_PYTHON_VERSION)
+      string(REPLACE "." ";" TFEL_PYTHON_VERSIONS ${TFEL_PYTHON_VERSION})
+      list(GET TFEL_PYTHON_VERSIONS 0 TFEL_PYTHON_VERSION_MAJOR)
+      list(GET TFEL_PYTHON_VERSIONS 1 TFEL_PYTHON_VERSION_MINOR)
+      set(TFEL_PYTHON_VERSION2 "${TFEL_PYTHON_VERSION_MAJOR}.${TFEL_PYTHON_VERSION_MINOR}")
+      if(NOT Python_ADDITIONAL_VERSIONS VERSION_EQUAL TFEL_PYTHON_VERSION2)
 	message(FATAL_ERROR "python version mismatch: "
 	  "(Python_ADDITIONAL_VERSIONS gives ${Python_ADDITIONAL_VERSIONS} and "
 	  "TFEL_PYTHON_VERSION gives ${TFEL_PYTHON_VERSION}).")
-      endif(NOT Python_ADDITIONAL_VERSIONS VERSION_EQUAL TFEL_PYTHON_VERSION)
+      endif(NOT Python_ADDITIONAL_VERSIONS VERSION_EQUAL TFEL_PYTHON_VERSION2)
     else(Python_ADDITIONAL_VERSIONS)
       set(Python_ADDITIONAL_VERSIONS)
       list(APPEND Python_ADDITIONAL_VERSIONS ${TFEL_PYTHON_VERSION})
@@ -137,12 +143,9 @@ endif(enable-castem)
 if(enable-castem-behaviours)
   set(MFM_CASTEM_BEHAVIOUR_INTERFACE ON)
   find_tfel_library(CastemInterface)
-  set(mfront-behaviours-interfaces "castem" ${mfront-behaviours-interfaces})
-  find_path(CASTEM_HEADER castem.h
-    HINTS ${TFEL_INCLUDE_PATH})
-  if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
+  set(mfront-behaviours-interfaces "castem"
+  ${mfront-behaviours-interfaces})
     include(cmake/modules/castem.cmake)
-  endif(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
 endif(enable-castem-behaviours)
 
 # aster

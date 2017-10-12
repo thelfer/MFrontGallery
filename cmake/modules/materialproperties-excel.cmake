@@ -21,27 +21,27 @@ macro(mfront_properties_excel_internal_library mat)
     set(${lib}_SOURCES ${deps} ${${lib}_SOURCES})
   endforeach(deps ${${mat}_mfront_properties_dependencies_excel_SOURCES})
   message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
-  if(MSVC)
-    set(mfront_def_file "${CMAKE_CURRENT_BINARY_DIR}/excel/src/lib${lib}.def")
-    add_custom_command(
-      OUTPUT  "${mfront_def_file}"
-      COMMAND "${MFRONT}"
-      ARGS    "--def-file=${lib}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-      ARGS    "--interface=excel-internal" ${mfront_sources}
-      DEPENDS ${mfront_sources}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/excel"
-      COMMENT "mfront def file ${mfront_def_file}")
-  endif(MSVC)
+ #  if(MSVC)
+ #   set(mfront_def_file "${CMAKE_CURRENT_BINARY_DIR}/excel/src/${lib}.def")
+ #   add_custom_command(
+ #    OUTPUT  "${mfront_def_file}"
+ #    COMMAND "${MFRONT}"
+ #    ARGS    "--def-file=${lib}"
+ #    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+ #    ARGS    "--interface=excel-internal" ${mfront_sources}
+ #    DEPENDS ${mfront_sources}
+ #    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/excel"
+ #    COMMENT "mfront def file ${mfront_def_file}")
+ # endif(MSVC)
   add_library(${lib} SHARED ${${lib}_SOURCES})
-  if(MSVC)
-    add_custom_target(${lib}_def DEPENDS ${mfront_def_file})
-    add_dependencies(${lib} ${lib}_def)
-    add_link_flags(${lib} "/DEF:${mfront_def_file}")
-  endif(MSVC)
-  if((CMAKE_HOST_WIN32) AND (NOT MSYS))  
-    set_target_properties(${lib} PROPERTIES PREFIX "lib")
-  endif((CMAKE_HOST_WIN32) AND (NOT MSYS))  
+ # if(MSVC)
+ #    add_custom_target(${lib}_def DEPENDS ${mfront_def_file})
+ #    add_dependencies(${lib} ${lib}_def)
+ #    add_link_flags(${lib} "/DEF:${mfront_def_file}")
+ #  endif(MSVC)
+  # if((CMAKE_HOST_WIN32) AND (NOT MSYS))  
+  #   set_target_properties(${lib} PROPERTIES PREFIX "lib")
+  # endif((CMAKE_HOST_WIN32) AND (NOT MSYS))  
   target_include_directories(${lib}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/excel/include"
     PRIVATE "${TFEL_INCLUDE_PATH}")
