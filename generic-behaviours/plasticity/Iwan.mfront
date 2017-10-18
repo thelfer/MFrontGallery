@@ -92,11 +92,15 @@ X.setEntryName("BackStress");
   if(converged){
     // checking status consistency
     for (unsigned short i=0;i!=Ns;++i){
-      if(!status[i]){continue;}
       if(status[i]){
 	if(dp[i]<0){
 	  // desactivating this system
 	  converged=status[i]=false;
+	}
+      } else {
+	if(sigmaeq(sig-X[i])>Y[i]){
+	  converged=false;
+	  status[i]=true;
 	}
       }
     }
