@@ -1,0 +1,18 @@
+@Author Vinicius Alves Fernandes EDF R&D;
+@Date Aout 2015;
+@Description{
+Teste de cisaillement modele de Iwan
+};
+
+@MaximumNumberOfSubSteps 1;
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<aster> '@PlasticityBehaviours-asterBuildPath@' 'asteriwan';
+
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStrain 'EYZ' {0.:0.,1.:-5.e-5,2.:5e-5,4.:-1e-4,
+    8.:1e-4,16.:-2e-4,32.:2e-4,64.:-4e-4,
+    128.:4e-4,256.:-8e-4,512.:8e-4,1024.:-1.6e-3};
+@Times {0., 1024. in 10240};
+
+@Test<file> '@CMAKE_CURRENT_SOURCE_DIR@/references/iwan.ref' {'SYZ':13} 1.e-1; 
