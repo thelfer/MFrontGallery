@@ -110,6 +110,7 @@ function(mfront_behaviours_library mat)
     endforeach(deps ${${mat}_mfront_behaviours_dependencies_${interface}_SOURCES})
     list(LENGTH ${lib}_SOURCES nb_sources)
     if(nb_sources GREATER 0)
+      message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
       add_library(${lib} SHARED ${${lib}_SOURCES})
       target_include_directories(${lib}
 	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
