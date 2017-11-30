@@ -3,6 +3,7 @@ mfront_behaviours_library(Plasticity
   IsotropicLinearKinematicHardeningPlasticity
   JohnsonCook_s
   Iwan
+  GreenPerfectPlasticity
   HosfordPerfectPlasticity)
 
 astermtest(Plasticity asteriwan)
