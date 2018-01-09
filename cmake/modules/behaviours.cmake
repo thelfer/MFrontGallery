@@ -56,6 +56,13 @@ function(mfront_behaviours_library mat)
   set ( _CMD SOURCES )
   set ( _SOURCES )
   set ( _DEPENDENCIES )
+  if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+    set(TFEL_MFRONT_LIBRARIES
+      "${TFELException};${TFELMath};${TFELMaterial}")
+  else((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+    set(TFEL_MFRONT_LIBRARIES
+      "${TFELException};${TFELMath};${TFELMaterial};${TFELPhysicalConstants}")
+  endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
   foreach ( _ARG ${ARGN})
     if ( ${_ARG} MATCHES SOURCES )
       set ( _CMD SOURCES )
@@ -144,72 +151,63 @@ function(mfront_behaviours_library mat)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CASTEM_CPPFLAGS}")
 	endif(CASTEM_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${CastemInterface})
       elseif(${interface} STREQUAL "aster")
 	if(ASTER_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ASTER_CPPFLAGS}")
 	endif(ASTER_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${AsterInterface})
       elseif(${interface} STREQUAL "epx")
 	if(EUROPLEXUS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${EUROPLEXUS_CPPFLAGS}")
 	endif(EUROPLEXUS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${EuroplexusInterface})
       elseif(${interface} STREQUAL "abaqus")
 	if(ABAQUS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_CPPFLAGS}")
 	endif(ABAQUS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "abaqusexplicit")
 	if(ABAQUS_EXPLICIT_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_EXPLICIT_CPPFLAGS}")
 	endif(ABAQUS_EXPLICIT_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "ansys")
 	if(ANSYS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ANSYS_CPPFLAGS}")
 	endif(ANSYS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${AnsysInterface})
       elseif(${interface} STREQUAL "calculix")
 	if(CALCULIX_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CALCULIX_CPPFLAGS}")
 	endif(CALCULIX_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${CalculiXInterface})
       elseif(${interface} STREQUAL "cyrano")
 	if(CYRANO_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CYRANO_CPPFLAGS}")
 	endif(CYRANO_CPPFLAGS)
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial}
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
 	  ${CyranoInterface})
       elseif(${interface} STREQUAL "zmat")
 	set_target_properties(${lib} PROPERTIES
 	  COMPILE_FLAGS "${ZSET_CPPFLAGS}")
 	target_include_directories(${lib}
 	  SYSTEM PRIVATE "${ZSET_INCLUDE_DIR}")
-	target_link_libraries(${lib} ${TFELException}
-	  ${TFELMath} ${TFELMaterial})
+	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES})
       else(${interface} STREQUAL "castem")
 	message(FATAL_ERROR "mfront_behaviours_library : "
 	  "unsupported interface ${interface}")
@@ -254,11 +252,11 @@ macro(add_mtest interface lib)
 	foreach(rm ${IEEE754_ROUNDING_MODES})
 	  add_test(NAME ${test}_${conf}_${rm}_mtest
 	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 --xml-output=true --result-file-output=false ${test}-${conf}.mtest
-	  CONFIGURATIONS ${conf})
+	    CONFIGURATIONS ${conf})
           set_property(TEST ${test}_${conf}_${rm}_mtest
-          PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
+            PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
 	endforeach(rm ${IEEE754_ROUNDING_MODES})
-      endforeach(conf ${CMAKE_CONFIGURATION_TYPES})
+      endforeach(conf ${CMAKE_CONFIGURATION_TYPES})      
     else(CMAKE_CONFIGURATION_TYPES)
       get_property(${lib}BuildPath TARGET ${lib} PROPERTY LOCATION)
       foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
@@ -269,7 +267,7 @@ macro(add_mtest interface lib)
 	add_test(NAME ${test}_${rm}_mtest
 	  COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 --xml-output=true --result-file-output=false ${test}.mtest)
 	set_property(TEST ${test}_${rm}_mtest
-	PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
+	  PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
       endforeach(rm ${IEEE754_ROUNDING_MODES})
     endif(CMAKE_CONFIGURATION_TYPES)
   endforeach(test ${_TESTS})

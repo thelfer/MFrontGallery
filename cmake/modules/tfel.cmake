@@ -42,6 +42,15 @@ STRING(LENGTH ${TFEL_LIBRARY_PATH}  TFEL_LIBRARY_PATH_LENGTH)
 MATH(EXPR TFEL_LIBRARY_PATH_LENGTH "${TFEL_LIBRARY_PATH_LENGTH} - 2")
 STRING(SUBSTRING ${TFEL_LIBRARY_PATH} 2 ${TFEL_LIBRARY_PATH_LENGTH} TFEL_LIBRARY_PATH)
 
+EXECUTE_PROCESS(COMMAND ${TFEL_CONFIG} "--cxx-standard"
+  RESULT_VARIABLE TFEL_CXX_STANDARD_AVAILABLE
+  OUTPUT_VARIABLE TFEL_CXX_STANDARD
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
+  set(TFEL_CXX_STANDARD 11)
+endif(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
+
 EXECUTE_PROCESS(COMMAND ${TFEL_CONFIG} "--python-version"
   RESULT_VARIABLE TFEL_PYTHON_BINDINGS
   OUTPUT_VARIABLE TFEL_PYTHON_VERSION
@@ -59,7 +68,6 @@ else(TFEL_PYTHON_BINDINGS)
   message(STATUS "no tfel python bindings")
 endif(TFEL_PYTHON_BINDINGS)
   
-
 macro(find_tfel_library name)
   find_library(${name}
     NAMES ${name}
@@ -74,20 +82,23 @@ find_tfel_library(TFELException)
 find_tfel_library(TFELUtilities)
 find_tfel_library(TFELMath)
 find_tfel_library(TFELMaterial)
+find_tfel_library(TFELPhysicalConstants)
 
-MESSAGE(STATUS "mfront        : ${MFRONT}")
-MESSAGE(STATUS "tfel-config   : ${TFEL_CONFIG}")
+MESSAGE(STATUS "tfel C++ standard     : ${TFEL_CXX_STANDARD}")
+MESSAGE(STATUS "mfront                : ${MFRONT}")
+MESSAGE(STATUS "tfel-config           : ${TFEL_CONFIG}")
 if(TFEL_CHECK)
-  MESSAGE(STATUS "tfel-check    : ${TFEL_CHECK}")
+  MESSAGE(STATUS "tfel-check            : ${TFEL_CHECK}")
 endif(TFEL_CHECK)  
-MESSAGE(STATUS "tfel include  : ${TFEL_INCLUDE_PATH}")
-MESSAGE(STATUS "tfel libs     : ${TFEL_LIBRARY_PATH}")
-MESSAGE(STATUS "TFELTests     : ${TFELTests}")
-MESSAGE(STATUS "TFELTests     : ${TFELTests}")
-MESSAGE(STATUS "TFELException : ${TFELException}")
-MESSAGE(STATUS "TFELUtilities : ${TFELUtilities}")
-MESSAGE(STATUS "TFELMath      : ${TFELMath}")	
-MESSAGE(STATUS "TFELMaterial  : ${TFELMaterial}") 
+MESSAGE(STATUS "tfel include          : ${TFEL_INCLUDE_PATH}")
+MESSAGE(STATUS "tfel libs             : ${TFEL_LIBRARY_PATH}")
+MESSAGE(STATUS "TFELTests             : ${TFELTests}")
+MESSAGE(STATUS "TFELTests             : ${TFELTests}")
+MESSAGE(STATUS "TFELException         : ${TFELException}")
+MESSAGE(STATUS "TFELUtilities         : ${TFELUtilities}")
+MESSAGE(STATUS "TFELMath              : ${TFELMath}")	
+MESSAGE(STATUS "TFELMaterial          : ${TFELMaterial}")
+MESSAGE(STATUS "TFELPhysicalConstants : ${TFELPhysicalConstants}") 
 SET(HAVE_TFEL ON)
 
 macro(install_generic_behaviour dir file)
