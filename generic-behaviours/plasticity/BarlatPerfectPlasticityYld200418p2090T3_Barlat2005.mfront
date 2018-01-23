@@ -1,0 +1,62 @@
+@DSL    Implicit;
+@Behaviour BarlatPerfectPlasticityYld200418p2090T3_Barlat2005;
+@Author Thomas Helfer;
+@Date   8/12/2017;
+@Description{
+
+};
+
+@ModellingHypotheses {".+"};
+@OrthotropicBehaviour<Pipe>;
+@Brick StandardElasticity;
+
+@Epsilon 1.e-16;
+@Theta   1;
+
+@ElasticMaterialProperties {150e9,0.3};
+@Parameter sigy = 150e6;
+
+@StateVariable strain p;
+p.setGlossaryName("EquivalentPlasticStrain");
+
+@Parameter l1p[9] = {-0.069888,0.079143,0.936408,
+		     0.524741,1.00306,1.36318,
+		     0.954322,1.06906,1.02377};
+@Parameter l2p[9] = {0.981171,0.575316,0.476741,
+		     1.14501,0.866827,-0.079294,
+		     1.40462,1.1471,1.05166};
+  
+@LocalVariable bool b;
+
+@InitializeLocalVariables{
+  const auto l1 = makeBarlatLinearTransformation<N>(l1p);
+  const auto l2 = makeBarlatLinearTransformation<N>(l2p);
+  const stress seps = 1.e-10*young;
+  const auto sigel = computeElasticPrediction();
+  const auto seqel = computeBarlatStress(sigel,l1,l2,8,seps);
+  b = seqel>sigy;
+}
+
+@Integrator{
+  const stress seps = 1.e-10*young;
+  if(!b){
+    // elastic loading, nothing to be done
+    return true;
+  }
+  const auto l1 = makeBarlatLinearTransformation<N>(l1p);
+  const auto l2 = makeBarlatLinearTransformation<N>(l2p);
+  real seq;
+  Stensor n;
+  Stensor4 dn;
+  std::tie(seq,n,dn) = computeBarlatStressSecondDerivative(sig,l1,l2,8,seps);
+  feel        += dp*n;
+  dfeel_ddeel += 2*mu*theta*dp*dn;
+  dfeel_ddp    = n;
+  fp           = (seq-sigy)/young;
+  dfp_ddeel    = 2*mu*theta*n/young;
+  if(seq<seps){
+    dfp_ddp      = 1;
+  } else {
+    dfp_ddp      = 0;
+  }
+}
