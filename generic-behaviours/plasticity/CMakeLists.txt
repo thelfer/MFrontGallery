@@ -4,7 +4,8 @@ mfront_behaviours_library(Plasticity
   JohnsonCook_s
   Iwan
   GreenPerfectPlasticity
-  HosfordPerfectPlasticity
+  Hosford1972PerfectPlasticity
+  BarlatPerfectPlasticityYld200418p2090T3_Barlat2005
   DruckerPerfectPlasticity_Cazacu2001
   OrthotropicDruckerPerfectPlasticity2090T3_Cazacu2001
   OrthotropicDruckerPerfectPlasticityYdLin6016T4_Cazacu2001)

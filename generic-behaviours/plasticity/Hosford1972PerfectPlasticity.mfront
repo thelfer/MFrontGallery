@@ -1,5 +1,5 @@
 @DSL       Implicit;
-@Behaviour HosfordPerfectPlasticity;
+@Behaviour Hosford1972PerfectPlasticity;
 @Author    Thomas Helfer;
 @Description{
   A simple implementation of a perfect
