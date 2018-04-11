@@ -1,4 +1,5 @@
 set(MFRONT_BEHAVIOURS_VISCOPLASTICITY_SOURCES
+  LoadInducedThermalStrain_Torelli2018
   IsotropicViscoplasticityAmstrongFredericKinematicHardening
   ImplicitNorton
   ChabocheViscoplasticity
@@ -13,3 +14,6 @@ endif(NOT MSVC)
 
 mfront_behaviours_library(Viscoplasticity
  ${MFRONT_BEHAVIOURS_VISCOPLASTICITY_SOURCES})
+
+astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-uniaxial)
+astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-biaxial)

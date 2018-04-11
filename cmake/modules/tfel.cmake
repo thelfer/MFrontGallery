@@ -101,6 +101,48 @@ MESSAGE(STATUS "TFELMaterial          : ${TFELMaterial}")
 MESSAGE(STATUS "TFELPhysicalConstants : ${TFELPhysicalConstants}") 
 SET(HAVE_TFEL ON)
 
+# list of available material property interfaces
+EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-material-property-interfaces"
+  OUTPUT_VARIABLE MFRONT_MATERIALPROPERTY_INTERFACES_TMP
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "[a-zA-Z]+"
+       MFRONT_MATERIALPROPERTY_INTERFACES ${MFRONT_MATERIALPROPERTY_INTERFACES_TMP})
+
+# list of available behaviour interfaces
+EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-behaviour-interfaces"
+  OUTPUT_VARIABLE MFRONT_BEHAVIOUR_INTERFACES_TMP
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "[a-zA-Z]+"
+       MFRONT_BEHAVIOUR_INTERFACES ${MFRONT_BEHAVIOUR_INTERFACES_TMP})
+
+# list of available model interfaces
+EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-model-interfaces"
+  OUTPUT_VARIABLE MFRONT_MODEL_INTERFACES_TMP
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "[a-zA-Z]+"
+       MFRONT_MODEL_INTERFACES ${MFRONT_MODEL_INTERFACES_TMP})
+
+function(check_if_material_property_interface_is_supported interface)
+  list (FIND MFRONT_MATERIALPROPERTY_INTERFACES ${interface} interface_index)
+  if (NOT ${interface_index} GREATER -1)
+	message(FATAL_ERROR "interface ${interface} is not supported by this version of TFEL")
+  endif()
+endfunction(check_if_material_property_interface_is_supported interface)
+
+function(check_if_behaviour_interface_is_supported interface)
+  list (FIND MFRONT_BEHAVIOUR_INTERFACES ${interface} interface_index)
+  if (NOT ${interface_index} GREATER -1)
+	message(FATAL_ERROR "interface ${interface} is not supported by this version of TFEL")
+  endif()
+endfunction(check_if_behaviour_interface_is_supported interface)
+
+function(check_if_model_interface_is_supported interface)
+  list (FIND MFRONT_model_INTERFACES ${interface} interface_index)
+  if (NOT ${interface_index} GREATER -1)
+	message(FATAL_ERROR "interface ${interface} is not supported by this version of TFEL")
+  endif()
+endfunction(check_if_model_interface_is_supported interface)
+
 macro(install_generic_behaviour dir file)
   install(FILES ${file}
     DESTINATION "share/${PACKAGE_NAME}/generic-behaviours/${dir}/${type}")
