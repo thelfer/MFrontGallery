@@ -5,11 +5,12 @@ else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
 function(check_cyrano_compatibility mat source)
-  behaviour_query(behaviour_mh
+  behaviour_query(modelling_hypotheses
     ${mat} ${source} "--supported-modelling-hypotheses")
-  string(FIND behaviour_mh "AxisymmetricGeneralisedPlaneStrain"
+  separate_arguments(modelling_hypotheses)
+  list(FIND modelling_hypotheses "AxisymmetricalGeneralisedPlaneStrain"
     agpstrain)
-  string(FIND behaviour_mh "AxisymmetricGeneralisedPlaneStress"
+  list(FIND modelling_hypotheses "AxisymmetricalGeneralisedPlaneStress"
     agpstress)
   if((agpstress EQUAL -1) AND (agpstrain EQUAL -1))
     set(file_OK OFF PARENT_SCOPE)
@@ -20,14 +21,15 @@ function(check_cyrano_compatibility mat source)
       set(file_OK OFF PARENT_SCOPE)
     else(NOT (behaviour_type STREQUAL "1"))
       behaviour_query(behaviour_has_strain_measure
-	${mat} ${source} "--is-strain-measure-defined")
+        ${mat} ${source} "--is-strain-measure-defined")
       if(behaviour_has_strain_measure STREQUAL "true")
-	behaviour_query(behaviour_strain_measure
-	  ${mat} ${source} "--strain-measure")
+	    behaviour_query(behaviour_strain_measure
+	      ${mat} ${source} "--strain-measure")
 	if(behaviour_strain_measure STREQUAL "Linearised")
+    elseif(behaviour_strain_measure STREQUAL "Hencky")
 	else(behaviour_strain_measure STREQUAL "Linearised")
 	  set(file_OK OFF PARENT_SCOPE)
-	endif(NOT (behaviour_strain_measure STREQUAL "Linearised"))
+	endif(behaviour_strain_measure STREQUAL "Linearised")
       endif(behaviour_has_strain_measure STREQUAL "true")
     endif(NOT (behaviour_type STREQUAL "1"))
   endif((agpstress EQUAL -1) AND (agpstrain EQUAL -1))
