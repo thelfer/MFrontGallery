@@ -1,0 +1,117 @@
+@DSL Implicit;
+@Behaviour DruckerPragerCap;
+@Author Thomas Helfer;
+@Date 15 / 05 / 2018;
+
+@ModellingHypotheses{".+"};
+
+@Epsilon 1.e-16;
+@Theta 1.;
+
+@Brick StandardElasticity{young_modulus : 150e9, poisson_ratio : 0.3};
+
+@StateVariable strain p[2];
+p.setGlossaryName("EquivalentPlasticStrain");
+
+@Parameter d    = 150e6;
+@Parameter beta = 0.6;
+@Parameter pa   = -10e6;
+@Parameter pb   = -75e6;
+
+@LocalVariable real tg;
+@LocalVariable real R;
+@LocalVariable real Re;
+@LocalVariable bool bpl[2];
+
+@InitLocalVariables {
+  tg = tan(beta);
+  R = (pa - pb) / (d - pa * tg);
+}
+
+@Predictor{
+  const auto sigel = computeElasticPrediction();
+  // Drucker-Prager
+  const auto prel = trace(sigel) / 3;
+  const auto qel = sigmaeq(sigel);
+  bpl[0] = (qel + prel * tg - d > 0) && (prel > pa);
+  // Cap
+  const auto seq_c = sqrt(power<2>(prel - pa) +  //
+                          power<2>(R * qel));
+  bpl[1] = (seq_c > (pa - pb)) && (prel <= pa);
+}
+
+@Integrator {
+  constexpr const auto id = Stensor::Id();
+  constexpr const auto id4 = Stensor4::Id();
+  constexpr const auto id_x_id = Stensor4::IxI();
+  constexpr const auto M = Stensor4::M();
+  const auto seps =  real(1.e-12) * young;
+  if ((bpl[0]) || (bpl[1])) {
+    const auto pr = trace(sig) / 3;
+    const auto q = sigmaeq(sig);
+    const auto iq = 1 / max(q,seps);
+    const auto nq = eval(3 * deviator(sig) * (iq / 2));
+    const auto dnq = eval((M - (nq ^ nq)) * iq);
+    if (bpl[0]) {
+      const auto n   = eval(nq+(tg/3)*id);
+      feel += dp[0]*n;
+      fp(0) = (q+pr*tg-d)/young;
+      // jacobian
+      dfeel_ddeel += 2*mu*theta*dp[0]*dnq;
+      dfeel_ddp(0) = n;
+      dfp_ddp(0,0) = 0;
+      dfp_ddeel(0) = (2*mu*theta/young)*n+(tg*theta*lambda/young)*id;
+    }
+    if (bpl[1]) {
+      const auto seq_c = sqrt(power<2>(pr - pa) +  //
+                              power<2>(R * q));
+      const auto iseq_c = 1 / max(seq_c,seps);
+      const auto n = eval(((pr - pa) * (id / 3) + R * R * q * nq) * iseq_c);
+      const auto dn = (Stensor4::IxI() / 9 + R * R * M - (n ^ n)) * iseq_c;
+      const auto De = 2 * mu * id4 + lambda * id_x_id;
+      feel += dp[1] * n;
+      fp(1) = (seq_c - R * (d - pa * tg)) / young;
+      // jacobian
+      dfeel_ddeel += theta * dp[1] * dn * De;
+      dfeel_ddp(1) = n;
+      if(std::abs(seq_c)<seps){
+        dfp_ddp(1, 1) = 1;
+      } else {
+        dfp_ddp(1, 1) = 0;
+      }
+      dfp_ddeel(1) = theta * (n | De) / young;
+    }
+  }
+} // end of @Integrator
+
+@AdditionalConvergenceChecks {
+  if (converged){
+    if (bpl[0]) {
+      if (dp[0] < 0) {
+        // desactivating this system
+        converged = bpl[0] = false;
+      }
+    } else {
+      const auto pr = trace(sig) / 3;
+      const auto q = sigmaeq(sig);
+      if (q + pr * tg > d) {
+        converged = false;
+        bpl[0] = true;
+      }
+    }
+    if (bpl[1]) {
+      if (dp[1] < 0) {
+        // desactivating this system
+        converged = bpl[1] = false;
+      }
+     } else {
+       const auto pr = trace(sig) / 3;
+       const auto q = sigmaeq(sig);
+       const auto seq_c = sqrt(power<2>(pr - pa) + power<2>(R * q));
+       if ((seq_c > pa - pb) && (pr < pa)) {
+         converged = false;
+         bpl[1] = true;
+       }
+     }
+  }
+}
