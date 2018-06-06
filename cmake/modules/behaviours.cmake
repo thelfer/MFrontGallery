@@ -58,10 +58,10 @@ function(mfront_behaviours_library mat)
   set ( _DEPENDENCIES )
   if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
     set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial}")
+      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities}")
   else((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
     set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial};${TFELPhysicalConstants}")
+      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities};${TFELPhysicalConstants}")
   endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
   foreach ( _ARG ${ARGN})
     if ( ${_ARG} MATCHES SOURCES )
