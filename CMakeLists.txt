@@ -1,5 +1,5 @@
-project(MFM)
-set(PACKAGE mfm)
+project(MFrontGallery)
+set(PACKAGE mfront-gallery)
 
 cmake_minimum_required(VERSION 3.0.2)
 cmake_policy(SET CMP0005 OLD)
@@ -136,6 +136,16 @@ if(enable-octave)
   link_directories(${OCTAVE_LIBRARIES_DIRS})
   set(mfront-properties-interfaces "octave" ${mfront-properties-interfaces})
 endif(enable-octave)
+
+# MFront generic interfaces
+option(enable-generic-behaviours "generate generic interface for mechanical behaviours"  OFF)
+if(enable-generic-behaviours)
+  check_if_behaviour_interface_is_supported("generic")
+  set(MFM_GENERIC_BEHAVIOUR_INTERFACE ON)
+  set(mfront-behaviours-interfaces "generic"
+  ${mfront-behaviours-interfaces})
+  include(cmake/modules/generic-behaviours.cmake)
+endif(enable-generic-behaviours)
 
 # castem
 option(enable-castem "generate castem interface for material properties" OFF)
