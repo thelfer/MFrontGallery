@@ -13,7 +13,7 @@ include(cmake/modules/ieee754.cmake)
 # compatibility with autotools
 include(cmake/modules/autotools.cmake)
 set(PACKAGE_NAME    "mfm")
-set(PACKAGE_VERSION "1.0")
+set(PACKAGE_VERSION "1.0.1-dev")
 execute_process(COMMAND svnversion
                 WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
                 OUTPUT_VARIABLE PLEIADES_SVN_REVISION 
