@@ -40,7 +40,7 @@ macro(mfront_properties_python_library mat)
   endif(WIN32)
   target_link_libraries(${lib} ${PYTHON_LIBRARIES})
   install(TARGETS ${lib} DESTINATION
-    lib/${PYTHON_LIBRARY}/site-packages/mfm)
+    lib/python${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}/site-packages/mfm)
   set_target_properties(${lib} PROPERTIES PREFIX "")
   if(WIN32)
     set_target_properties(${lib} PROPERTIES SUFFIX ".pyd")

@@ -36,18 +36,19 @@
 
 @StateVariable Stensor ELITS;
 @AuxiliaryStateVariable Stensor EFTS;
-@AuxiliaryStateVariable real tmax;
+@AuxiliaryStateVariable real Tmax;
 
 // ! thermal strain increment (scalar)
 @LocalVariable StrainStensor deth;
 
 @InitLocalVariables {
-  tmax = max(max(tcrit, tmax), T);
+  Tmax = max(max(tcrit, Tmax), T);
   deth = alpha * dT * Stensor::Id();
 }
 
 @Integrator {
-  if ((T + dT > tmax) && (trace(sig) < 0)) {
+  const auto T_ = T + dT;
+  if ((T_ > Tmax) && (trace(sig) < 0)) {
     // Decomposition of the stress tensor in positive and negative
     // parts
     const auto sig_p = positive_part(sig);
@@ -61,7 +62,7 @@
     const auto eta = 1 + (cm - 1) * gamma;
     const auto mybeta = b[0] + T * (b[1] + T * (b[2] + T * (b[3] + T * b[4])));
     fELITS -= (mybeta / (-sigmultimate)) * eta *
-              ((1 + nulits) * (sig_n)-nulits * trace(sig_n) * Stensor::Id()) * (T + dT - tmax);
+              ((1 + nulits) * (sig_n)-nulits * trace(sig_n) * Stensor::Id()) * (T + dT - Tmax);
   }
   // elasticity
   feel += dELITS + deth;
