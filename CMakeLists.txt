@@ -5,6 +5,10 @@ cmake_minimum_required(VERSION 3.0.2)
 cmake_policy(SET CMP0005 OLD)
 cmake_policy(SET CMP0026 OLD)
 cmake_policy(SET CMP0007 NEW)
+cmake_policy(SET CMP0053 NEW)
+
+# portable-build
+option(enable-portable-build "produce binary that can be shared between various machine (same architecture, same gcc version, different processors" OFF)
 
 include(cmake/modules/generalmacros.cmake)
 # load the list of rounding modes defined by the IEEE754 standard
