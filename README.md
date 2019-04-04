@@ -19,3 +19,8 @@ It is mainly decomposed in two parts:
 
 The last purpose of this project is to show how to build a compilation
 project for `MFront`'s properties, behaviours and models.
+
+# Versions
+
+- tag `MFrontGallery-1.0` is meant to be build against `TFEL` 3.2.0
+- tag `MFrontGallery-1.0.1` is meant to be build against `TFEL` 3.2.1
