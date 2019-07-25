@@ -41,10 +41,10 @@ p.setGlossaryName("EquivalentPlasticStrain");
 }
 
 @Integrator {
-  constexpr const auto id = Stensor::Id();
-  constexpr const auto id4 = Stensor4::Id();
-  constexpr const auto id_x_id = Stensor4::IxI();
-  constexpr const auto M = Stensor4::M();
+  const auto id = Stensor::Id();
+  const auto id4 = Stensor4::Id();
+  const auto id_x_id = Stensor4::IxI();
+  const auto M = Stensor4::M();
   const auto seps =  real(1.e-12) * young;
   if ((bpl[0]) || (bpl[1])) {
     const auto pr = trace(sig) / 3;

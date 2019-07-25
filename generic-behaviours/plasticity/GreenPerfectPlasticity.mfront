@@ -34,8 +34,8 @@ s0.setGlossaryName("YieldStress");
 
 
 @Integrator{
-  constexpr const auto id  = Stensor::Id();
-  constexpr const auto id4 = Stensor4::Id();
+  const auto id  = Stensor::Id();
+  const auto id4 = Stensor4::Id();
   if(b){
     const auto hC   = C/2;
     const auto s    = deviator(sig);

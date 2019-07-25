@@ -54,8 +54,8 @@ s0.setGlossaryName("YieldStrength");
     // elastic loading, nothing to be done
     return true;
   }
-  constexpr const auto id  = Stensor::Id();
-  constexpr const auto id4 = Stensor4::Id();
+  const auto id  = Stensor::Id();
+  const auto id4 = Stensor4::Id();
   const auto  s    = l*sig;
   const auto  J2   = (s|s)/2;
   if(J2>seps*seps){
