@@ -45,6 +45,7 @@ function(add_mfront_behaviour_sources lib mat interface file)
       ARGS    "--interface=${interface}"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
+      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
       ARGS     "${mfront_file}"
       DEPENDS "${mfront_file}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"

@@ -3,9 +3,11 @@ function(behaviour_query res mat source )
     message(FATAL_ERROR "behaviour_query: no query specified")
   endif(${ARGC} LESS 1)
   execute_process(COMMAND ${MFRONT_QUERY}
+    "--no-gui"
     "--verbose=quiet"
     "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
     "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
 	${ARGN} ${source}
     RESULT_VARIABLE query_result
     OUTPUT_VARIABLE query_output

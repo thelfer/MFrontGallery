@@ -35,6 +35,8 @@ function(mfront_properties_extension interface)
     set(source_ext "" PARENT_SCOPE)
   elseif("${interface}" STREQUAL "castem")
     set(source_ext "castem" PARENT_SCOPE)
+  elseif("${interface}" STREQUAL "cyrano")
+    set(source_ext "cyrano" PARENT_SCOPE)
   else("${interface}" STREQUAL "c++")
     message(FATAL_ERROR
       "mfront_properties_extension : unsupported interface ${interface}")
