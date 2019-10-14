@@ -1,23 +1,35 @@
 set(ANSYS_CPPFLAGS)
 function(check_ansys_compatibility mat source)
-  behaviour_query(modelling_hypotheses
-    ${mat} ${source} "--supported-modelling-hypotheses")
-  # creating a cmake list
-  separate_arguments(modelling_hypotheses)
-  list(LENGTH modelling_hypotheses nb_modelling_hypotheses)
-  if(nb_modelling_hypotheses EQUAL 0)
+  behaviour_query(behaviour_type
+    ${mat} ${source} "--type")
+  if(behaviour_type STREQUAL "1")
+    # strain based behaviour, do nothing
+  elseif(behaviour_type STREQUAL "2")
+    # finite strain behaviour, do nothing
+  else(behaviour_type STREQUAL "1")
+    # unsupported behaviour type
     set(file_OK OFF PARENT_SCOPE)
-  endif(nb_modelling_hypotheses EQUAL 0)
-  foreach(h ${modelling_hypotheses})
-    behaviour_query(external_state_variables
-      ${mat} ${source} 
-      "--modelling-hypothesis=${h}"
-      "--external-state-variables")
-    list(LENGTH external_state_variables nb_external_state_variables)
-    if(NOT (nb_external_state_variables EQUAL 1))
+  endif(behaviour_type STREQUAL "1")    
+  if(file_OK)
+    behaviour_query(modelling_hypotheses
+      ${mat} ${source} "--supported-modelling-hypotheses")
+    # creating a cmake list
+    separate_arguments(modelling_hypotheses)
+    list(LENGTH modelling_hypotheses nb_modelling_hypotheses)
+    if(nb_modelling_hypotheses EQUAL 0)
       set(file_OK OFF PARENT_SCOPE)
-    endif(NOT (nb_external_state_variables EQUAL 1))
-  endforeach(h ${modelling_hypotheses})
+    endif(nb_modelling_hypotheses EQUAL 0)
+    foreach(h ${modelling_hypotheses})
+      behaviour_query(external_state_variables
+        ${mat} ${source} 
+        "--modelling-hypothesis=${h}"
+        "--external-state-variables")
+      list(LENGTH external_state_variables nb_external_state_variables)
+      if(NOT (nb_external_state_variables EQUAL 1))
+        set(file_OK OFF PARENT_SCOPE)
+      endif(NOT (nb_external_state_variables EQUAL 1))
+    endforeach(h ${modelling_hypotheses})
+  endif(file_OK)
 endfunction(check_ansys_compatibility)
 
 function(getAnsysBehaviourName name)

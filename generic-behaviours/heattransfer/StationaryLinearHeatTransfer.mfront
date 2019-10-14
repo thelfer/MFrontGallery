@@ -1,0 +1,27 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour StationaryLinearHeatTransfer;
+@Author Thomas Helfer;
+@Date 15/02/2019;
+
+@Gradient TemperatureGradient gT;
+gT.setGlossaryName("TemperatureGradient");
+
+@Flux HeatFlux j;
+j.setGlossaryName("HeatFlux");
+
+@MaterialProperty thermalconductivity k;
+k.setGlossaryName("ThermalConductivity");
+
+@PredictionOperator {
+  static_cast<void>(smt);    // removing compiler warning
+  Dt = -k * tmatrix<N, N, real>::Id();
+}
+
+@Integrator{
+  j = -k * (gT + dgT);
+} // end of @Integrator
+
+@TangentOperator {
+  static_cast<void>(smt); // removing compiler warning
+  Dt = -k * tmatrix<N, N, real>::Id();
+}

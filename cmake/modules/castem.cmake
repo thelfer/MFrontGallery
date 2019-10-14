@@ -4,6 +4,21 @@ option(enable-castem-pleiades "use a pleiades version of castem" OFF)
 find_path(CASTEM_HEADER castem.h
     HINTS ${TFEL_INCLUDE_PATH})
 
+function(check_castem_compatibility mat source)
+  behaviour_query(behaviour_type
+    ${mat} ${source} "--type")
+  if(behaviour_type STREQUAL "1")
+    # strain based behaviour, do nothing
+  elseif(behaviour_type STREQUAL "2")
+    # finite strain behaviour, do nothing
+  elseif(behaviour_type STREQUAL "3")
+    # cohesive zone model, do nothing
+  else(behaviour_type STREQUAL "1")
+    # unsupported behaviour type
+    set(file_OK OFF PARENT_SCOPE)
+  endif(behaviour_type STREQUAL "1")    
+endfunction(check_castem_compatibility)
+
 if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
   if(CASTEM_INSTALL_PATH)
     set(CASTEMHOME "${CASTEM_INSTALL_PATH}")
@@ -27,7 +42,7 @@ if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
       add_definitions("-DCASTEM_ROOT=\\\"\"${CASTEMHOME}\"\\\"")
       add_definitions("-DHAVE_CASTEM=1")
       if(enable-castem-pleiades)
-        set(castem_supported_versions 10 12 14 15 16)
+        set(castem_supported_versions 10 12 14 15 16 17 18 19 20)
         foreach(cversion ${castem_supported_versions})
   	file(GLOB castem20${cversion}s "${CASTEMHOME}/bin/castem*${cversion}*_PLEIADES")
   	foreach(cexe ${castem20${cversion}s})
@@ -41,7 +56,7 @@ if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
   	endforeach(cexe ${castem20${cversion}s})
         endforeach(cversion ${castem_supported_versions})
       else(enable-castem-pleiades)
-        set(castem_supported_versions 14 15 16)
+        set(castem_supported_versions 14 15 16 17 18 19 20)
         foreach(cversion ${castem_supported_versions})
   	file(GLOB castem${cversion}s "${CASTEMHOME}/bin/castem${cversion}*")
   	foreach(cexe ${castem${cversion}s})

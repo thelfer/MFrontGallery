@@ -1,0 +1,33 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour TransientLinearHeatTransfer;
+@Author Thomas Helfer;
+@Date 15 / 02 / 2019;
+
+@Gradient TemperatureGradient gT;
+gT.setGlossaryName("TemperatureGradient");
+
+@Flux HeatFlux j;
+j.setGlossaryName("HeatFlux");
+
+@StateVariable real H;
+H.setEntryName("Enthalpy");
+
+@AdditionalTangentOperatorBlock dj_ddT;
+@AdditionalTangentOperatorBlock dH_ddT;
+
+@Parameter rho = 7200;
+@Parameter C   = 440.5;
+@Parameter k   = 35;
+
+@Integrator {
+  const auto T_ = T + dT;
+  H = rho * C * T_;
+  j = -k * (gT + dgT);
+}  // end of @Integrator
+
+@TangentOperator {
+  static_cast<void>(smt);  // remove compiler warning
+  dj_ddgT = -k * tmatrix<N, N, real>::Id();
+  dj_ddT = tvector<N, real>(real(0));
+  dH_ddT = rho * C;
+}  // end of @TangentOperator

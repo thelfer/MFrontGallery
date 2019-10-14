@@ -1,0 +1,5 @@
+mfront_behaviours_library(HeatTransfer
+ StationaryLinearHeatTransfer
+ StationaryNonLinearHeatTransfer
+ TransientLinearHeatTransfer
+ TransientNonLinearHeatTransfer)

@@ -1,0 +1,36 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour StationaryNonLinearHeatTransfer;
+@Author Thomas Helfer;
+@Date 15/02/2019;
+
+@Gradient TemperatureGradient gT;
+gT.setGlossaryName("TemperatureGradient");
+
+@Flux HeatFlux j;
+j.setGlossaryName("HeatFlux");
+
+@AdditionalTangentOperatorBlock dj_ddT;
+
+@Parameter real A = 0.0375;
+@Parameter real B = 2.165e-4;
+
+@LocalVariable thermalconductivity k;
+
+@PredictionOperator {
+  static_cast<void>(smt);    // removing compiler warning
+  k = 1 / (A + B * T);
+  dj_ddgT = -k * tmatrix<N, N, real>::Id();
+  dj_ddT  =  B * k * k * (gT + dgT);
+}
+
+@Integrator{
+  const auto T_ = T + dT;
+  k = 1 / (A + B * T_);
+  j = -k * (gT + dgT);
+} // end of @Integrator
+
+@TangentOperator {
+  static_cast<void>(smt); // removing compiler warning 
+  dj_ddgT = -k * tmatrix<N, N, real>::Id();
+  dj_ddT  =  B * k * k * (gT + dgT);
+} // end of @TangentOperator 

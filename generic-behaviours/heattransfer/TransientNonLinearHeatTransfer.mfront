@@ -1,0 +1,48 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour TransientNonLinearHeatTransfer;
+@Author Thomas Helfer;
+@Date 15 / 02 / 2019;
+
+@Gradient TemperatureGradient gT;
+gT.setGlossaryName("TemperatureGradient");
+
+@Flux HeatFlux j;
+j.setGlossaryName("HeatFlux");
+
+@StateVariable real H;
+H.setEntryName("Enthalpy");
+
+@AdditionalTangentOperatorBlock dj_ddT;
+@AdditionalTangentOperatorBlock dH_ddT;
+
+@Parameter Tm = 933.15;  
+@Parameter ks = 210;
+@Parameter Cs = 3.e6;
+@Parameter kl = 95;
+@Parameter Cl = 2.58e6;
+@Parameter dHsl = 1.08048e9;
+
+@LocalVariable thermalconductivity k;
+// @LocalVariable real H0;
+@LocalVariable real Ce;
+
+@Integrator {
+  const auto T_ = T + dT;
+  k = (T_<Tm) ? ks : kl;
+  j = -k*(gT+dgT);
+  // enthalpy
+  if(T_<Tm){
+    Ce = Cs;
+    H = Cs*T_;
+  } else {
+    Ce = Cl;
+    H = Cl*(T_-Tm)+dHsl+Cs*Tm;
+  }
+}  // end of @Integrator
+
+@TangentOperator {
+  static_cast<void>(smt);  // remove compiler warning
+  dj_ddgT = -k * tmatrix<N, N, real>::Id();
+  dj_ddT = tvector<N, real>(real(0));
+  dH_ddT = Ce;
+}  // end of @TangentOperator
