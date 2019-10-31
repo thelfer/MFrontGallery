@@ -3,7 +3,9 @@ set(MFRONT_BEHAVIOURS_VISCOPLASTICITY_SOURCES
   IsotropicViscoplasticityAmstrongFredericKinematicHardening
   ImplicitNorton
   ChabocheViscoplasticity
-  Hayhurst)
+  Hayhurst
+  MericCailletaudSingleCrystalViscoPlasticity
+  MericCailletaudSingleCrystalViscoPlasticityNumericalJacobian)
 
 if(NOT MSVC)
   list(APPEND MFRONT_BEHAVIOURS_VISCOPLASTICITY_SOURCES
