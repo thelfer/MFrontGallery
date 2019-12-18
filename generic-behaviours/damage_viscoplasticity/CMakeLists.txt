@@ -1,0 +1,2 @@
+mfront_behaviours_library(DamageViscoplasticity
+   FichantLaBorderieDamageAndTorelliLoadInducedThermalStrainBehaviour)

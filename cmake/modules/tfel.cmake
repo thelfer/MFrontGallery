@@ -24,10 +24,16 @@ find_program(TFEL_CONFIG  tfel-config
   HINTS "${TFELHOME}/bin")
 find_program(MFRONT_QUERY  mfront-query
   HINTS "${TFELHOME}/bin")
+find_program(MFMTG        mfm-test-generator
+  HINTS "${TFELHOME}/bin")
 
 IF(NOT (TFEL_CONFIG AND MFRONT AND MFRONT_QUERY))
   MESSAGE(FATAL_ERROR "tfel not found")
 ENDIF(NOT (TFEL_CONFIG AND MFRONT AND MFRONT_QUERY))
+
+IF(NOT MFMTG)
+  MESSAGE(WARNING "mfm-test-generator not found")
+ENDIF(NOT MFMTG)
 
 EXECUTE_PROCESS(COMMAND ${TFEL_CONFIG} "--includes"
   OUTPUT_VARIABLE TFEL_INCLUDE_PATH
@@ -169,6 +175,11 @@ macro(add_mfront_dependency deps mat interface file)
   set(${deps}_${interface}_SOURCES ${mfront_output1} ${${deps}_${interface}_SOURCES})
 endmacro(add_mfront_dependency)
 
+# function(mfmtg_generate target input)
+#  EXECUTE_PROCESS(COMMAND ${MFMTG} "--plugins=${}" "--target=${target}" "${input}")
+# endfunction(mfmtg_generate)
+
 include(cmake/modules/materialproperties.cmake)
 include(cmake/modules/behaviours.cmake)
 include(cmake/modules/models.cmake)
+
