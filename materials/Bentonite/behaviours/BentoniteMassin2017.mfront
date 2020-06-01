@@ -1,0 +1,128 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour Massin2017;
+@Material Bentonite;
+@Author Éric Simo, Thomas Nagel, Thomas Helfer;
+@Date 17 / 04 / 2020;
+@Description {
+  Hypoplasticity for unsaturated soils, expansive soils with
+  double-porosity structure, thermal effects.
+};
+
+
+//! number of material parameters
+@IntegerConstant params_size = 23;
+
+/*!
+ * Critical state friction angle of macrostructure in a
+ * standard soil-mechanics context (note: variable phic in
+ * the code converted to Radians, but input \(\phi_c\)
+ * specified in degrees)
+ */
+@Parameter real phi = 25.0;
+/*!
+ * Slope of isotropic normal compression line in
+ * \(ln(p^M/p_r )\) versus \(ln(1+e)\) space
+ */
+@Parameter real lam_star = 0.081;
+//! Macrostructural volume strain in \(p^M\) unloading
+@Parameter real kap_star = 0.01;
+//! Position of isotropic normal compression line in 
+@Parameter real n_star = 1.48;
+//! Stiffness in shear
+@Parameter real nu = 0.25;
+/*!
+ * Dependency of position of isotropic normal
+ * compression line on suction
+ */
+@Parameter real ns = 0.005;
+/*!
+ * Dependency of slope of isotropic normal compression
+ * line on suction
+ */
+@Parameter real ls = 0.0048;
+/*!
+ * Dependency of position of isotropic normal
+ * compression line on temperature
+ */
+@Parameter real nt = -0.07;
+/*!
+ * Dependency of slope of isotropic normal compression
+ * line on temperature
+ */
+@Parameter real lt = 0.0;
+/*!
+ * (1) Control of f_u and thus dependency of
+ * wetting-/heating-induced compaction on
+ * distance from state boundary surface Mašín (2017);
+ * (2) control of double-structure coupling function
+ * and thus response to wetting-drying and
+ * heating-cooling cycles Mašín (2013)
+ */
+@Parameter real m = 35;
+/*!
+ * Dependency of microstructural volume strains on
+ * temperature
+ */
+@Parameter real alpha_s = 0.00015;
+//! Dependency of microstructural volume strains on pˆm
+@Parameter real kappa_m = 0.18;
+//! Reference suction for \(e^m\)
+@Parameter real sm_star = -140000.0;
+/*!
+ * Reference microstructural void ratio for reference
+ * temperature T r , reference suction s r , and zero total
+ * stress
+ */
+@Parameter real em_star = 0.12;
+//! Value of fm for compression
+@Parameter real csh = 0.002;
+/*!
+ * Air-entry value of suction for reference
+ * macrostructural void ratio e0M
+ */
+@Parameter real se_ref = -200.0;
+/*!
+ * Reference macrostructural void ratio for air-entry
+ * value of suction of macrostructure
+ */
+@Parameter real em_ref = 0.50;
+//! Reference temperature
+@Parameter real Tref = 294.0;
+/*!
+ * Dependency of macrostructural air-entry
+ * value of suction on temperature
+ */
+@Parameter real at = 0.118;
+/*!
+ * Dependency of macrostructural air-entry value of
+ * suction on temperature
+ */
+@Parameter real bt = -0.000154;
+/*!
+ * Ratio of air entry and air expulsion values of suction
+ * for macrostructure water retention model
+ */
+@Parameter real aer = 0.75;
+/*!
+ * Slope of macrostructural water retention curve (note:
+ * variable \(\gamma\) in the paper with fixed value
+ * \(\gamma = 0.55\))
+ */
+@Parameter real lambdap0 = 0.55;
+/*!
+ * Artificial cohesion (note: only numerical, not
+ * mentioned in the paper, implied p t = 0)
+ */
+@Parameter real p_t = 0;
+
+//! number of parameters relative to the Runge-Kutta algorithm
+@IntegerConstant rk_params_size = 5;
+
+@Parameter real err_sig = 1e-5;
+err_sig.setEntryName("RungeKuttaStressCriterion");
+@Parameter real h_min = 1e-17;
+@Parameter real ni = 10000;
+@Parameter real sv_rkf_zero = 1e-3;
+@Parameter real rkt = 3;
+
+@Import "Massin2017Behaviour-common.mfront";

@@ -139,6 +139,7 @@ function(mfront_behaviours_library mat)
       add_library(${lib} SHARED ${${lib}_SOURCES})
       target_include_directories(${lib}
 	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
 	PRIVATE "${TFEL_INCLUDE_PATH}")
       if(${interface} STREQUAL "castem")
 	if(CASTEMHOME)

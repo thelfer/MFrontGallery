@@ -10,10 +10,5 @@ macro(add_material_subdirectories mat)
   endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${mat}/models/CMakeLists.txt")
 endmacro(add_material_subdirectories)
 
-add_material_subdirectories(UO2)
-add_material_subdirectories(UO2Cr2O3)
-add_material_subdirectories(UPuO2_MIMAS)
-
-add_material_subdirectories(M5)
-add_material_subdirectories(Zircaloy4)
+add_material_subdirectories(Bentonite)
 add_material_subdirectories(VanadiumAlloy)
