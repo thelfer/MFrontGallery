@@ -277,6 +277,12 @@ endif(mfront-behaviours-interfaces)
 #compiler options
 include(cmake/modules/compiler.cmake)
 
+# Looking for LaTeX
+option(enable-reference-doc "enable generation of the reference documentation" OFF)
+if(enable-reference-doc)
+  include(cmake/modules/latex.cmake)
+endif(enable-reference-doc)
+
 # testing
 set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
 # (must be placed *before* any add_subdirectory, cmake bug ?)
