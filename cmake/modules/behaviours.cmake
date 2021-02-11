@@ -143,9 +143,12 @@ function(mfront_behaviours_library mat)
       message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
       add_library(${lib} SHARED ${${lib}_SOURCES})
       target_include_directories(${lib}
-	PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include"
-	PRIVATE "${TFEL_INCLUDE_PATH}")
+        PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
+        PRIVATE "${TFEL_INCLUDE_PATH}")
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        target_include_directories(${lib}
+          PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+      endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
       if(${interface} STREQUAL "castem")
 	if(CASTEMHOME)
 	  if(enable-castem-pleiades)

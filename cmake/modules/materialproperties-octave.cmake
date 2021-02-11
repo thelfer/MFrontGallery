@@ -27,7 +27,7 @@ macro(mfront_properties_octave_library mat)
       ${OCTAVE_LIBRARIES})  
     if(WIN32)
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${oct_file} DESTINATION
-	bin/octave-${OCTAVE_VERSION_STRING})
+              bin/octave-${OCTAVE_VERSION_STRING})
     else(WIN32)
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${oct_file} DESTINATION
 	lib/octave-${OCTAVE_VERSION_STRING})
