@@ -34,10 +34,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions("-g")
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-if(HAVE_FORTRAN)
+if(MFM_USE_FORTRAN)
   # we associate clang with the gnu fortran compiler
   include(cmake/modules/gnu-fortran-compiler.cmake)
-endif(HAVE_FORTRAN)
+endif(MFM_USE_FORTRAN)
 
 option(enable-libcxx "use LLVM C++ Standard library" OFF)
 if(enable-libcxx)

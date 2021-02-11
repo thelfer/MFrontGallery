@@ -1,0 +1,49 @@
+@DSL RungeKutta;
+@Behaviour ElasticityRK;
+@Author Thomas Helfer;
+@Date 20 / 11 / 2020;
+@Description {
+}
+
+@Includes {
+#ifndef MFRONT_EXTERNAL_FORTRAN_FUNCTIONS
+#define MFRONT_EXTERNAL_FORTRAN_FUNCTIONS 1
+  extern "C" {
+  void ElasticityInterfaceComputeStiffnessTensor(double* const);
+  void ElasticityInterfaceComputeRate(double* const,        // deel
+                                      double* const,        // disvs
+                                      const double* const,  // eel
+                                      const double* const,  // isvs
+                                      const double* const,  // sig
+                                      const double* const,  // deto
+                                      const int);           // nisvs
+  }
+#endif /* MFRONT_EXTERNAL_FORTRAN_FUNCTIONS */
+}
+
+@ModellingHypothesis Tridimensional;
+
+@LocalVariable StiffnessTensor De;
+
+@InitLocalVariables {
+  ElasticityInterfaceComputeStiffnessTensor(De.begin());
+}
+
+@PredictionOperator {
+  static_cast<void>(smt);
+  Dt = De;
+}
+
+@ComputeStress {
+  sig = De * eel;
+}
+
+@Derivative {
+  ElasticityInterfaceComputeRate(deel.data(), nullptr, eel.data(), nullptr,
+                                 sig.data(), deto.data(), 0);
+}
+
+@TangentOperator {
+  static_cast<void>(smt);
+  Dt = De;
+}

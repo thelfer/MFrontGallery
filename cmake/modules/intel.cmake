@@ -32,11 +32,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions("-g")
 endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-if(HAVE_FORTRAN)
+if(MFM_USE_FORTRAN)
   if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
     set(INTEL_FORTRAN_COMPILER ON)
   else("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
     include(cmake/modules/gnu-fortran-compiler.cmake)
   endif("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel")
-endif(HAVE_FORTRAN)
+endif(MFM_USE_FORTRAN)
 

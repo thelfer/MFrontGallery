@@ -1,0 +1,30 @@
+@DSL Default;
+@Behaviour Elasticity;
+@Author Thomas Helfer;
+@Date 18 / 10 / 2020;
+
+@ModellingHypothesis Tridimensional;
+
+@StateVariable real isvs[6];
+isvs.setEntryName("InternalStateVariables");
+
+@Includes {
+#ifndef MFRONT_EXTERNAL_FORTRAN_FUNCTIONS
+#define MFRONT_EXTERNAL_FORTRAN_FUNCTIONS 1
+  extern "C" {
+  void ElasticityInterfaceIntegrate(double* const,
+                                    double* const,
+                                    double* const,
+                                    const double* const,
+                                    const int);
+  }
+#endif /* MFRONT_EXTERNAL_FORTRAN_FUNCTIONS */
+}
+
+@ProvidesSymmetricTangentOperator;
+@Integrator {
+  static_cast<void>(computeTangentOperator_);
+  static_cast<void>(smt);
+  ElasticityInterfaceIntegrate(&Dt(0, 0), &sig(0), &isvs[0], &deto[0],
+                               isvs.size());
+}

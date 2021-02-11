@@ -7,6 +7,8 @@ cmake_policy(SET CMP0026 OLD)
 cmake_policy(SET CMP0007 NEW)
 cmake_policy(SET CMP0053 NEW)
 
+set(MFM_USE_FORTRAN OFF)
+
 # portable-build
 option(enable-portable-build "produce binary that can be shared between various machine (same architecture, same gcc version, different processors" OFF)
 
@@ -54,15 +56,24 @@ endif(enable-excel)
 option(enable-fortran "generate fortran-interface for material properties" OFF)
 if(enable-fortran)
   check_if_material_property_interface_is_supported("fortran")
+  set(MFM_USE_FORTRAN ON)
   set(MFM_FORTRAN_INTERFACE ON)
-  set(HAVE_FORTRAN ON)
-  enable_language (Fortran)
-  message(STATUS "fortran support enabled")
+  message(STATUS "fortran interface for material properties support enabled")
   set(mfront-properties-interfaces "fortran" ${mfront-properties-interfaces})
 else(enable-fortran)
-  set(HAVE_FORTRAN OFF)
   message(STATUS "fortran support disabled")
 endif(enable-fortran)
+
+option(enable-fortran-behaviours-wrappers
+  "generate examples of how to use MFront as wrappers for behaviours writtent in Fortran" OFF)
+if(enable-fortran-behaviours-wrappers)
+  set(MFM_USE_FORTRAN ON)
+  message(STATUS "fortran behaviour wrappers enabled")
+endif(enable-fortran-behaviours-wrappers) 
+
+if(MFM_USE_FORTRAN)
+  enable_language (Fortran)
+endif(MFM_USE_FORTRAN)
 
 #python
 option(enable-python "enable python support" OFF)
@@ -296,6 +307,8 @@ else(CMAKE_CONFIGURATION_TYPES)
 endif(CMAKE_CONFIGURATION_TYPES)
 
 add_subdirectory(generic-behaviours)
+add_subdirectory(mfront-wrappers
+)
 add_subdirectory(materials)
 
 # if(TFEL_CHECK)

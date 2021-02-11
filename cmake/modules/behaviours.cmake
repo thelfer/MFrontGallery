@@ -74,6 +74,7 @@ function(mfront_behaviours_library mat)
   set ( _CMD SOURCES )
   set ( _SOURCES )
   set ( _DEPENDENCIES )
+  set ( _LINK_LIBRARIES )
   if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
     set(TFEL_MFRONT_LIBRARIES
       "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities}")
@@ -86,11 +87,15 @@ function(mfront_behaviours_library mat)
       set ( _CMD SOURCES )
     elseif ( ${_ARG} MATCHES DEPENDENCIES )
       set ( _CMD DEPENDENCIES )
+    elseif ( ${_ARG} MATCHES LINK_LIBRARIES )
+      set ( _CMD LINK_LIBRARIES )
     else ()
       if ( ${_CMD} MATCHES SOURCES )
         list ( APPEND _SOURCES "${_ARG}" )
       elseif ( ${_CMD} MATCHES DEPENDENCIES )
         list ( APPEND _DEPENDENCIES "${_ARG}" )
+      elseif ( ${_CMD} MATCHES LINK_LIBRARIES )
+        list ( APPEND _LINK_LIBRARIES "${_ARG}" )
       endif ()
     endif ()
   endforeach ()
@@ -152,7 +157,7 @@ function(mfront_behaviours_library mat)
 	  endif(enable-castem-pleiades)
 	endif(CASTEMHOME)
       endif(${interface} STREQUAL "castem")
-      if(WIN32)
+    if(WIN32)
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	  set_target_properties(${lib}
 	    PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
@@ -170,69 +175,72 @@ function(mfront_behaviours_library mat)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CASTEM_CPPFLAGS}")
 	endif(CASTEM_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CastemInterface})
       elseif(${interface} STREQUAL "aster")
 	if(ASTER_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ASTER_CPPFLAGS}")
 	endif(ASTER_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AsterInterface})
       elseif(${interface} STREQUAL "epx")
 	if(EUROPLEXUS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${EUROPLEXUS_CPPFLAGS}")
 	endif(EUROPLEXUS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${EuroplexusInterface})
       elseif(${interface} STREQUAL "abaqus")
 	if(ABAQUS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_CPPFLAGS}")
 	endif(ABAQUS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "abaqusexplicit")
 	if(ABAQUS_EXPLICIT_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_EXPLICIT_CPPFLAGS}")
 	endif(ABAQUS_EXPLICIT_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "ansys")
 	if(ANSYS_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${ANSYS_CPPFLAGS}")
 	endif(ANSYS_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AnsysInterface})
       elseif(${interface} STREQUAL "calculix")
 	if(CALCULIX_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CALCULIX_CPPFLAGS}")
 	endif(CALCULIX_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CalculiXInterface})
       elseif(${interface} STREQUAL "cyrano")
 	if(CYRANO_CPPFLAGS)
 	  set_target_properties(${lib} PROPERTIES
 	    COMPILE_FLAGS "${CYRANO_CPPFLAGS}")
 	endif(CYRANO_CPPFLAGS)
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CyranoInterface})
       elseif(${interface} STREQUAL "zmat")
 	set_target_properties(${lib} PROPERTIES
 	  COMPILE_FLAGS "${ZSET_CPPFLAGS}")
 	target_include_directories(${lib}
 	  SYSTEM PRIVATE "${ZSET_INCLUDE_DIR}")
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES})
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES})
       elseif(${interface} STREQUAL "generic")
-	target_link_libraries(${lib} ${TFEL_MFRONT_LIBRARIES})
+	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES})
       else(${interface} STREQUAL "generic")
 	message(FATAL_ERROR "mfront_behaviours_library : "
 	  "unsupported interface ${interface}")
       endif(${interface} STREQUAL "castem")
+      foreach(link_library ${_LINK_LIBRARIES})
+        target_link_libraries(${lib} PRIVATE ${link_library})
+      endforeach(link_library ${_LINK_LIBRARIES})
     else(nb_sources GREATER 0)
       message(STATUS "No sources selected for "
 	"library ${lib} for interface ${interface}")
