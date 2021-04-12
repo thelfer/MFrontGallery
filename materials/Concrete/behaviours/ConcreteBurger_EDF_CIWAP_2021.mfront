@@ -20,11 +20,13 @@
 @Behaviour Burger_EDF_CIWAP_2021;
 @Material Concrete;
 @Author François Hamon(EDF R&D ERMES - T65),
-        Jean-Luc Adia(EDF R&D MMC - T25);
+        Jean-Luc Adia(EDF R&D MMC - T25),
+        Thomas Helfer (CEA IRESNE/DES/DEC/SESC);
 @Description {
-BETON_BURGER model for concrete creep;
+`Burger_EDF_CIWAP_2021` model for concrete creep;
+Compater to `code_aster` `BETON_BURGER` constitutive equations, this behaviour
+takes into account two points: 
 
-The modification take into account two points: 
 -adding of shrinkage depending to relative humidity;
 -drying creep depending to the positive part of derivative of relative humidity;
 }
