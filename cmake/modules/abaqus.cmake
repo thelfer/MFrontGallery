@@ -14,11 +14,9 @@ function(check_abaqus_compatibility mat source)
 	${mat} ${source} "--strain-measure")
       if(behaviour_strain_measure STREQUAL "Linearised")
 	# small strain behaviours are not supported, skipping
-	set(file_OK OFF PARENT_SCOPE)
       endif(behaviour_strain_measure STREQUAL "Linearised")
     else(behaviour_has_strain_measure STREQUAL "true")
       # no strain measure defined, skipping
-      set(file_OK OFF PARENT_SCOPE)
     endif(behaviour_has_strain_measure STREQUAL "true")
   else(behaviour_type STREQUAL "2")
     # unsupported behaviour type
