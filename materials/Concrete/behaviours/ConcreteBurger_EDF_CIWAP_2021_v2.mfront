@@ -1,0 +1,246 @@
+/* -------------------------------------------------------------------- */
+/* Copyright (C) 1991 - 2017 - EDF R&D - www.code-aster.org             */
+/* This file is part of code_aster.                                     */
+/*                                                                      */
+/* code_aster is free software: you can redistribute it and/or modify   */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.                                  */
+/*                                                                      */
+/* code_aster is distributed in the hope that it will be useful,        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.                         */
+/*                                                                      */
+/* You should have received a copy of the GNU General Public License    */
+/* along with code_aster.  If not, see <http://www.gnu.org/licenses/>.  */
+/* -------------------------------------------------------------------- */
+
+@DSL Implicit;
+@Behaviour Burger_EDF_CIWAP_2021_v2;
+@Material Concrete;
+@Author François Hamon(EDF R&D ERMES - T65),
+        Jean-Luc Adia(EDF R&D MMC - T25);
+@Description {
+BETON_BURGER model for concrete creep;
+
+The modification take into account two points: 
+-adding of shrinkage depending to relative humidity;
+-drying creep depending to the positive part of derivative of relative humidity;
+}
+
+@Brick StandardElasticity;
+@Algorithm NewtonRaphson;
+@Epsilon 1e-14;
+@Theta 1;
+
+@Includes{
+#include "TFEL/Math/FischerBurmeister.hxx"
+}
+
+//! Elastic Young Modulus
+@MaterialProperty stress young;
+young.setGlossaryName("YoungModulus");
+//! Elastic Poisson Ratio
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+//! Shrinkage coefficient
+@MaterialProperty real K_SH;
+K_SH.setEntryName("ShrinkageFactor");
+//! Spherical reversible basic creep stiffness
+@MaterialProperty real K_RS;
+K_RS.setEntryName("SphericReversibleStiffness");
+//! Spherical reversible basic creep viscosity
+@MaterialProperty real ETA_RS;
+ETA_RS.setEntryName("SphericReversibleViscosity");
+//! Reference strain for evolution of irreversible creep viscosity
+@MaterialProperty real KAPPA;
+KAPPA.setEntryName("IrreversibleCreepViscosityReferenceStrain");
+//! Spherical irreversible creep viscosity
+@MaterialProperty real ETA_IS;
+ETA_IS.setEntryName("SphericIrreversibleCreepViscosity");
+//! Deviatoric reversible basic creep stiffness
+@MaterialProperty real K_RD;
+K_RD.setEntryName("DeviatoricReversibleStiffness");
+//! Deviatoric reversible basic creep viscosity
+@MaterialProperty real ETA_RD;
+ETA_RD.setEntryName("DeviatoricReversibleViscosity");
+//! Deviatoric irreversible creep viscosity
+@MaterialProperty real ETA_ID;
+ETA_ID.setEntryName("DeviatoricIrreversibleViscosity");
+//! Activation energy of basic creep parameter
+@MaterialProperty real QSR_K;
+QSR_K.setEntryName("ActivationEnergy");
+//! Reference temperature for temperature activation of basic creep
+@MaterialProperty real TEMP_0_C;
+TEMP_0_C.setEntryName("ReferenceTemperature");
+//! Drying creep viscosity
+@MaterialProperty real ETA_FD;
+ETA_FD.setEntryName("DryingCreepVicosity");
+
+//! Limit strain for the irreversible creep model
+@StateVariable strain ELIM;
+ELIM.setEntryName("MaximumValueOfTheIrreversibleStrain");
+//! Spherical irreversible basic creep strain
+@StateVariable strain ESPHI;
+ESPHI.setEntryName("SphericIrreversibleStrain");
+//! Deviatoric irreversible basic creep strain
+@StateVariable StrainStensor EDEVI;
+EDEVI.setEntryName("DeviatoricIrreversibleStrain");
+
+//! Spherical Reversible basic creep strain
+@AuxiliaryStateVariable strain ESPHR;
+ESPHR.setEntryName("SphericReversibleStrain");
+//! Deviatoric Reversible basic creep strain
+@AuxiliaryStateVariable StrainStensor EDEVR;
+EDEVR.setEntryName("DeviatoricReversibleStrain");
+//! Shrinkage strain
+@AuxiliaryStateVariable strain ESH;
+ESH.setEntryName("ShrinkageStrain");
+//! Drying creep strain
+@AuxiliaryStateVariable StrainStensor Edess;
+Edess.setEntryName("DryingCreepStrain");
+/*!
+ * Shifted value of the historical minimale of relative humidity 
+ *
+ * This value has been shifted (value + 1) so the implicit initialization to zero of this
+ * variable in most finite element solvers is meaningfull. So for initialization at value different to 1, please don't forget to take into account this shift.
+ */
+@AuxiliaryStateVariable strain rHmin;
+rHmin.setEntryName("ShiftedHistoricalMinimumRelativeHumidity");
+//! Basic creep strain tensor
+@AuxiliaryStateVariable StrainStensor EF;
+EF.setEntryName("BasicCreepStrain");
+
+
+/*! Relative Humidity
+* Code_Aster use only : rH.setEntryName("SECH");
+* Other FE Code, you can use : rH.setEntryName("RelativeHumidity");
+*/
+@ExternalStateVariable real rH;
+rH.setEntryName("SECH");
+
+//! first Lamé coeffient
+@LocalVariable real lambda;
+//! second Lamé coeffient
+@LocalVariable real mu;
+//! variable to compute effect of relative on drying creep
+@LocalVariable real VrH;
+//! inverse of drying strain viscosity
+@LocalVariable real inv_ETA_FD;
+//! variables for impact of temperature on basic creep
+@LocalVariable real KRS_T;
+@LocalVariable real KRD_T;
+@LocalVariable real NRS_T;
+@LocalVariable real NRD_T;
+@LocalVariable real NIS_T;
+@LocalVariable real NID_T;
+@LocalVariable real KAPPA_T;
+//! increment of spherical reversible strain
+@LocalVariable strain dESPHR;
+//! increment of deviatoric reversible strain
+@LocalVariable StrainStensor dEDEVR;
+//! increment of shrinkage strain
+@LocalVariable strain dESH;
+//! increment of drying creep strain
+@LocalVariable StrainStensor dEdess;
+
+@InitLocalVariables {
+  //
+  lambda = computeLambda(young, nu);
+  mu = computeMu(young, nu);
+  //
+  const auto Tm = T + dT / 2;
+  const auto iT = 1 / (273 + Tm) - 1 / (273 + TEMP_0_C);
+  const auto e = exp(QSR_K * iT);
+  KRS_T = K_RS * e;
+  KRD_T = K_RD * e;
+  NRS_T = ETA_RS * e;
+  NRD_T = ETA_RD * e;
+  NIS_T = ETA_IS * e;
+  NID_T = ETA_ID * e;
+  KAPPA_T = KAPPA / e;
+  //
+  dESH = K_SH * drH;
+  //
+  if ((drH <= 0) && (rH <= rHmin + 1)) {
+    VrH = fabs(drH);
+    rHmin = rH - 1;
+  } else {
+    VrH = 0;
+  }
+  if (ETA_FD > real(0)) {
+    inv_ETA_FD = 1 / ETA_FD;
+  } else {
+    inv_ETA_FD = real(0);
+  }
+}
+
+@Integrator {
+  constexpr auto eeps = strain(1e-14);
+  const auto id = Stensor::Id();
+  const auto pr = trace(sig) / 3;
+  const auto s = deviator(sig);
+  const auto dpr_ddeel = (lambda + 2 * mu / 3) * theta * id;
+  const auto ds_ddeel = 2 * mu * theta * Stensor4::K();
+  const auto dsig_ddeel = ds_ddeel + (dpr_ddeel ^ id);
+  //
+  const auto rH_mts = rH + theta * drH;
+  //
+  const auto a_rs = theta * KRS_T * dt / NRS_T;
+  dESPHR = (rH_mts * pr - KRS_T * ESPHR) * dt / (NRS_T * (1 + a_rs));
+  const auto ddESPHR_dpr = rH_mts * dt / (NRS_T * (1 + a_rs));
+  //
+  const auto a_rd = theta * KRD_T * dt / NRD_T;
+  dEDEVR = (rH_mts * s - KRD_T * EDEVR) * dt / (NRD_T * (1 + a_rd));
+  const auto ddEDEVR_dds = rH_mts * dt / (NRD_T * (1 + a_rd));
+  //
+  const auto e = (ESPHI + dESPHI) * id + EDEVI + dEDEVI;
+  const auto ne = sqrt(e | e);
+  const auto ine = 1 / max(ne, eeps);
+  const auto dne_ddESPHI = trace(e) * ine;
+  const auto dne_ddEDEVI = e * ine;
+  //
+  const auto myield_ELIM = ELIM + dELIM - ne;
+  fELIM = regularisedFischerBurmeisterFunction(dELIM, myield_ELIM, eeps);
+  const auto [dfELIM_dx, dfELIM_dy] =
+      regularisedFischerBurmeisterFunctionFirstDerivatives(dELIM, myield_ELIM,
+                                                           eeps);
+  dfELIM_ddELIM = dfELIM_dx + dfELIM_dy;
+  dfELIM_ddESPHI = -dfELIM_dy * dne_ddESPHI;
+  dfELIM_ddEDEVI = -dfELIM_dy * dne_ddEDEVI;
+  //
+  auto elim = (ELIM + theta * dELIM) / KAPPA_T;
+  auto delim_ddELIM = theta / KAPPA_T;
+  if (abs(elim) > 200) {
+    elim = (elim / abs(elim)) * 200;
+    delim_ddELIM = 0;
+  }
+  const auto eexp = exp(-elim);
+  const auto deexp_ddELIM = -eexp * delim_ddELIM;
+  fESPHI -= (rH_mts * eexp * dt / NIS_T) * pr;
+  dfESPHI_ddeel = -(rH_mts * eexp * dt / NIS_T) * dpr_ddeel;
+  dfESPHI_ddELIM = -(rH_mts * deexp_ddELIM * dt / NIS_T) * pr;
+  fEDEVI -= (rH_mts * eexp * dt / NID_T) * s;
+  dfEDEVI_ddeel = -(rH_mts * eexp * dt / NID_T) * ds_ddeel;
+  dfEDEVI_ddELIM = -(rH_mts * deexp_ddELIM * dt / NID_T) * s;
+  //
+  dEdess = inv_ETA_FD * VrH * sig;
+  const auto dEdess_ddeel = inv_ETA_FD * VrH * dsig_ddeel;
+  //
+  feel += dEDEVR + dEDEVI + dEdess + (dESPHR + dESPHI + dESH) * id;
+  dfeel_ddeel += ddEDEVR_dds * ds_ddeel + dEdess_ddeel +  //
+                 (id ^ (ddESPHR_dpr * dpr_ddeel));
+  dfeel_ddEDEVI = Stensor4::Id();
+  dfeel_ddESPHI = id;
+}
+
+@UpdateAuxiliaryStateVariables {
+  ESH += dESH;
+  Edess += dEdess;
+  ESPHR += dESPHR;
+  EDEVR += dEDEVR;
+  //
+  const auto id = Stensor::Id();
+  EF += dEDEVR + dEDEVI + (dESPHR + dESPHI) * id;
+}

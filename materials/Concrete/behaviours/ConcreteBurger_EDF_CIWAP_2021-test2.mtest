@@ -1,0 +1,28 @@
+@MaximumNumberOfSubSteps 1;
+@Behaviour<aster> @library@ @behaviour@;
+@MaterialProperty<constant> 'YoungModulus' 24.2e9; //Pa
+@MaterialProperty<constant> 'PoissonRatio' 0.2; //-
+@MaterialProperty<constant> 'ShrinkageFactor' 0.00951974; //-
+@MaterialProperty<constant> 'SphericReversibleStiffness' 3.9e10; //Pa
+@MaterialProperty<constant> 'SphericReversibleViscosity' 4.6e17; //Pa.s
+@MaterialProperty<constant> 'IrreversibleCreepViscosityReferenceStrain' 1.20e-4; //-
+@MaterialProperty<constant> 'SphericIrreversibleCreepViscosity' 2.6e18; //Pa.s
+@MaterialProperty<constant> 'DeviatoricReversibleStiffness' 1.95e10; //Pa
+@MaterialProperty<constant> 'DeviatoricReversibleViscosity' 2.30e17; //Pa.s
+@MaterialProperty<constant> 'DeviatoricIrreversibleViscosity' 1.30e18; //Pa.s
+@MaterialProperty<constant> 'ActivationEnergy' 7677.42; //K
+@MaterialProperty<constant> 'ReferenceTemperature' 20.0; //K
+@MaterialProperty<constant> 'DryingCreepVicosity' 6.2e9; //Pa.s
+@ExternalStateVariable 'Temperature' {0.0: 40.0, 8.64000000e+08: 40.0};//°C
+@ImposedStress 'SXX' {0.0: 12e6, 8.64000000e+08: 12e6};//Pa
+@ExternalStateVariable 'SECH' {0.0: 1.0, 8.64000000e+08: 1.};//-
+@Times {0.000000, 
+        8.64000000e+04 in 3, 
+        8.64000000e+05 in 5, 
+        8.64000000e+06 in 10, 
+        1.72800000e+07 in 10, 
+        2.59200000e+07 in 10, 
+        3.45600000e+07 in 10, 
+        4.32000000e+07 in 10, 
+        8.64000000e+08 in 100};//s
+@Test<file> @reference_file@ 'EXX' 2 1.e-8;
