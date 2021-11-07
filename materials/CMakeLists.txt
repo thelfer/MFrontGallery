@@ -12,4 +12,5 @@ endmacro(add_material_subdirectories)
 
 add_material_subdirectories(Bentonite)
 add_material_subdirectories(Concrete)
+add_material_subdirectories(CrushedSalt)
 add_material_subdirectories(VanadiumAlloy)

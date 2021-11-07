@@ -1,0 +1,52 @@
+@Author Thomas Helfer;
+@Date 02 / 11 / 2021;
+@Description{
+    "This test check that the porosity evolution of the material (without "
+    "viscoplasticity) matches "
+    "the analytical solution for an imposed change of volume (in compression). "
+    "The evolution of the hydrostatic pressure is also checked."};
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour 'src/libCrushedSalt-generic.so' 'CrushedSaltKorthausBehaviour';
+
+// desactivating viscoplasticity
+@Parameter 'GrainDeformationReferenceStrainRate' 0.;
+
+@Real 'f0' 0.05;
+// internal state variable initialisations
+@InternalStateVariable 'Porosity' 'f0';
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStrain 'EXX' {0 : 0, 1 : -1e-2};
+@ImposedStrain 'EYY' {0 : 0, 1 : -1e-2};
+@ImposedStrain 'EZZ' {0 : 0, 1 : -1e-2};
+
+@Times{0, 1 in 10};
+
+// At the end of the loading, the porosity must be:
+//
+// f1 = 1-(1-f0) * exp(3e-2), i.e. 0.021068192744158942
+//
+// The bulk modulus is thus:
+//
+// Kv = K * exp(-ck * f1 * (1 - rf0) / (1 - f1))
+//
+
+@Evolution<function> 'dV_V0' '-3e-2 * t';
+@Real 'rf0' 'CrushedSaltKorthausBehaviour::ReferencePorosity';
+@Real 'ck' 'CrushedSaltKorthausBehaviour::ck';
+@Real 'E' 'CrushedSaltKorthausBehaviour::RockSaltYoungModulus';
+@Real 'nu' 'CrushedSaltKorthausBehaviour::RockSaltPoissonRatio';
+@Real 'K' 'E / (3 * (1 - 2 * nu))';
+@Evolution<function> 'f' '1 - (1 - f0) * exp(-dV_V0)';
+@Evolution<function> 'Kv' 'K * exp(-ck * f * (1 - rf0) / (1 - f))';
+@Test<function> 'Porosity' 'f' 1e-12;
+@Test<function> 'SXX' 'Kv * dV_V0' 1e-4;
+@Test<function> 'SYY' 'Kv * dV_V0' 1e-4;
+@Test<function> 'SZZ' 'Kv * dV_V0' 1e-4;
+@Test<function> {
+  'SXY' : '0', 'SXZ' : '0', 'SYZ' : '0'
+}
+1e-4;

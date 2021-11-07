@@ -14,6 +14,7 @@
 @MaterialProperty<constant> 'ReferenceTemperature' 20.0; //K
 @MaterialProperty<constant> 'DryingCreepVicosity' 6.2e9; //Pa.s
 @ExternalStateVariable 'Temperature' {0.0: 20.0, 8.64000000e+08: 20.0};//°C
+
 @ImposedStress 'SXX' {0.0: 12e6, 8.64000000e+08: 12e6};//Pa
 @ExternalStateVariable 'SECH' {0.0: 1.0, 8.64000000e+08: 1.};//-
 @Times {0.000000, 

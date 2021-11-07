@@ -1,0 +1,45 @@
+@Author Thomas Helfer;
+@Date 02 / 11 / 2021;
+@Description{
+    "This test check that there is no porosity evolution in shear and that "
+    "the shear stress matches the analytical solution (viscoplasticity is "
+    "disabled)"};
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour 'src/libCrushedSalt-generic.so' 'CrushedSaltKorthausBehaviour';
+
+// desactivating viscoplasticity
+@Parameter 'GrainDeformationReferenceStrainRate' 0.;
+
+@Real 'f0' 0.05;
+// internal state variable initialisations
+@InternalStateVariable 'Porosity' 'f0';
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStrain 'EXY' {0 : 0, 1 : -1e-2};
+
+@Times{0, 1 in 10};
+
+// The bulk modulus is thus:
+//
+// Kv = K * exp(-ck * f1 * (1 - rf0) / (1 - f1))
+//
+// The shear modulus is:
+//
+// muv = 3 * (1 - 2 * nu) / (2 * (1 + nu)) * Kv
+
+@Real 'rf0' 'CrushedSaltKorthausBehaviour::ReferencePorosity';
+@Real 'ck' 'CrushedSaltKorthausBehaviour::ck';
+@Real 'E' 'CrushedSaltKorthausBehaviour::RockSaltYoungModulus';
+@Real 'nu' 'CrushedSaltKorthausBehaviour::RockSaltPoissonRatio';
+@Real 'K' 'E / (3 * (1 - 2 * nu))';
+@Evolution<function> 'Kv' 'K * exp(-ck * f0 * (1 - rf0) / (1 - f0))';
+@Evolution<function> 'muv' '3 * (1 - 2 * nu) / (2 * (1 + nu)) * Kv';
+@Test<function> 'Porosity' 'f0' 1e-12;
+@Test<function> 'SXY' '2 * muv * EXY' 1e-4;
+@Test<function> {
+  'SXX' : '0', 'SYY' : '0', 'SZZ' : '0', 'SXZ' : '0', 'SYZ' : '0'
+}
+1e-4;

@@ -1,0 +1,5 @@
+@Author Thomas Helfer;
+@Date 07 / 11 / 2021;
+@Description{
+    "Check that the behaviour of the material matches a standard Norton "
+    "behaviour based on the von Mises stress"};

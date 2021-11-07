@@ -1,0 +1,32 @@
+@Author Thomas Helfer;
+@Date 02 / 11 / 2021;
+@Description{
+    "This tests describes the evolution of the material without "
+    "viscoplasticity for a imposed hydrostatic pressure. The main interest of "
+    "this test is to check the quadratic convergence of MTest' equilibrium "
+    "algorithm which means that the consistent tangent operator is correctly "
+    "implemented"};
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour 'src/libCrushedSalt-generic.so' 'CrushedSaltKorthausBehaviour';
+
+// desactivating viscoplasticity
+@Parameter 'GrainDeformationReferenceStrainRate' 0.;
+
+@Real 'f0' 0.05;
+// internal state variable initialisations
+@InternalStateVariable 'Porosity' 'f0';
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStress 'SXX' {0 : 0, 1 : -3e8};
+@ImposedStress 'SYY' {0 : 0, 1 : -3e8};
+@ImposedStress 'SZZ' {0 : 0, 1 : -3e8};
+
+@Times{0, 1 in 10};
+
+@Test<function> {
+  'SXY' : '0', 'SXZ' : '0', 'SYZ' : '0'
+}
+1e-4;

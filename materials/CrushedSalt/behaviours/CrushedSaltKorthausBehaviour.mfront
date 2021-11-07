@@ -1,0 +1,201 @@
+@DSL Implicit;
+@Behaviour KorthausBehaviour;
+@Material CrushedSalt;
+
+//@UseQt true;
+@Epsilon 1.e-14;
+@Theta 1.;
+
+@AuxiliaryStateVariable real eta;
+eta.setGlossaryName("Porosity");
+
+//! porosity at the middle of the time step.
+@LocalVariable real eta_mts;
+//! porosity at the end of the time step.
+@LocalVariable real eta_ets;
+/*!
+ * derivative of the porosity at the middle of the time step with respect to
+ * the total strain.
+ */
+@LocalVariable Stensor deta_mts_ddeto;
+/*!
+ * derivative of the porosity at the end of the time step with respect to
+ * the total strain.
+ */
+@LocalVariable Stensor deta_ets_ddeto;
+//! bulk modulus at the middle of the time step.
+@LocalVariable stress Kv_mts;
+//! bulk modulus at the end of the time step.
+@LocalVariable stress Kv_ets;
+/*!
+ * derivative of the shear modulus at the end of the time step with respect to
+ * the porosity at the end of the time step.
+ */
+@LocalVariable stress dKv_ets_deta_ets;
+//! shear modulus at the middle of the time step.
+@LocalVariable stress mu_mts;
+//! shear modulus at the end of the time step
+@LocalVariable stress mu_ets;
+/*!
+ * derivative of the shear modulus at the end of the time step with respect to
+ * the porosity at the end of the time step.
+ */
+@LocalVariable stress dmu_ets_deta_ets;
+//! reference strain rate for the temperature at the middle of the time step
+@LocalVariable strainrate de;
+//! equivalent viscoplastic strain increment
+@LocalVariable strain dp;
+@LocalVariable stress p;
+@LocalVariable StressStensor s;
+// @LocalVariable stress seq;
+// @LocalVariable invert_type<stress> iseq;
+@LocalVariable real h1_mts, h2_mts;
+@LocalVariable real dh1_mts_deta_mts;
+@LocalVariable real dh2_mts_deta_mts;
+
+//! normal to the equivalent stress
+@LocalVariable Stensor n;
+
+@Parameter real nu = 0.25;
+nu.setEntryName("RockSaltPoissonRatio");
+@Parameter stress E = 25e9;
+E.setEntryName("RockSaltYoungModulus");
+@Parameter real ck = 9;
+//! reference porosity
+@Parameter real eta0 = 0.35;
+eta0.setEntryName("ReferencePorosity");
+
+@Parameter temperature Ta = 6495.068559057012;  // 54e3/8.314
+Ta.setEntryName("GrainDeformationActivationTemperature");
+@Parameter stress s0 = 10e6;
+s0.setEntryName("GrainDeformationReferenceEquivalentStress");
+@Parameter real nvp = 5;
+nvp.setEntryName("GrainDeformationStressExponent");
+@Parameter strainrate de0 = 0.2083;  // A *  s0 ** nvp with A = 2.083e-36
+de0.setEntryName("GrainDeformationReferenceStrainRate");
+
+@Parameter real a = 0.01648;
+@Parameter real c = 0.1;
+@Parameter real m = 2.25;
+@Parameter real b1 = 0.9;
+@Parameter real b2 = 1;
+
+@InitLocalVariables {
+  constexpr auto id = Stensor::Id();
+  // Porosity at the middle of the time step
+  const auto exp_mts = exp(-theta * trace(deto));
+  const auto eta_mts_tr = 1 - (1 - eta) * exp_mts;
+  eta_mts = max(min(eta_mts_tr, real(1)), real(0));
+  if ((eta_mts_tr < 0) || (eta_mts_tr > 1)) {
+    deta_mts_ddeto = Stensor(real(0));
+  } else {
+    deta_mts_ddeto = theta * (1 - eta) * exp_mts * id;
+  }
+  // Porosity at the end of the time step
+  const auto exp_ets = exp(-trace(deto));
+  const auto eta_ets_tr = 1 - (1 - eta) * exp_ets;
+  eta_ets = max(min(eta_ets_tr, real(1)), real(0));
+  if ((eta_ets_tr < 0) || (eta_ets_tr > 1)) {
+    deta_ets_ddeto = Stensor(real(0));
+  } else {
+    deta_ets_ddeto = (1 - eta) * exp_ets * id;
+  }
+  // bulk modulus of the rock salt
+  const auto K = E / (3 * (1 - 2 * nu));
+  // crushed salt bulk modulus at the middle of the time step
+  Kv_mts = K * exp(-ck * eta_mts * ((1 - eta0) / (1 - eta_mts)));
+  // crushed salt bulk modulus at the end of the time step
+  Kv_ets = K * exp(-ck * eta_ets * ((1 - eta0) / (1 - eta_ets)));
+  dKv_ets_deta_ets = -ck * Kv_ets * (1 - eta0) / power<2>(1 - eta_ets);
+  //
+  const auto rnu = 3 * (1 - 2 * nu) / (2 * (1 + nu));
+  mu_mts = Kv_mts * rnu;
+  mu_ets = Kv_ets * rnu;
+  dmu_ets_deta_ets = dKv_ets_deta_ets * rnu;
+  // reference strain rate at the middle of the time step
+  de = de0 * exp(-Ta / (T + theta * dT));
+  // Green criterion weigth
+  const auto eta_mts_mc = pow(eta_mts, -c);
+  const auto D_eta_mts_mc = eta_mts_mc - pow(eta0, -c);
+  h1_mts = a / pow(D_eta_mts_mc, m);
+  h2_mts = b1 + b2 * h1_mts;
+  dh1_mts_deta_mts = c * m * (h1_mts / D_eta_mts_mc) * eta_mts_mc / eta_mts;
+  dh2_mts_deta_mts = b2 * dh1_mts_deta_mts;
+}
+
+@ComputeStress {
+  constexpr auto id = Stensor::Id();
+  sig = Kv_mts * trace(eel) * id + 2 * mu_mts * deviator(eel);
+}
+
+@Integrator {
+  constexpr auto id = Stensor::Id();
+  constexpr auto eeps = 1.e-12;
+  const auto seps = eeps * E;
+  // elastic part
+  feel = deel - deto;
+  // viscoplastic part
+  s = deviator(sig);
+  p = trace(sig) / 3;
+  const auto q2 = s | s;
+  const auto seq = power<1, 2>(h1_mts * p * p + h2_mts * q2);
+  const auto iseq = 1 / max(seq, seps);
+  n = ((h1_mts / 3) * p * id + h2_mts * s) * iseq;
+  dp = dt * de * pow(seq / s0, nvp);
+  feel += dp * n;
+  // jacobian part
+  const auto De_mts =
+      eval(Kv_mts * Stensor4::IxI() + 2 * mu_mts * Stensor4::K());
+  const auto dp_dseq = nvp * dp * iseq;
+  const auto dp_ddeel = theta * dp_dseq * (n | De_mts);
+  const auto dn_dsig =
+      (((h1_mts / 9) * Stensor4::IxI() + h2_mts * Stensor4::K()) - (n ^ n)) * iseq;
+  const auto dn_ddeel = theta * dn_dsig * De_mts;
+  dfeel_ddeel += (n ^ dp_ddeel) + dp * dn_ddeel;
+}
+
+@ComputeFinalStress {
+  constexpr auto id = Stensor::Id();
+  sig = Kv_ets * trace(eel) * id + 2 * mu_ets * deviator(eel);
+}
+
+@UpdateAuxiliaryStateVariables {
+  eta = eta_ets;
+}
+
+@TangentOperator {
+  constexpr auto id = Stensor::Id();
+  // elastic stiffness
+  const auto De = eval(Kv_ets * Stensor4::IxI() + 2 * mu_ets * Stensor4::K());
+  if (smt == ELASTIC) {
+    dsig_ddeto = De + ((dKv_ets_deta_ets * trace(eel) * id +
+                        2 * dmu_ets_deta_ets * deviator(eel)) ^
+                       deta_ets_ddeto);
+  } else {
+    // Note: at this stage, sig has been updated to its value at the end of the
+    // time step. It can't be used to compute quantities at the middle of the
+    // time step such as p, q, n, etc.
+    constexpr auto eeps = 1.e-12;
+    const auto seps = eeps * E;
+    //
+    const auto q2 = s | s;
+    const auto seq = power<1, 2>(h1_mts * p * p + h2_mts * q2);
+    const auto iseq = 1 / max(seq, seps);
+    auto dseq_deta_mts =
+        (dh1_mts_deta_mts * p * p + dh2_mts_deta_mts * q2) * (iseq / 2);
+    auto dp_deta_mts = nvp * dp * iseq * dseq_deta_mts;
+    auto dn_deta_mts =
+        ((dh1_mts_deta_mts / 3) * p * id + dh2_mts_deta_mts * s) * iseq -
+        dseq_deta_mts * iseq * n;
+    auto dfeel_deta_mts = dp_deta_mts * n + dp * dn_deta_mts;
+    //
+    dfeel_ddeto = -Stensor4::Id() + (dfeel_deta_mts ^ deta_mts_ddeto);
+    auto ddeel_ddeto = Stensor4{};
+    getIntegrationVariablesDerivatives_eto(ddeel_ddeto);
+    //
+    dsig_ddeto = De * ddeel_ddeto +  //
+                 ((dKv_ets_deta_ets * trace(eel) * id +
+                   2 * dmu_ets_deta_ets * deviator(eel)) ^
+                  deta_ets_ddeto);
+  }
+}
