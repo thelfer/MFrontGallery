@@ -85,8 +85,8 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   // Porosity at the middle of the time step
   const auto exp_mts = exp(-theta * trace(deto));
   const auto eta_mts_tr = 1 - (1 - eta) * exp_mts;
-  eta_mts = max(min(eta_mts_tr, real(1)), real(0));
-  if ((eta_mts_tr < 0) || (eta_mts_tr > 1)) {
+  eta_mts = max(min(eta_mts_tr, eta0), real(0));
+  if ((eta_mts_tr < 0) || (eta_mts_tr > eta0)) {
     deta_mts_ddeto = Stensor(real(0));
   } else {
     deta_mts_ddeto = theta * (1 - eta) * exp_mts * id;
@@ -94,8 +94,8 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   // Porosity at the end of the time step
   const auto exp_ets = exp(-trace(deto));
   const auto eta_ets_tr = 1 - (1 - eta) * exp_ets;
-  eta_ets = max(min(eta_ets_tr, real(1)), real(0));
-  if ((eta_ets_tr < 0) || (eta_ets_tr > 1)) {
+  eta_ets = max(min(eta_ets_tr, eta0), real(0));
+  if ((eta_ets_tr < 0) || (eta_ets_tr > eta0)) {
     deta_ets_ddeto = Stensor(real(0));
   } else {
     deta_ets_ddeto = (1 - eta) * exp_ets * id;
