@@ -182,6 +182,26 @@ function(check_if_model_interface_is_supported interface)
   endif()
 endfunction(check_if_model_interface_is_supported interface)
 
+function(get_mfront_generated_sources interface mat file)
+  execute_process(COMMAND
+    ${MFRONT_QUERY} "--interface=${interface}" "${file}"
+    "--generated-sources=unsorted"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
+    RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
+    OUTPUT_VARIABLE MFRONT_SOURCES
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
+  list(TRANSFORM MFRONT_GENERATED_SOURCES PREPEND "${interface}/src/")
+  set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
+endfunction(get_mfront_generated_sources)
+
+if(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
+  set(TFEL_CXX_STANDARD 11)
+endif(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
+
+
 macro(install_generic_behaviour dir file)
   install(FILES ${file}
     DESTINATION "share/${PACKAGE_NAME}/generic-behaviours/${dir}/${type}")

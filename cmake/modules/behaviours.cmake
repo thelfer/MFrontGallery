@@ -1,13 +1,4 @@
-function(add_mfront_behaviour_sources lib mat interface file)
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
-    set(mfront_file   "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront")
-    configure_file(
-      "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront"
-      @ONLY)
-  else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
-    set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront")
-  endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
+function(check_behaviour_compatibility mat mfront_file)
   set(file_OK ON)
   if(${interface} STREQUAL "castem")
     check_castem_compatibility(${mat} ${mfront_file})
@@ -39,20 +30,25 @@ function(add_mfront_behaviour_sources lib mat interface file)
   if(${interface} STREQUAL "generic")
     check_generic_behaviour_compatibility(${mat} ${mfront_file})
   endif(${interface} STREQUAL "generic")
+  set(file_OK ${file_OK} PARENT_SCOPE)
+endfunction(check_behaviour_compatibility)
+
+function(add_mfront_behaviour_sources lib mat interface file)
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
+    set(mfront_file   "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront")
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront"
+      @ONLY)
+  else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
+    set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront")
+  endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
+  check_behaviour_compatibility(${mat} ${mfront_file})
   if(file_OK)
-    set(mfront_output1 "${interface}/src/${file}.cxx")
-    if(interface STREQUAL "zmat")
-      set(mfront_output2 "${interface}/src/ZMAT${file}.cxx")
-    elseif(interface STREQUAL "castem")
-      set(mfront_output2 "${interface}/src/umat${file}.cxx")
-    elseif(interface STREQUAL "generic")
-      set(mfront_output2 "${interface}/src/${file}-${interface}.cxx")
-    else(interface STREQUAL "generic")
-      set(mfront_output2 "${interface}/src/${interface}${file}.cxx")
-    endif(interface STREQUAL "zmat")
+    get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
+    string(REPLACE ";" " " mfront_generated_sources2 "${mfront_generated_sources}")
     add_custom_command(
-      OUTPUT  "${mfront_output1}"
-      OUTPUT  "${mfront_output2}"
+      OUTPUT  ${mfront_generated_sources}
       COMMAND "${MFRONT}"
       ARGS    "--interface=${interface}"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
@@ -62,8 +58,8 @@ function(add_mfront_behaviour_sources lib mat interface file)
       DEPENDS "${mfront_file}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
       COMMENT "mfront source ${mfront_file} for interface ${interface}")
-    set(${lib}_SOURCES ${mfront_output1} ${mfront_output2}
-      ${${lib}_SOURCES} PARENT_SCOPE)
+	list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
+    set(${lib}_SOURCES ${${lib}_SOURCES} PARENT_SCOPE)
     install_mfront("${mfront_file}" ${mat} behaviours)
   else(file_OK)
     message(STATUS "${file} has been discarded for interface ${interface}")

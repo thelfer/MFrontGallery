@@ -1,47 +1,22 @@
-macro(add_mfront_property_source lib mat interface ext file)
+macro(add_mfront_property_source lib mat interface file)
   if(${ARGC} EQUAL 6)
     set(source_dir "${ARGN}")
   else(${ARGC} EQUAL 6)
     set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
   endif(${ARGC} EQUAL 6)
   set(mfront_file   "${source_dir}/${file}.mfront")
-  if("${ext}" STREQUAL "")
-    set(mfront_output1 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}.cxx")
-    set(mfront_output2 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include/${file}.hxx")
-  elseif("${ext}" STREQUAL "cxx_ext")
-    set(mfront_output1 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}-cxx.cxx")
-    set(mfront_output2 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include/${file}-cxx.hxx")
-  else("${ext}" STREQUAL "")
-    set(mfront_output1 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}-${ext}.cxx")
-    set(mfront_output2 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include/${file}-${ext}.hxx")
-  endif("${ext}" STREQUAL "")
+  get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
   add_custom_command(
-    OUTPUT  "${mfront_output1}"
-    OUTPUT  "${mfront_output2}"
+    OUTPUT  "${mfront_generated_sources}"
     COMMAND "${MFRONT}"
     ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
     ARGS    "--interface=${interface}" "${mfront_file}"
     DEPENDS "${mfront_file}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
     COMMENT "mfront source ${mfront_file}")
-  install(FILES ${mfront_output2} DESTINATION "include")
-  set(${lib}_SOURCES ${mfront_output1} ${${lib}_SOURCES})
+#  install(FILES ${mfront_generated_sources} DESTINATION "include")
+  set(${lib}_SOURCES ${mfront_generated_sources} ${${lib}_SOURCES})
 endmacro(add_mfront_property_source)
-
-function(mfront_properties_extension interface)
-  if("${interface}" STREQUAL "c++")
-    set(source_ext "cxx_ext" PARENT_SCOPE)
-  elseif("${interface}" STREQUAL "c")
-    set(source_ext "" PARENT_SCOPE)
-  elseif("${interface}" STREQUAL "castem")
-    set(source_ext "castem" PARENT_SCOPE)
-  elseif("${interface}" STREQUAL "cyrano")
-    set(source_ext "cyrano" PARENT_SCOPE)
-  else("${interface}" STREQUAL "c++")
-    message(FATAL_ERROR
-      "mfront_properties_extension : unsupported interface ${interface}")
-  endif("${interface}" STREQUAL "c++")
-endfunction(mfront_properties_extension)
 
 macro(mfront_properties_standard_library mat interface)
   if(${interface} STREQUAL "c")
@@ -49,9 +24,8 @@ macro(mfront_properties_standard_library mat interface)
   else(${interface} STREQUAL "c")
     set(lib "${mat}MaterialProperties-${interface}")
   endif(${interface} STREQUAL "c")
-  mfront_properties_extension("${interface}")
   foreach(source ${ARGN})
-    add_mfront_property_source(${lib} ${mat} ${interface} "${source_ext}" ${source})
+    add_mfront_property_source(${lib} ${mat} ${interface} ${source})
   endforeach(source)
   foreach(deps ${${mat}_mfront_properties_dependencies_${interface}_SOURCES})
     set(${lib}_SOURCES ${deps} ${${lib}_SOURCES})
