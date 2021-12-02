@@ -193,14 +193,12 @@ function(get_mfront_generated_sources interface mat file)
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
-  list(TRANSFORM MFRONT_GENERATED_SOURCES PREPEND "${interface}/src/")
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_generated_sources)
 
 if(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
   set(TFEL_CXX_STANDARD 11)
 endif(NOT TFEL_CXX_STANDARD_AVAILABLE EQUAL 0)
-
 
 macro(install_generic_behaviour dir file)
   install(FILES ${file}
@@ -211,22 +209,21 @@ macro(install_mfront file mat type)
   install(FILES ${file} DESTINATION "share/${PACKAGE_NAME}/materials/${mat}/${type}")
 endmacro(install_mfront)
 
-macro(add_mfront_dependency deps mat interface file)
-  set(source_dir     "${PROJECT_SOURCE_DIR}/materials/${mat}/properties")
-  set(mfront_file    "${source_dir}/${file}.mfront")
-  set(mfront_output1 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}-mfront.cxx")
-  set(mfront_output2 "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include/${file}-mfront.hxx")
-  add_custom_command(
-    OUTPUT  "${mfront_output1}"
-    OUTPUT  "${mfront_output2}"
-    COMMAND "${MFRONT}"
-    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-    ARGS    "--interface=mfront" "${mfront_file}"
-    DEPENDS "${mfront_file}"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-    COMMENT "mfront source ${mfront_file}")
-  set(${deps}_${interface}_SOURCES ${mfront_output1} ${${deps}_${interface}_SOURCES})
-endmacro(add_mfront_dependency)
+#macro(add_mfront_dependency deps mat interface file)
+#  set(source_dir     "${PROJECT_SOURCE_DIR}/materials/${mat}/properties")
+#  set(mfront_file    "${source_dir}/${file}.mfront")
+#  get_mfront_generated_sources("mfront" "${mat}" "${mfront_file}")
+#  add_custom_command(
+#    OUTPUT  ${mfront_generated_sources}
+#    COMMAND "${MFRONT}"
+#    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+#    ARGS    "--interface=mfront" "${mfront_file}"
+#    DEPENDS "${mfront_file}"
+#    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
+#    COMMENT "mfront source ${mfront_file}")
+#  list(APPEND ${deps}_${interface}_SOURCES ${mfront_generated_sources})
+#  set(${deps}_${interface}_SOURCES ${${deps}_${interface}_SOURCES} PARENT_SCOPE)
+#endmacro(add_mfront_dependency)
 
 # function(mfmtg_generate target input)
 #  EXECUTE_PROCESS(COMMAND ${MFMTG} "--plugins=${}" "--target=${target}" "${input}")

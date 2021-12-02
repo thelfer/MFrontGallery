@@ -1,33 +1,33 @@
 macro(mfront_properties_python_library mat)
   string(TOLOWER ${mat} lib)
   set(mfront_files)
+  set(wrapper_source "${CMAKE_CURRENT_BINARY_DIR}/python/src/${mat}lawwrapper.cxx")
   foreach(source ${ARGN})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
     list(APPEND mfront_files "${mfront_file}")
-    set(mfront_output "python/src/${source}-python.cxx")
+    get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
+    list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
+    list(REMOVE_ITEM mfront_generated_sources ${wrapper_source})
     add_custom_command(
-      OUTPUT  "${mfront_output}"
-      OUTPUT  "python/include/${source}-python.hxx"
+      OUTPUT  ${mfront_generated_sources}
       COMMAND "${MFRONT}"
+      ARGS    "--interface=${interface}"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-      ARGS    "--interface=python" "${mfront_file}"
+      ARGS     "${mfront_file}"
       DEPENDS "${mfront_file}"
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
-      COMMENT "mfront source ${mfront_file}")
-    set(${lib}_SOURCES ${mfront_output} ${${lib}_SOURCES})
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
+      COMMENT "mfront source ${mfront_file} for interface ${interface}")
+    set(${lib}_SOURCES ${mfront_generated_sources} ${${lib}_SOURCES})
   endforeach(source)
-  foreach(deps ${${mat}_mfront_properties_dependencies_python_SOURCES})
-    set(${lib}_SOURCES ${deps} ${${lib}_SOURCES})
-  endforeach(deps ${${mat}_mfront_properties_dependencies_python_SOURCES})
   add_custom_command(
-    OUTPUT  "python/src/${mat}lawwrapper.cxx"
+    OUTPUT  ${wrapper_source}
     COMMAND "${MFRONT}"
     ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
     ARGS    "--interface=python" ${mfront_files}
     DEPENDS ${mfront_files}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
     COMMENT "mfront source ${mfront_file}")
-  set(${lib}_SOURCES "python/src/${mat}lawwrapper.cxx" ${${lib}_SOURCES})
+  set(${lib}_SOURCES ${wrapper_source} ${${lib}_SOURCES})
   message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
   add_library(${lib} SHARED ${${lib}_SOURCES})
   target_include_directories(${lib}
