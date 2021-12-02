@@ -4,10 +4,7 @@ mfront_properties_library(VanadiumAlloy
   VanadiumAlloy_ShearModulus_SRMA
   VanadiumAlloy_SpecificHeat_SRMA
   VanadiumAlloy_ThermalExpansion_SRMA
-  VanadiumAlloy_ThermalConductivity_SRMA
-  DEPENDENCIES
-  VanadiumAlloy_YoungModulus_SRMA
-  VanadiumAlloy_PoissonRatio_SRMA)
+  VanadiumAlloy_ThermalConductivity_SRMA)
 
 # c_property_test(VanadiumAlloy
 #   VanadiumAlloy_YoungModulus_SRMA-TestC)

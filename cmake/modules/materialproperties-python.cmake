@@ -7,27 +7,19 @@ macro(mfront_properties_python_library mat)
     list(APPEND mfront_files "${mfront_file}")
     get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
     list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
-    list(REMOVE_ITEM mfront_generated_sources ${wrapper_source})
-    add_custom_command(
-      OUTPUT  ${mfront_generated_sources}
+    list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
+  endforeach(source)
+  list(APPEND ${lib}_SOURCES ${wrapper_source})
+  list(REMOVE_DUPLICATES ${lib}_SOURCES)
+  add_custom_command(
+      OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
       ARGS    "--interface=${interface}"
       ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-      ARGS     "${mfront_file}"
-      DEPENDS "${mfront_file}"
+      ARGS    ${mfront_files}
+      DEPENDS ${mfront_files}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-      COMMENT "mfront source ${mfront_file} for interface ${interface}")
-    set(${lib}_SOURCES ${mfront_generated_sources} ${${lib}_SOURCES})
-  endforeach(source)
-  add_custom_command(
-    OUTPUT  ${wrapper_source}
-    COMMAND "${MFRONT}"
-    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-    ARGS    "--interface=python" ${mfront_files}
-    DEPENDS ${mfront_files}
-    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
-    COMMENT "mfront source ${mfront_file}")
-  set(${lib}_SOURCES ${wrapper_source} ${${lib}_SOURCES})
+      COMMENT "mfront sources ${mfront_files} for interface ${interface}")
   message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
   add_library(${lib} SHARED ${${lib}_SOURCES})
   target_include_directories(${lib}

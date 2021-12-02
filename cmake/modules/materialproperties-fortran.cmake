@@ -1,4 +1,4 @@
-macro(fortran_property_test mat file)
+function(fortran_property_test mat file)
   if(MFM_FORTRAN_INTERFACE)
     set(lib "${mat}MaterialProperties-fortran")
     set(test_file ${file}.f)
@@ -11,5 +11,5 @@ macro(fortran_property_test mat file)
     add_dependencies(${test_name} ${lib})
     target_link_libraries(${test_name} ${lib})
   endif(MFM_FORTRAN_INTERFACE)
-endmacro(fortran_property_test $(file))
+endfunction(fortran_property_test $(file))
 

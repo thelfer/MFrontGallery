@@ -1,5 +1,2 @@
 mfront_behaviours_library(VanadiumAlloy
-  VanadiumAlloyViscoplasticBehaviour
-  DEPENDENCIES
-  VanadiumAlloy_YoungModulus_SRMA
-  VanadiumAlloy_PoissonRatio_SRMA)
+  VanadiumAlloyViscoplasticBehaviour)

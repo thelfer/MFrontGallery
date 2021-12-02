@@ -182,10 +182,11 @@ function(check_if_model_interface_is_supported interface)
   endif()
 endfunction(check_if_model_interface_is_supported interface)
 
-function(get_mfront_generated_sources interface mat file)
-  execute_process(COMMAND
-    ${MFRONT_QUERY} "--interface=${interface}" "${file}"
-    "--generated-sources=unsorted"
+function(get_mfront_all_specific_targets_generated_sources interface mat file)
+  execute_process(COMMAND ${MFRONT_QUERY}
+    "--verbose=quiet"
+    "--interface=${interface}" "${file}"
+    "--all-specific-targets-generated-sources"
     "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
     "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
     "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
@@ -193,6 +194,25 @@ function(get_mfront_generated_sources interface mat file)
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
+  set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
+endfunction(get_mfront_all_specific_targets_generated_sources)
+
+function(get_mfront_generated_sources interface mat file)
+  execute_process(COMMAND ${MFRONT_QUERY}
+    "--verbose=quiet"
+    "--interface=${interface}" "${file}"
+    "--generated-sources=unsorted"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
+    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
+    RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
+    OUTPUT_VARIABLE MFRONT_SOURCES
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+	if(MFRONT_SOURCES)
+      string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
+    else(MFRONT_SOURCES)
+      set(MFRONT_GENERATED_SOURCES )
+    endif(MFRONT_SOURCES)
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_generated_sources)
 
@@ -208,22 +228,6 @@ endmacro(install_generic_behaviour)
 macro(install_mfront file mat type)
   install(FILES ${file} DESTINATION "share/${PACKAGE_NAME}/materials/${mat}/${type}")
 endmacro(install_mfront)
-
-#macro(add_mfront_dependency deps mat interface file)
-#  set(source_dir     "${PROJECT_SOURCE_DIR}/materials/${mat}/properties")
-#  set(mfront_file    "${source_dir}/${file}.mfront")
-#  get_mfront_generated_sources("mfront" "${mat}" "${mfront_file}")
-#  add_custom_command(
-#    OUTPUT  ${mfront_generated_sources}
-#    COMMAND "${MFRONT}"
-#    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-#    ARGS    "--interface=mfront" "${mfront_file}"
-#    DEPENDS "${mfront_file}"
-#    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-#    COMMENT "mfront source ${mfront_file}")
-#  list(APPEND ${deps}_${interface}_SOURCES ${mfront_generated_sources})
-#  set(${deps}_${interface}_SOURCES ${${deps}_${interface}_SOURCES} PARENT_SCOPE)
-#endmacro(add_mfront_dependency)
 
 # function(mfmtg_generate target input)
 #  EXECUTE_PROCESS(COMMAND ${MFMTG} "--plugins=${}" "--target=${target}" "${input}")
