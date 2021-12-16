@@ -1,7 +1,3 @@
-@OrthotropicBehaviour<Pipe>;
-@AbaqusOrthotropyManagementPolicy[abaqus, abaqus_explicit] MFront;
-
-
 @Includes {
 #include "TFEL/Material/StiffnessTensor.hxx"
 }
@@ -24,9 +20,9 @@
   for (unsigned short i = 0; i != Nv; ++i) {
     auto Dv = StiffnessTensor();
     computeOrthotropicStiffnessTensor<hypothesis, value, oac>(
-        Dv, E1[i], E2[i], E3[i],    //
-        nu12[i], nu23[i], nu13[i],  //
-        G12[i], G23[i], G13[i]);
+        Dv, Ev1[i], Ev2[i], Ev3[i],    //
+        nuv12[i], nuv23[i], nuv13[i],  //
+        Gv12[i], Gv23[i], Gv13[i]);
     const auto e1 = exp(-dt / tau[i]);
     const auto e2 = sqrt(e1);
     h[i] = h[i] * e1 + deto * e2;
