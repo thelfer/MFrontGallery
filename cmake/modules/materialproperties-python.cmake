@@ -1,11 +1,16 @@
 macro(mfront_properties_python_library mat)
   string(TOLOWER ${mat} lib)
   set(mfront_files)
+  parse_mfront_library_sources(${ARGN})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   set(wrapper_source "${CMAKE_CURRENT_BINARY_DIR}/python/src/${mat}lawwrapper.cxx")
-  foreach(source ${ARGN})
+  foreach(source ${mfront_sources})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
     list(APPEND mfront_files "${mfront_file}")
-    get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
+message(STATUS "search paths: ${mfront_search_paths}")
+    get_mfront_generated_sources(${mat} ${interface} "${mfront_search_paths}" ${mfront_file})
+message(STATUS "search paths after")
     list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
     list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
   endforeach(source)
@@ -15,7 +20,7 @@ macro(mfront_properties_python_library mat)
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
       ARGS    "--interface=${interface}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_search_paths}
       ARGS    ${mfront_files}
       DEPENDS ${mfront_files}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"

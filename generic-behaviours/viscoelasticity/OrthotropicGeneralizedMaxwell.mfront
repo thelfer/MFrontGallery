@@ -1,0 +1,37 @@
+@DSL DefaultDSL;
+@Behaviour OrthotropicGeneralizedMaxwell;
+@Author Thomas Helfer and Lorenzo Riparbelli;
+@Date 8 / 10 / 2014;
+
+@Description {
+  "Orthotropic Maxwell behvaviour"
+}
+
+@IntegerConstant Nv = 3;
+@RequireStiffnessTensor<UnAltered>;
+
+@MaterialProperty stress E1[Nv];
+E1.setEntryName("ViscoelasticYoungModulus1");
+@MaterialProperty stress E2[Nv];
+E2.setEntryName("ViscoelasticYoungModulus2");
+@MaterialProperty stress E3[Nv];
+E3.setEntryName("ViscoelasticYoungModulus3");
+
+@MaterialProperty real nu12[Nv];
+nu12.setEntryName("ViscoelasticPoissonRatio12");
+@MaterialProperty real nu23[Nv];
+nu23.setEntryName("ViscoelasticPoissonRatio23");
+@MaterialProperty real nu13[Nv];
+nu13.setEntryName("ViscoelasticPoissonRatio13");
+
+@MaterialProperty stress G12[Nv];
+G12.setEntryName("ViscoelasticShearModulus12");
+@MaterialProperty stress G23[Nv];
+G23.setEntryName("ViscoelasticShearModulus23");
+@MaterialProperty stress G13[Nv];
+G13.setEntryName("ViscoelasticShearModulus13");
+
+@MaterialProperty time tau[Nv];
+tau.setEntryName("CharacteristicTime");
+
+@Import "OrthotropicGeneralizedMaxwell-core.mfront";

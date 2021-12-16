@@ -1,4 +1,4 @@
-macro(add_mfront_model_sources lib interface file)
+macro(add_mfront_model_sources lib interface search_paths file)
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
     set(mfront_file   "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront")
     configure_file(
@@ -12,7 +12,7 @@ macro(add_mfront_model_sources lib interface file)
   add_custom_command(
     OUTPUT  "${mfront_output}"
     COMMAND "${MFRONT}"
-    ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+    ARGS    ${search_paths}
     ARGS    "--interface=${interface}" "${mfront_file}"
     DEPENDS "${mfront_file}"
     COMMENT "mfront source ${mfront_file}")
@@ -22,7 +22,10 @@ macro(add_mfront_model_sources lib interface file)
     ${${interface}_SPECIFIC_DEFINITIONS})
 endmacro(add_mfront_model_sources)
 
-macro(mfront_models_library mat)
+function(mfront_models_library mat)
+  parse_mfront_library_sources(${ARGN})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   if(${ARGC} LESS 1)
     message(FATAL_ERROR "mfront_models_library : no source specified")
   endif(${ARGC} LESS 1)
@@ -32,8 +35,8 @@ macro(mfront_models_library mat)
     else(${interface} STREQUAL "licos")
       set(lib "${mat}MaterialModels-${interface}")
     endif(${interface} STREQUAL "licos")
-    foreach(source ${ARGN})
-      add_mfront_model_sources(${lib} ${interface} ${source})
+    foreach(source ${mfront_sources})
+      add_mfront_model_sources(${lib} ${interface} "${mfront_search_paths}" ${source})
     endforeach(source)
     add_library(${lib} SHARED ${${lib}_SOURCES})
     if(WIN32)
@@ -49,4 +52,4 @@ macro(mfront_models_library mat)
   foreach(source ${ARGN})
     install_mfront(${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront ${mat} models)
   endforeach(source ${ARGN})
-endmacro(mfront_models_library)
+endfunction(mfront_models_library)

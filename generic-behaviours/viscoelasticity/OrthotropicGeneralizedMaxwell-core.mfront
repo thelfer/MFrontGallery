@@ -1,0 +1,38 @@
+@OrthotropicBehaviour<Pipe>;
+@AbaqusOrthotropyManagementPolicy[abaqus, abaqus_explicit] MFront;
+
+
+@Includes {
+#include "TFEL/Material/StiffnessTensor.hxx"
+}
+
+@StateVariable StrainStensor h[Nv];
+
+@PredictionOperator {
+  static_cast<void>(smt);
+  Dt = D;
+}
+
+@ProvidesSymmetricTangentOperator;
+@Integrator {
+  constexpr auto value = StiffnessTensorAlterationCharacteristic::UNALTERED;
+  constexpr auto oac = OrthotropicAxesConvention::PIPE;
+  sig = D * (eto + deto);
+  if (computeTangentOperator_) {
+    Dt = D;
+  }
+  for (unsigned short i = 0; i != Nv; ++i) {
+    auto Dv = StiffnessTensor();
+    computeOrthotropicStiffnessTensor<hypothesis, value, oac>(
+        Dv, E1[i], E2[i], E3[i],    //
+        nu12[i], nu23[i], nu13[i],  //
+        G12[i], G23[i], G13[i]);
+    const auto e1 = exp(-dt / tau[i]);
+    const auto e2 = sqrt(e1);
+    h[i] = h[i] * e1 + deto * e2;
+    sig += Dv * h[i];
+    if ((computeTangentOperator_) && (smt == CONSISTENTTANGENTOPERATOR)) {
+      Dt += e2 * Dv;
+    }
+  }
+}

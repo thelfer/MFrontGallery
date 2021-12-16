@@ -1,13 +1,11 @@
-function(behaviour_query res mat source )
+function(behaviour_query res mat search_paths source )
   if(${ARGC} LESS 1)
     message(FATAL_ERROR "behaviour_query: no query specified")
   endif(${ARGC} LESS 1)
+  set(SEARCH_PATH_STR "${search_paths}")
   execute_process(COMMAND ${MFRONT_QUERY}
-    "--no-gui"
-    "--verbose=quiet"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
+    "--no-gui" "--verbose=quiet"
+    ${search_paths}
 	${ARGN} ${source}
     RESULT_VARIABLE query_result
     OUTPUT_VARIABLE query_output

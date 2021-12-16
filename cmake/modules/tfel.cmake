@@ -197,14 +197,12 @@ function(get_mfront_all_specific_targets_generated_sources interface mat file)
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_all_specific_targets_generated_sources)
 
-function(get_mfront_generated_sources interface mat file)
+function(get_mfront_generated_sources mat interface search_paths file)
   execute_process(COMMAND ${MFRONT_QUERY}
     "--verbose=quiet"
     "--interface=${interface}" "${file}"
     "--generated-sources=unsorted"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
+    ${search_paths}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -232,6 +230,76 @@ endmacro(install_mfront)
 # function(mfmtg_generate target input)
 #  EXECUTE_PROCESS(COMMAND ${MFMTG} "--plugins=${}" "--target=${target}" "${input}")
 # endfunction(mfmtg_generate)
+
+# Parse sources and options used to generate MFront libraries:
+#
+# The following options can be specificed by the user:
+#
+# - SOURCES
+# - SEARCH_PATH
+# - SEARCH_PATHS
+# - LINK_LIBARARY
+# - LINK_LIBARARIES
+#
+# The following values are set in the parent scopes
+#
+# - mfront_sources: list of sources
+# - mfront_search_paths: search paths
+# - mfront_link_libraries: list of link libraries
+function(parse_mfront_library_sources )
+  set ( _CMD SOURCES )
+  set ( _SOURCES )
+  set ( _LINK_LIBRARIES )
+  set ( _SEARCH_PATHS )
+  if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+    set(TFEL_MFRONT_LIBRARIES
+      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities}")
+  else((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+    set(TFEL_MFRONT_LIBRARIES
+      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities};${TFELPhysicalConstants}")
+  endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+  foreach ( _ARG ${ARGN})
+    if ( ${_ARG} STREQUAL "SOURCES" )
+      set ( _CMD SOURCES )
+    elseif ( ${_ARG} STREQUAL "LINK_LIBRARY" )
+      set ( _CMD LINK_LIBRARY )
+    elseif ( ${_ARG} STREQUAL "LINK_LIBRARIES" )
+      set ( _CMD LINK_LIBRARIES )
+    elseif ( ${_ARG} STREQUAL "SEARCH_PATH" )
+      set ( _CMD SEARCH_PATH )
+    elseif ( ${_ARG} STREQUAL "SEARCH_PATHS" )
+      set ( _CMD SEARCH_PATHS )
+    else ()
+      if ( ${_CMD} STREQUAL "SOURCES" )
+        list ( APPEND _SOURCES "${_ARG}" )
+      elseif ( ${_CMD} STREQUAL "LINK_LIBRARY" )
+        list ( APPEND _LINK_LIBRARIES "${_ARG}" )
+        set ( _CMD SOURCES )
+      elseif ( ${_CMD} STREQUAL "LINK_LIBRARIES" )
+        list ( APPEND _LINK_LIBRARIES "${_ARG}" )
+      elseif ( ${_CMD} STREQUAL "SEARCH_PATH")
+        list ( APPEND _SEARCH_PATHS "${CMAKE_SOURCE_DIR}/${_ARG}" )
+        set ( _CMD SOURCES )
+      elseif ( ${_CMD} STREQUAL "SEARCH_PATHS" )
+        list ( APPEND _SEARCH_PATHS "${CMAKE_SOURCE_DIR}/${_ARG}" )
+      endif ()
+    endif ()
+  endforeach ()
+  if(${_CMD} STREQUAL "SEARCH_PATH")
+   message(FATAL_ERROR "no argument given to SEARCH_PATH")
+  endif(${_CMD} STREQUAL "SEARCH_PATH")
+  if(${_CMD} STREQUAL "LINK_LIBRARY")
+   message(FATAL_ERROR "no argument given to LINK_LIBRARY")
+  endif(${_CMD} STREQUAL "LINK_LIBRARY")
+  list(TRANSFORM _SEARCH_PATHS PREPEND "--search-path=")
+  list(LENGTH _SOURCES _SOURCES_LENGTH )
+  if(${_SOURCES_LENGTH} LESS 1)
+    message(FATAL_ERROR "parse_mfront_library_sources: no source specified")
+  endif(${_SOURCES_LENGTH} LESS 1)
+  set(mfront_sources        ${_SOURCES}        PARENT_SCOPE)
+  set(mfront_search_paths   ${_SEARCH_PATHS}   PARENT_SCOPE)
+  set(mfront_link_libraries ${_LINK_LIBRARIES} PARENT_SCOPE)
+endfunction(parse_mfront_library_sources)
 
 include(cmake/modules/materialproperties.cmake)
 include(cmake/modules/behaviours.cmake)

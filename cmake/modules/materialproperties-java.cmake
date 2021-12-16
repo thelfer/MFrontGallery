@@ -8,10 +8,13 @@ function(mfront_properties_java_library mat)
     set(java_file       "${mat}.java")
     set(java_class_file "${mat}.class")
   endif(MFM_PACKAGE)
-  foreach(source ${ARGN})
+  parse_mfront_library_sources(${ARGN})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  foreach(source ${mfront_sources})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
     list(APPEND mfront_files "${mfront_file}")
-    get_mfront_generated_sources("java" ${mat} ${mfront_file})
+    get_mfront_generated_sources(${mat} "java" "" ${mfront_file})
     list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/java/src/")
     list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
   endforeach(source)
@@ -22,7 +25,7 @@ function(mfront_properties_java_library mat)
     add_custom_command(
       OUTPUT  ${all_generated_files}
       COMMAND "${MFRONT}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_search_paths}
       ARGS    "--@Package=${MFM_PACKAGE}"
       ARGS    "--interface=java"
       ARGS    ${mfront_files}
@@ -33,7 +36,7 @@ function(mfront_properties_java_library mat)
     add_custom_command(
       OUTPUT  ${all_generated_files}
       COMMAND "${MFRONT}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_search_paths}
       ARGS    "--interface=java"
       ARGS    ${mfront_files}
       DEPENDS "${mfront_files}"

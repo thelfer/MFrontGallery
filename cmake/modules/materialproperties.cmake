@@ -1,11 +1,11 @@
-function(add_mfront_property_source lib mat interface file)
+function(add_mfront_property_source lib mat interface search_paths file)
   if(${ARGC} EQUAL 6)
     set(source_dir "${ARGN}")
   else(${ARGC} EQUAL 6)
     set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
   endif(${ARGC} EQUAL 6)
   set(mfront_file   "${source_dir}/${file}.mfront")
-  get_mfront_generated_sources(${interface} ${mat} ${mfront_file})
+  get_mfront_generated_sources(${mat} ${interface} "${search_paths}" ${mfront_file})
   list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
   set(${lib}_MFRONT_SOURCES ${mfront_file} ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
   list(APPEND mfront_generated_sources ${${lib}_SOURCES})
@@ -14,8 +14,11 @@ function(add_mfront_property_source lib mat interface file)
 endfunction(add_mfront_property_source)
 
 function(mfront_properties_standard_library2 lib mat interface)
-  foreach(source ${ARGN})
-    add_mfront_property_source(${lib} ${mat} ${interface} ${source})
+  parse_mfront_library_sources(${ARGN})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  foreach(source ${mfront_sources})
+    add_mfront_property_source(${lib} ${mat} ${interface} "${mfront_search_paths}" ${source})
   endforeach(source)
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
