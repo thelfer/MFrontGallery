@@ -310,7 +310,9 @@ function(add_mtest interface lib)
 	foreach(rm ${IEEE754_ROUNDING_MODES})
 	  add_test(NAME ${_TEST_NAME}_${conf}_${rm}_mtest
 	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0
-                      --xml-output=true --result-file-output=false
+                      --result-file-output=false
+                      --xml-output=true
+                      --@XMLOutputFile="${_TEST_NAME}_${conf}_${rm}_mtest.xml"
                       ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
                       ${test_file}
 	     CONFIGURATIONS ${conf})
@@ -324,15 +326,17 @@ function(add_mtest interface lib)
 	get_property(${mplib}BuildPath TARGET ${mplib} PROPERTY LOCATION)
       endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest.in)
-       configure_file(${_MTEST_FILE}.mtest.in ${_MTEST_FILE}-${conf}.mtest @ONLY)
-       set(test_file ${_MTEST_FILE}-${conf}.mtest)
+       configure_file(${_MTEST_FILE}.mtest.in ${_MTEST_FILE}.mtest @ONLY)
+       set(test_file ${_MTEST_FILE}.mtest)
     else(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest.in)
        set(test_file ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest)
     endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest.in)    
     foreach(rm ${IEEE754_ROUNDING_MODES})
 	  add_test(NAME ${_TEST_NAME}_${rm}_mtest
 	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 
-                      --xml-output=true --result-file-output=false
+                      --xml-output=true
+                      --@XMLOutputFile="${_TEST_NAME}_${rm}_mtest.xml"
+                      --result-file-output=false
                       ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
                       ${test_file})
 	  set_property(TEST ${_TEST_NAME}_${rm}_mtest
