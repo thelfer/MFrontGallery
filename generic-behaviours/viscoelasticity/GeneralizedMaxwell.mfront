@@ -32,6 +32,7 @@ sej.setEntryName("ViscoelasticStress");
 }
 
 @PredictionOperator{
+  static_cast<void>(smt);
   Dt = l0*Stensor4::IxI()+2*mu0*Stensor4::Id();
 }
 

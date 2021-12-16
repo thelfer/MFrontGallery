@@ -1,2 +1,3 @@
 mfront_behaviours_library(Viscoelasticity
-  GeneralizedMaxwell)
+  GeneralizedMaxwell
+  FiniteStrainOrthotropicGeneralizedMaxwell)

@@ -1,0 +1,75 @@
+@DSL DefaultDSL;
+@Behaviour FiniteStrainOrthotropicGeneralizedMaxwell;
+@Author Thomas Helfer and Lorenzo Riparbelli;
+@Date 8 / 10 / 2014;
+
+@Description {
+  "Orthotropic Maxwell behvaviour "
+  "in the logarithmic strain framework"
+}
+
+@StrainMeasure Hencky;
+@OrthotropicBehaviour;
+@AbaqusOrthotropyManagementPolicy[abaqus, abaqus_explicit] MFront;
+
+@IntegerConstant Nv = 3;
+@RequireStiffnessTensor<UnAltered>;
+
+@Includes {
+#include "TFEL/Material/StiffnessTensor.hxx"
+}
+
+@MaterialProperty stress E1[Nv];
+E1.setEntryName("ViscoelasticYoungModulus1");
+@MaterialProperty stress E2[Nv];
+E2.setEntryName("ViscoelasticYoungModulus2");
+@MaterialProperty stress E3[Nv];
+E3.setEntryName("ViscoelasticYoungModulus3");
+
+@MaterialProperty real nu12[Nv];
+nu12.setEntryName("ViscoelasticPoissonRatio12");
+@MaterialProperty real nu23[Nv];
+nu23.setEntryName("ViscoelasticPoissonRatio23");
+@MaterialProperty real nu13[Nv];
+nu13.setEntryName("ViscoelasticPoissonRatio13");
+
+@MaterialProperty stress G12[Nv];
+G12.setEntryName("ViscoelasticShearModulus12");
+@MaterialProperty stress G23[Nv];
+G23.setEntryName("ViscoelasticShearModulus23");
+@MaterialProperty stress G13[Nv];
+G13.setEntryName("ViscoelasticShearModulus13");
+
+@MaterialProperty time tau[Nv];
+tau.setEntryName("CharacteristicTime");
+
+@StateVariable StrainStensor h[Nv];
+
+@PredictionOperator {
+  static_cast<void>(smt);
+  Dt = D;
+}
+
+@ProvidesSymmetricTangentOperator;
+@Integrator {
+  sig = D * (eto + deto);
+  if (computeTangentOperator_) {
+    Dt = D;
+  }
+  for (unsigned short i = 0; i != Nv; ++i) {
+    constexpr const auto value =
+        StiffnessTensorAlterationCharacteristic::UNALTERED;
+    auto Dv = StiffnessTensor();
+    computeOrthotropicStiffnessTensor<hypothesis, value>(
+        Dv, E1[i], E2[i], E3[i],    //
+        nu12[i], nu23[i], nu13[i],  //
+        G12[i], G23[i], G13[i]);
+    const auto e1 = exp(-dt / tau[i]);
+    const auto e2 = sqrt(e1);
+    h[i] = h[i] * e1 + deto * e2;
+    sig += Dv * h[i];
+    if ((computeTangentOperator_) && (smt == CONSISTENTTANGENTOPERATOR)) {
+      Dt += e2 * Dv;
+    }
+  }
+}
