@@ -1,7 +1,7 @@
 set(CALCULIX_CPPFLAGS)
-function(check_calculix_compatibility mat source)
+function(check_calculix_compatibility mat search_paths source)
   behaviour_query(behaviour_type
-    ${mat} ${source} "--type")
+    ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing
   elseif(behaviour_type STREQUAL "2")
@@ -12,7 +12,7 @@ function(check_calculix_compatibility mat source)
   endif(behaviour_type STREQUAL "1")    
   if(file_OK)
     behaviour_query(modelling_hypotheses
-      ${mat} ${source} "--supported-modelling-hypotheses")
+      ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
     # creating a cmake list
     separate_arguments(modelling_hypotheses)
     list(FIND modelling_hypotheses "Tridimensional" tridimensional_found)
@@ -20,7 +20,7 @@ function(check_calculix_compatibility mat source)
       set(file_OK OFF PARENT_SCOPE)
     else(tridimensional_found EQUAL -1)
       behaviour_query(external_state_variables
-        ${mat} ${source}
+        ${mat} "${search_paths}" ${source}
         "--modelling-hypothesis=Tridimensional"
         "--external-state-variables")
       list(LENGTH external_state_variables nb_external_state_variables)

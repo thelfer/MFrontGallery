@@ -1,6 +1,9 @@
 function(mfront_properties_octave_library mat)
   set (octave_targets )
-  foreach(source ${ARGN})
+  parse_mfront_library_sources(${ARGN})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  foreach(source ${mfront_sources})
     set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
     set(mfront_file   "${source_dir}/${source}.mfront")
     get_mfront_all_specific_targets_generated_sources("octave" ${mat} ${mfront_file})
@@ -9,7 +12,7 @@ function(mfront_properties_octave_library mat)
       OUTPUT  ${mfront_generated_sources}
       COMMAND "${MFRONT}"
       ARGS    "--interface=octave"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_search_paths}
       ARGS     "${mfront_file}"
       DEPENDS "${mfront_file}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
@@ -32,7 +35,7 @@ function(mfront_properties_octave_library mat)
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${oct_file} DESTINATION
 	lib/octave-${OCTAVE_VERSION_STRING})
     endif(WIN32)
-  endforeach(source ${ARGN})
+  endforeach(source)
   add_custom_target(${mat}MaterialProperties-octave ALL
     DEPENDS ${octave_targets})
   add_dependencies(check ${mat}MaterialProperties-octave)
