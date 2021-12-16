@@ -8,7 +8,8 @@ set(MFRONT_BEHAVIOURS_PLASTICITY_SOURCES
   DruckerPerfectPlasticity_Cazacu2001
   OrthotropicDruckerPerfectPlasticity2090T3_Cazacu2001
   OrthotropicDruckerPerfectPlasticityYdLin6016T4_Cazacu2001
-  DruckerPragerCap)
+  DruckerPragerCap
+  SemiImplicitModifiedCamClay_OpenGeoSys2020)
 
 if(NOT MSVC)
   list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES JohnsonCook_s)
