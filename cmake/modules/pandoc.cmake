@@ -1,0 +1,73 @@
+find_program(MFM_PANDOC NAMES pandoc pandoc.exe)
+find_program(MFM_PANDOC_CROSSREF NAMES pandoc-crossref pandoc-crossref.exe)
+mark_as_advanced(MFM_PANDOC)
+mark_as_advanced(MFM_PANDOC_CROSSREF)
+if(MFM_PANDOC)
+  message(STATUS "Enabling generation of documentation based on pandoc")
+  set(MFM_HAVE_PANDOC ON)
+  if(NOT MFM_PANDOC_CROSSREF)
+    message(STATUS "pandoc-crossref not found: references to equations, figures, tables, sections won't be generated")
+  endif(NOT MFM_PANDOC_CROSSREF)
+elseif(MFM_PANDOC)
+  message(STATUS "Disabling generation of documentation based on pandoc")
+  set(MFM_HAVE_PANDOC OFF)
+endif(MFM_PANDOC)
+
+if(MFM_PANDOC)
+  message(STATUS "pandoc:          ${MFM_PANDOC}")
+elseif(MFM_PANDOC)
+  message(STATUS "pandoc:          not found")
+endif(MFM_PANDOC)
+if(MFM_PANDOC_CROSSREF)
+  message(STATUS "pandoc-crossref: ${MFM_PANDOC_CROSSREF}")
+elseif(MFM_PANDOC_CROSSREF)
+  message(STATUS "pandoc-crossref: not found")
+endif(MFM_PANDOC_CROSSREF)
+
+function(pandoc_html file)
+  if(MFM_PANDOC)
+    set(pandoc_args)
+    list(APPEND pandoc_args "-f" "markdown-markdown_in_html_blocks+tex_math_single_backslash+grid_tables")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bibliography.bib")
+      list(APPEND pandoc_args "--citeproc")
+      list(APPEND pandoc_args "--bibliography=${CMAKE_CURRENT_SOURCE_DIR}/bibliography.bib")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/bibliography.bib")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/mfm-template.html")
+      list(APPEND pandoc_args "--template=${CMAKE_CURRENT_SOURCE_DIR}/mfm-template.html")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/mfm-template.html")
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/iso690-numeric-en.csl")
+      list(APPEND pandoc_args "--csl=${CMAKE_CURRENT_SOURCE_DIR}/iso690-numeric-en.csl")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/iso690-numeric-en.csl")
+    list(APPEND pandoc_args "--mathjax")
+    list(APPEND pandoc_args "--highlight-style=tango")
+    list(APPEND pandoc_args "--email-obfuscation=javascript")
+    list(APPEND pandoc_args "--default-image-extension=svg")
+    if(MFM_PANDOC_CROSSREF)
+      list(APPEND pandoc_args "--filter" "pandoc-crossref")
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pandoc-crossref.yaml")
+        list(APPEND pandoc_args "-M" "crossrefYaml=${CMAKE_CURRENT_SOURCE_DIR}/pandoc-crossref.yaml")
+      endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/pandoc-crossref.yaml")
+    endif(MFM_PANDOC_CROSSREF)
+    ADD_CUSTOM_COMMAND(
+      OUTPUT    ${CMAKE_CURRENT_BINARY_DIR}/${file}.html
+      DEPENDS   ${CMAKE_CURRENT_SOURCE_DIR}/${file}.md
+      DEPENDS   ${CMAKE_CURRENT_SOURCE_DIR}/mfm-template.html
+      DEPENDS   ${CMAKE_CURRENT_SOURCE_DIR}/css/main.css
+      COMMAND   ${MFM_PANDOC}
+      ARGS      ${pandoc_args}
+      ARGS      ${ARGN}
+      ARGS      ${CMAKE_CURRENT_SOURCE_DIR}/${file}.md -o ${file}.html)
+    add_custom_target(${file}-html ALL DEPENDS ${file}.html)
+    add_dependencies(website ${file}-html)
+    if(MFM_APPEND_SUFFIX)
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}.html
+        DESTINATION share/doc/mfm-${MFM_SUFFIX}/web
+        COMPONENT website)
+    else(MFM_APPEND_SUFFIX)
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}.html
+        DESTINATION share/doc/mfm/web
+        COMPONENT website)
+    endif(MFM_APPEND_SUFFIX)
+  endif(MFM_PANDOC)
+endfunction(pandoc_html)
+
