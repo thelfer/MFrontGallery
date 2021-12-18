@@ -1,0 +1,34 @@
+@Includes {
+#include "TFEL/Material/StiffnessTensor.hxx"
+}
+
+@StateVariable StrainStensor h[Nv];
+
+@PredictionOperator {
+  static_cast<void>(smt);
+  Dt = D;
+}
+
+@ProvidesSymmetricTangentOperator;
+@Integrator {
+  constexpr auto value = StiffnessTensorAlterationCharacteristic::UNALTERED;
+  constexpr auto oac = OrthotropicAxesConvention::PIPE;
+  sig = D * (eto + deto);
+  if (computeTangentOperator_) {
+    Dt = D;
+  }
+  for (unsigned short i = 0; i != Nv; ++i) {
+    auto Dv = StiffnessTensor();
+    computeOrthotropicStiffnessTensor<hypothesis, value, oac>(
+        Dv, Ev1[i], Ev2[i], Ev3[i],    //
+        nuv12[i], nuv23[i], nuv13[i],  //
+        Gv12[i], Gv23[i], Gv13[i]);
+    const auto e1 = exp(-dt / tau[i]);
+    const auto e2 = sqrt(e1);
+    h[i] = h[i] * e1 + deto * e2;
+    sig += Dv * h[i];
+    if ((computeTangentOperator_) && (smt == CONSISTENTTANGENTOPERATOR)) {
+      Dt += e2 * Dv;
+    }
+  }
+}

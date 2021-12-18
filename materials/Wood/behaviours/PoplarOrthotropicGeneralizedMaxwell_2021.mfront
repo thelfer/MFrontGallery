@@ -1,0 +1,44 @@
+@DSL DefaultDSL;
+@Material Poplar;
+@Behaviour OrthotropicGeneralizedMaxwell_2021;
+@Author Thomas Helfer and Lorenzo Riparbelli;
+@Date 8 / 10 / 2014;
+
+@Description {
+  "Orthotropic Maxwell behvaviour"
+}
+
+@StrainMeasure Hencky;
+@OrthotropicBehaviour<Pipe>;
+@AbaqusOrthotropyManagementPolicy[abaqus, abaqus_explicit] MFront;
+
+@ComputeStiffnessTensor{635,   10285, 369,    //
+                        0.029, 0.42,  0.165,  //
+                        786,   838,   114};
+
+@IntegerConstant Nv = 3;
+@Parameter stress Ev1[Nv] = {66, 75, 97};
+Ev1.setEntryName("ViscoelasticYoungModulus1");
+@Parameter stress Ev2[Nv] = {329, 220, 384};
+Ev2.setEntryName("ViscoelasticYoungModulus2");
+@Parameter stress Ev3[Nv] = {37, 22, 66};
+Ev3.setEntryName("ViscoelasticYoungModulus3");
+
+@Parameter real nuv12[Nv] = {0, 0, 0};
+nuv12.setEntryName("ViscoelasticPoissonRatio12");
+@Parameter real nuv23[Nv] = {0, 0, 0};
+nuv23.setEntryName("ViscoelasticPoissonRatio23");
+@Parameter real nuv13[Nv] = {0, 0, 0};
+nuv13.setEntryName("ViscoelasticPoissonRatio13");
+
+@Parameter stress Gv12[Nv] = {66, 57, 57};
+Gv12.setEntryName("ViscoelasticShearModulus12");
+@Parameter stress Gv23[Nv] = {40, 36, 35};
+Gv23.setEntryName("ViscoelasticShearModulus23");
+@Parameter stress Gv13[Nv] = {3, 2, 2};
+Gv13.setEntryName("ViscoelasticShearModulus13");
+
+@Parameter time tau[Nv] = {100, 1000, 10000};
+tau.setEntryName("CharacteristicTime");
+
+@Import "OrthotropicGeneralizedMaxwell-core.mfront";
