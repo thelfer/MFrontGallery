@@ -1,0 +1,57 @@
+@Author Thomas Helfer, Lorenzo Riparbelli;
+@Date   16/12/2021;
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<@interface@> @library@ @behaviour@;
+
+// material properties
+@MaterialProperty<constant> 'YoungModulus1' 635;
+@MaterialProperty<constant> 'YoungModulus2' 10285;
+@MaterialProperty<constant> 'YoungModulus3' 369;
+@MaterialProperty<constant> 'PoissonRatio12' 0.029;
+@MaterialProperty<constant> 'PoissonRatio23' 0.42;
+@MaterialProperty<constant> 'PoissonRatio13' 0.165;
+@MaterialProperty<constant> 'ShearModulus12' 786;
+@MaterialProperty<constant> 'ShearModulus23' 838;
+@MaterialProperty<constant> 'ShearModulus13' 114;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus1[0]' 66;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus1[1]' 75;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus1[2]' 97;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus2[0]' 329;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus2[1]' 220;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus2[2]' 384;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus3[0]' 37;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus3[1]' 22;
+@MaterialProperty<constant> 'ViscoelasticYoungModulus3[2]' 66;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio12[0]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio12[1]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio12[2]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio23[0]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio23[1]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio23[2]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio13[0]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio13[1]' 0.;
+@MaterialProperty<constant> 'ViscoelasticPoissonRatio13[2]' 0.;
+@MaterialProperty<constant> 'ViscoelasticShearModulus12[0]' 66;
+@MaterialProperty<constant> 'ViscoelasticShearModulus12[1]' 57;
+@MaterialProperty<constant> 'ViscoelasticShearModulus12[2]' 57;
+@MaterialProperty<constant> 'ViscoelasticShearModulus23[0]' 40;
+@MaterialProperty<constant> 'ViscoelasticShearModulus23[1]' 36;
+@MaterialProperty<constant> 'ViscoelasticShearModulus23[2]' 35;
+@MaterialProperty<constant> 'ViscoelasticShearModulus13[0]' 3;
+@MaterialProperty<constant> 'ViscoelasticShearModulus13[1]' 2;
+@MaterialProperty<constant> 'ViscoelasticShearModulus13[2]' 2;
+@MaterialProperty<constant> 'CharacteristicTime[0]' 100;
+@MaterialProperty<constant> 'CharacteristicTime[1]' 1000;
+@MaterialProperty<constant> 'CharacteristicTime[2]' 10000;
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStress 'SZZ' -1;
+
+@Times<data> @reference_file@ using 1;
+
+@Test<file> @reference_file@ 'EXX' 5 1.e-8;
+@Test<file> @reference_file@ 'EZZ' 6 1.e-8;
+@Test<file> @reference_file@ 'EYY' 7 1.e-8;
