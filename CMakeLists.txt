@@ -288,11 +288,14 @@ endif(mfront-behaviours-interfaces)
 #compiler options
 include(cmake/modules/compiler.cmake)
 
-# Looking for LaTeX
-option(enable-reference-doc "enable generation of the reference documentation" OFF)
-if(enable-reference-doc)
-  include(cmake/modules/latex.cmake)
-endif(enable-reference-doc)
+# Documentation
+option(enable-website "enable generation of the website" ON)
+if(enable-website)
+  add_custom_target(doc)
+  add_custom_target(website)
+  add_dependencies(doc website)
+  include(cmake/modules/pandoc.cmake)
+endif(enable-website)
 
 # testing
 set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
@@ -307,9 +310,12 @@ else(CMAKE_CONFIGURATION_TYPES)
 endif(CMAKE_CONFIGURATION_TYPES)
 
 add_subdirectory(generic-behaviours)
-add_subdirectory(mfront-wrappers
-)
+add_subdirectory(mfront-wrappers)
 add_subdirectory(materials)
+
+if(enable-website)
+  add_subdirectory(docs/web)
+endif(enable-website)
 
 # if(TFEL_CHECK)
 #   add_test(NAME tfel_check COMMAND ${TFEL_CHECK})
