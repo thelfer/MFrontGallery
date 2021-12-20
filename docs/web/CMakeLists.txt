@@ -1,4 +1,5 @@
 pandoc_html(index)
+pandoc_html(OrthotropicGeneralizedMaxwell)
 
 if(MFM_APPEND_SUFFIX)
   install(DIRECTORY js css img
