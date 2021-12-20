@@ -1,4 +1,5 @@
 pandoc_html(index)
+pandoc_html(SemiImplicitModifiedCamClay_OpenGeoSys2020 "--toc" "--number-sections")
 
 if(MFM_APPEND_SUFFIX)
   install(DIRECTORY js css img
