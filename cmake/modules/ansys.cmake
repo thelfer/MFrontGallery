@@ -19,16 +19,20 @@ function(check_ansys_compatibility mat search_paths source)
     if(nb_modelling_hypotheses EQUAL 0)
       set(file_OK OFF PARENT_SCOPE)
     endif(nb_modelling_hypotheses EQUAL 0)
+    set(_external_state_variable_test OFF)
     foreach(h ${modelling_hypotheses})
       behaviour_query(external_state_variables
         ${mat} "${search_paths}" ${source} 
         "--modelling-hypothesis=${h}"
         "--external-state-variables")
       list(LENGTH external_state_variables nb_external_state_variables)
-      if(NOT (nb_external_state_variables EQUAL 1))
-        set(file_OK OFF PARENT_SCOPE)
-      endif(NOT (nb_external_state_variables EQUAL 1))
+      if(nb_external_state_variables EQUAL 1)
+        set(_external_state_variable_test ON)
+      endif(nb_external_state_variables EQUAL 1)
     endforeach(h ${modelling_hypotheses})
+    if(NOT _external_state_variable_test)
+      set(file_OK OFF PARENT_SCOPE)
+    endif()
   endif(file_OK)
 endfunction(check_ansys_compatibility)
 
