@@ -22,7 +22,7 @@ abstract: |
   additional options of refinement and stabilization. Based on the
   interface `MFront`, the implementation is outlined briefly. Then,
   numerical studies are presented for a single integration point using
-  `MFront mtest`, and eventually for meshes consisting of one or
+  `MTest`, and eventually for meshes consisting of one or
   multiple finite elements using `OpenGeoSys`.
 ---
 
@@ -155,13 +155,12 @@ stress under isotropic compression and evolves as:
 
 This way, the pre-consolidation pressure increases in case of plastic
 compaction, i.\,e. $\dot{\varepsilon}_\p^\text{V}<0$. Moreover, the
-pre-consolidation pressure \iffalse only changes with plastic volume
-changes, and it \fi remains constant during purely elastic loading.
-Furthermore, the parameter $\vartheta$ depends on the pore number $e$ or
-the porosity $\phi$, respectively:
+pre-consolidation pressure remains constant during purely elastic
+loading. Furthermore, the parameter $\vartheta$ depends on the pore
+number $e$ or the porosity $\phi$, respectively:
 
 \[
-  \vartheta(e) = \frac{1+e}{\lambda - \kappa} \overset{\eqref{eq:e-phiRelation}}{=} \frac{1}{(\lambda - \kappa)(1 - \phi)} = \vartheta(\phi) \ ,
+  \vartheta(e) = \frac{1+e}{\lambda - \kappa} = \frac{1}{(\lambda - \kappa)(1 - \phi)} = \vartheta(\phi) \ ,
 \]
 
 where the material constants $\lambda, \kappa$ represent the slope of
@@ -180,7 +179,7 @@ closed. This way, all the basic effects $1.-5.$ are captured.
 In order to refine effect $5.$, namely load-path dependent elastic
 stiffness, an evolution equation for the hydrostatic pressure and the
 elastic volumetric strain, respectively, has to be added
-\cite{Callari1998}:
+@Callari1998:
 
 \[\label{eq:evolutionP}
   \dot{p} = -\dot{\varepsilon}_\e^\text{V} \left(\frac{1+e}{\kappa}\right)\ p \ .
@@ -188,7 +187,7 @@ elastic volumetric strain, respectively, has to be added
 
 As a consequence, the compression modulus becomes load-path-dependent,
 too. Then, care must be taken that the constitutive equations are still
-thermodynamically consistent \cite{Borja1998}. I also seems
+thermodynamically consistent @Borja1998. I also seems
 counter-intuitive that the bulk modulus should increase with the pore
 number. For these reasons and for the sake of simplicity, linear
 elasticity is used here. This means instead of \eqref{eq:evolutionP}
@@ -258,7 +257,7 @@ For the solution of the incremental set of equations \eqref{eq:incrementalSystem
 
 \[\label{eqset:partialDerivatives}
 \begin{align}
-  \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta\tensor\varepsilon_\e} &= \tensorf{I} + \varDelta\varLambda_p\frac{\partial\tensor{n}}{\partial\varDelta\tensor\varepsilon_\e} \quad\with\quad \tensorf{I}=\Vek e_a\dyad\Vek e_b\dyad\Vek e_a\dyad\Vek e_b \ ,
+  \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta\tensor\varepsilon_\e} &= \tensorf{I} + \varDelta\varLambda_p\frac{\partial\tensor{n}}{\partial\varDelta\tensor\varepsilon_\e} \quad\with\quad \tensorf{I}=\vec{e}_a\dyad\vec{e}_b\dyad\vec{e}_a\dyad\vec{e}_b \ ,
   \\
   \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta\varLambda_p} &= \tensor{n}\ ,
   \\
@@ -328,13 +327,16 @@ based on the Karush Kuhn Tucker conditions with an elastic predictor and
 a plastic corrector step. This leads to a radial return mapping
 algorithm (also known as active set search). Alternatively, the case
 distinction can be avoided using the Fischer-Burmeister complementary
-condition \cite[cf. e.\,g.][]{Ashrafi2016,Bartel2019}. Both methods can
-be used in MFront \cite{Helfer2015,Helfer2020}.
+condition [@Ashrafi2016;@Bartel2019]. Both methods can be used in MFront
+[@Helfer2015;@Helfer2020].
 
 
 ## Numerical refinement and stabilization {#sec:stabilization}
 
-It is recommended to normalize all residuals \eqref{eq:incrementalSystem} to some similar order of magnitude, e.\,g. as strains. For this, equation \eqref{eq:flp} can be divided by some characteristic value:
+It is recommended to normalize all residuals
+\eqref{eq:incrementalSystem} to some similar order of magnitude, e.\,g.
+as strains. For this, equation \eqref{eq:flp} can be divided by some
+characteristic value:
 
 \begin{align}
   f_{\!\varLambda_p} &= f / \hat{f} = \left\{q^2 + M^2(p^2 - p\,p_\c)\right\} / (E\,p_{\c0}) \ .
@@ -399,7 +401,7 @@ The number of equations in System \eqref{eq:incrementalSystem} can be
 reduced exploiting the minor influence of the porosity in a given time
 step. Since $\phi$ usually does not significantly change during the
 strain increment, it can be updated explicitly at the end of the time
-step \cite{Borja1990}. Exploiting formula \eqref{eq:evolutionPhi} yields
+step [@Borja1990]. Exploiting formula \eqref{eq:evolutionPhi} yields
 
 \begin{align}
   {}^{k+1}\!\phi &= 1 -\, (1-{}^{k}\!\phi) \exp(\minus\Delta\varepsilon^\text{V}) \quad\text{or}\\
@@ -418,10 +420,10 @@ new porosity value using the relation
 # Implementation into `MFront`
 
 For the `MFront` implementation the domain specific language (DSL)
-\texttt{Implicit} was used, cf. \cite{Helfer2015,Marois2020}. The
-coupling to OpenGeoSys \cite{Kolditz2012a,Bilke2019} is done using MGIS
-\cite{Helfer2020}. The implementation is part of the \textsl{OpenGeoSys}
-source code, cf. \url{https://gitlab.opengeosys.org}.
+`Implicit` was used, cf. [@Helfer2015;Marois2020]. The coupling to
+`OpenGeoSys` [@Kolditz2012a;Bilke2019] is done using `MGIS`
+[@Helfer2020]. The implementation is part of the `OpenGeoSys` source
+code, cf. <https://gitlab.opengeosys.org>.
 
 In the preamble of the `MFront` code the parameters are specified and
 integration variables are declared. Note that a \emph{state variable} is
@@ -467,11 +469,11 @@ steps:
 
 # Numerical studies
 
-## Consolidated plane strain simple shear test using \textsl{mtest} {#sec:mtestResults}
+## Consolidated plane strain simple shear test using `MTest` {#sec:mtestResults}
 
-`MFront` provides the tool \textsl{mtest} for testing the implemented
+`MFront` provides the tool `MTest` for testing the implemented
 material behaviour at a single material point (integration point), see
-\cite{Helfer2015}. For this, non-monotonic loading sequences can be
+[@Helfer2015]. For this, non-monotonic loading sequences can be
 prescribed in terms of stress and strain trajectories.
 
 In order to test the consolidation behaviour, plane strain simple shear
@@ -482,26 +484,25 @@ This results in the so-called overconsolidation ratios (OCR) of $4, 2,
 4/3$. From this hydrostatic stress state, shear is applied up to the
 strain $\varepsilon_{xy}=0.01$.
 
-\begin{table}[h!]
-  \centering
-  \caption{Material parameters for the basic modified Cam clay model}
-  \label{tab:matParaCamClay}
-  \begin{tabular}{c c c c c c c c c c}
-  \firsthline
-    {$E$} / Pa & {$\nu$} & {$M$} & {$\lambda$} & {$\kappa$} & {$\phi_0$} & {$p_{\c0}$} / Pa & {$p_\text{amb}$} / Pa\\
-    \hline
-    $150\cdot10^{9}$ & $0.3$ & $1.5$ & $7.7\pnkt10^{\minus3}$ & $6.6\pnkt10^{\minus4}$ & $0.44$ & $30\cdot10^{6}$ & $0\cdot10^{3}$ \\
-    \lasthline
-  \end{tabular}
-\end{table}
-\par
-The material parameters are given in \autoref{tab:matParaCamClay}. It should be noted that only the difference $\lambda - \kappa$ plays a role in the basic model with \emph{constant} elastic parameters. Considering the OCR, there are three different cases (cf. \autoref{fig:mtestShear3cases}):
-\vspace{-2mm}
-\begin{figure}[h!]
-  \includegraphics[width=0.5\textwidth]{pdf/ModCamClay_ParamStudy_ShearCurves_pStudy}
-  \includegraphics[width=0.5\textwidth]{pdf/ModCamClay_ParamStudy_eplVCurves_pStudy}
-  \caption{Consolidated shear test for three typical OCR values: $\varepsilon_\p^\text{V}>0$ causes softening, whereas $\varepsilon_\p^\text{V}<0$ (compaction) results in hardening.}\label{fig:mtestShear3cases}
-\end{figure}
++------------------+-------+-------+------------------------+------------------------+----------+-----------------+------------------------+
+| $E\,(Pa)$        | $\nu$ | $M$   | $\lambda$              | $\kappa$               | $\phi_0$ | $p_\c0\,(Pa)$   | $p_{\text{amb}}\,(Pa)$ |
++:================:+:=====:+:=====:+:======================:+:======================:+:========:+:===============:+:======================:+
+| $150\cdot10^{9}$ | $0.3$ | $1.5$ | $7.7\cdot10^{\minus3}$ | $6.6\cdot10^{\minus4}$ | $0.44$   | $30\cdot10^{6}$ | $0\cdot10^{3}$         |
++------------------+-------+-------+------------------------+------------------------+----------+-----------------+------------------------+
+
+: Material parameters for the basic modified Cam clay model {#tbl:matParaCamClay}
+
+The material parameters are given in Table @tbl:matParaCamClay. It
+should be noted that only the difference $\lambda - \kappa$ plays a role
+in the basic model with \emph{constant} elastic parameters. Considering
+the OCR, there are three different cases (cf. Figure
+@fig:mtestShear3cases):
+
+![Consolidated shear test for three typical OCR values:
+$\varepsilon_\p^\text{V}>0$ causes softening, whereas
+$\varepsilon_\p^\text{V}<0$ (compaction) results in
+hardening.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/ParamStudy_ConsolidatedShearTest.svg){#fig:mtestShear3cases
+width=90%}
 
 For $\text{OCR}>2$ the shearing is accompanied by a plastic expansion
 (dilatancy) with $\varepsilon_\p^\text{V}>0$, which causes softening
@@ -519,11 +520,11 @@ which causes hardening until the critical state is reached.
 %TODO: OCR=1 means normally consolidated, OCR>1 describes an over-consolidated state
 %TODO: OCR=maximum pressure (=pre-consolidation pressure) / current pressure
 
-\begin{figure}[h!]\centering
-  \includegraphics[width=0.61\textwidth]{pdf/ModCamClay_ParamStudy_YieldSurface_pStudy}
-  \caption{Consolidated shear test for 3 typical OCR values: depicted are the different stress trajectories, the critical state line (CSL) and the final yield surfaces.}\label{fig:mtestShear3casesYield}
-\end{figure}
-\noindent
+![Consolidated shear test for 3 typical OCR values: depicted are the
+different stress trajectories, the critical state line (CSL) and the
+final yield
+surfaces.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/ParamStudy_YieldSurface.svg){#fig:mtestShear3casesYield
+width=90%}
 
 The stress trajectories, and the final yield surfaces are illustrated in
 the $p,q$-space together with the initial yield surface and the critical
@@ -535,57 +536,53 @@ pressure $p_{\c0}$ resembles a heavily pre-consolidated, compacted
 (dense) soil material, whereas a low value of $p_{\c0}$ resembles a
 loosened initial state.
 
-\begin{figure}[h!]
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_ParamStudy_ShearCurves_pcStudy}
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_ParamStudy_eplVCurves_pcStudy}
-  \caption{Consolidated shear test for two different initial pre-consolidation pressures.}\label{fig:mtestShear2cases}
-\end{figure}
+![Consolidated shear test for two different initial pre-consolidation
+pressures.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/ParamStudy_ConsolidatedShearTest-pc.svg){#fig:mtestShear2cases
+width=90%}
 
-As can be seen in \autoref{fig:mtestShear2cases} and
-\ref{fig:mtestShear2casesYield} the materials thrive to the same
+![Consolidated shear test for two different initial pre-consolidation
+pressures: the CSL and the final state including the final yield surface
+are
+equal.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/ParamStudy_YieldSurface-pc.svg){#fig:mtestShear2casesYield
+width=90%}
+
+As can be seen in Figures @fig:mtestShear2cases and
+@fig:mtestShear2casesYield, the materials thrive to the same
 (asymptotic) critical state, since the CSL is identical. However, this
 is either accomplished by hardening (contraction) or softening
 (dilatancy).
 
-\begin{figure}[h!]
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_ParamStudy_YieldSurface_pcHigh}
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_ParamStudy_YieldSurface_pcLow}
-\caption{Consolidated shear test for two different initial pre-consolidation pressures: the CSL and the final state including the final yield surface are equal.}\label{fig:mtestShear2casesYield}
-\end{figure}
-
 ## Plane strain simple shear test with one FE using `OpenGeoSys`
 
 As a next step the shear test from the previous section was repeated
-using \textsl{OpenGeoSys}, but without consolidation phase. A unit
+using `OpenGeoSys`, but without consolidation phase. A unit
 square domain was meshed with only one finite element. At the boundaries
 (top, bottom, left, right) Dirichlet boundary conditions~(BCs) were
 prescribed. The top boundary was loaded by a linear ramp from time $0$
 to $1\,$s. The material parameters were taken from
-\autoref{tab:matParaCamClay} with only one difference: As the test has
+Table @tbl:matParaCamClay with only one difference: As the test has
 no pre-consolidation phase, it is starting from zero stress and due to
-the reasons explained in \autoref{sec:stabilization} some small initial
-ambient pressure $p_\text{amb}=1\cdot10^{3}$\,Pa was added.\footnote{If
-the test is stress-controlled and the material is initially on the
-critical state with zero stress, this causes an infinite strain
+the reasons explained in Section @sec:stabilization some small initial
+ambient pressure $p_\text{amb}=1\cdot10^{3}$\,Pa was added.
+
+\footnote{If the test is stress-controlled and the material is initially
+on the critical state with zero stress, this causes an infinite strain
 increment and no convergence can be expected.}
 
-\begin{table}[h!]
-  \begin{tabular}{l|c|c|l|c|r}
-     Test                    & BC left   & BC right      & BC top               & BC bottom   & behaviour\\
-     \hline
-     Shear $xy$         & free      & free          & $u_x=-0.05t$         & $u_x=u_y=0$ & no convergence\\
-     Shear $xy$         & free      & free          & $u_x=-0.05t, u_y=0$  & $u_x=u_y=0$ & convergence\\
-%     Shear $xy$ + compr. $y$ & free      & free          & $u_x=u_y=-0.05t$     & $u_x=u_y=0$ & convergence\\
-     \hline 
-  \end{tabular}
-  \caption{Convergence behaviour for different shear loadings and BCs.}\label{table:shear1FE}
-\end{table}
++------------+-----------+---------------+----------------------+-------------+----------------+
+| Test       | BC left   | BC right      | BC top               | BC bottom   | behaviour      |
++:==========:+:=========:+:=============:+:====================:+:===========:+:==============:+
+| Shear $xy$ | free      | free          | $u_x=-0.05t$         | $u_x=u_y=0$ | no convergence |
++------------+-----------+---------------+----------------------+-------------+----------------+
+| Shear $xy$ | free      | free          | $u_x=-0.05t, u_y=0$  | $u_x=u_y=0$ | convergence    |
++------------+-----------+---------------+----------------------+-------------+----------------+
 
-\begin{figure}[h]
-  \includegraphics[width=0.5\textwidth]{pdf/SimpleShearCamClay_uyTop=0.png}
-  \includegraphics[width=0.5\textwidth]{pdf/SimpleShearCamClay_freeTop.png}
-  \caption{Test results for different BCs according to \autoref{table:shear1FE}: the top boundary is either confined (\textsl{left}) or free (\textsl{right}). }\label{fig:shear1FE}
-\end{figure}
+: Convergence behaviour for different shear loadings and BCs. {#tbl:shear1FE}
+
+![Test results for different BCs according to Table @tbl:shear1FE: the
+top boundary is either confined (`left`) or free
+(`right`).](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/SimpleShearTest.svg){#fig:shear1FE
+width=90%}
 
 In order to have true simple shear the top BC $u_y=0$ has to be applied.
 Else there is a tilting effect, and the deformation consists of shear
@@ -598,61 +595,96 @@ $\varepsilon^\text{V}\neq 0$)
 
 ## Plane strain simple biaxial test with one FE using `OpenGeoSys`
 
-It must be noted that the Cam clay model is primarily intended to capture the shear behaviour of soil materials \emph{without} cohesion. Hence, the uniaxial stress states with free boundaries cannot be sustained just as these states cannot be reached in reality. As an example, uniaxial tension causes pronounced lateral stretching due to plastic volume increase (dilatancy). The application of some minimal pre-consolidation pressure can help to stabilize the simulation, but convergence cannot be expected in general.
-\par
-Still, the biaxial tension/compression behaviour can be simulated to a certain degree. The \autoref{table:biaxial1FE} shows under which conditions convergence can be expected. In the converged cases a homogeneous solution was obtained as expected.
+It must be noted that the Cam clay model is primarily intended to
+capture the shear behaviour of soil materials \emph{without} cohesion.
+Hence, the uniaxial stress states with free boundaries cannot be
+sustained just as these states cannot be reached in reality. As an
+example, uniaxial tension causes pronounced lateral stretching due to
+plastic volume increase (dilatancy). The application of some minimal
+pre-consolidation pressure can help to stabilize the simulation, but
+convergence cannot be expected in general.
 
-\begin{table}[h!]
-  \begin{tabular}{l|c|c|c|c|c}
-     Test                    & BC left   & BC right      & BC top               & BC bottom   & convergence\\
-     \hline
-     Uniax. compr. $y$       & $u_x=0$   & free          & $u_y=-0.05t$         & $u_y=0$     & no\\
-     Uniax. tension $y$      & $u_x=0$   & free          & $u_y=+0.05t$         & $u_y=0$     & no\\
-     Biaxial compr. $x,y$    & $u_x=0$   & $u_x=-0.05 t$ & $u_y=-0.05t$         & $u_y=0$     & yes\\
-     Biaxial tension $x,y$   & $u_x=0$   & $u_x=+0.05 t$ & $u_y=+0.05t$         & $u_y=0$     & (yes)\\
-     Biaxial mixed $x,y$     & $u_x=0$   & $u_x=+0.05 t$ & $u_y=-0.05t$         & $u_y=0$     & yes\\
-     Biaxial mixed $x,y$     & $u_x=0$   & $u_x=-0.05 t$ & $u_y=+0.05t$         & $u_y=0$     & yes\\
-     \hline 
-  \end{tabular}
-  \caption{Convergence behaviour for different biaxial loadings and BCs}\label{table:biaxial1FE}
-\end{table}
+Still, the biaxial tension/compression behaviour can be simulated to a
+certain degree. The Table @tbl:biaxial1FE shows under which conditions
+convergence can be expected. In the converged cases a homogeneous
+solution was obtained as expected.
 
-It is interesting to note that the biaxial tension test can be simulated with the Cam clay model. In order to achieve convergence the drop of the pre-consolidation pressure has to be limited. For this, either the value of the parameter difference $\lambda - \kappa$ is increased or some minimal value $p^\text{min}_\c$ has to be ensured according to Eq.~\eqref{eq:pcMin}.
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Test                    | BC left   | BC right      | BC top               | BC bottom   | convergence |
++=========================+===========+===============+======================+=============+=============+
+| Uniax. compr. $y$       | $u_x=0$   | free          | $u_y=-0.05t$         | $u_y=0$     | no          |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Uniax. tension $y$      | $u_x=0$   | free          | $u_y=+0.05t$         | $u_y=0$     | no          |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Biaxial compr. $x,y$    | $u_x=0$   | $u_x=-0.05 t$ | $u_y=-0.05t$         | $u_y=0$     | yes         |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Biaxial tension $x,y$   | $u_x=0$   | $u_x=+0.05 t$ | $u_y=+0.05t$         | $u_y=0$     | (yes)       |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Biaxial mixed $x,y$     | $u_x=0$   | $u_x=+0.05 t$ | $u_y=-0.05t$         | $u_y=0$     | yes         |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
+| Biaxial mixed $x,y$     | $u_x=0$   | $u_x=-0.05 t$ | $u_y=+0.05t$         | $u_y=0$     | yes         |
++-------------------------+-----------+---------------+----------------------+-------------+-------------+
 
-\begin{figure}[h]
-  \includegraphics[width=0.5\textwidth]{pdf/BiaxtestCamClay_TopComprRightTension.png}
-  \includegraphics[width=0.5\textwidth]{pdf/BiaxtestCamClay_TopTensionRightCompr.png}
-  \caption{Biaxial test results for different BCs: shown are the mixed cases from \autoref{table:biaxial1FE}. }\label{fig:biaxMixedCases}
-\end{figure}
+: Convergence behaviour for different biaxial loadings and BCs {#tbl:biaxial1FE}
+
+It is interesting to note that the biaxial tension test can be simulated
+with the Cam clay model. In order to achieve convergence the drop of the
+pre-consolidation pressure has to be limited. For this, either the value
+of the parameter difference $\lambda - \kappa$ is increased or some
+minimal value $p^\text{min}_\c$ has to be ensured according to
+Eq.~\eqref{eq:pcMin}.
+
+![Biaxial test results for different BCs: shown are the mixed cases from
+Table
+@tbl:biaxial1FE.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/BiaxialTest.svg){#fig:biaxial1FE
+width=90%}
 
 ## Axially-symmetric triaxial compression test
 
-As a benchmark to existing results an axially-symmetric triaxial compression test was performed. For this, a cylindrical domain of height $100$\,m and radius $25$\,m is meshed with $100\times 25$ finite elements. At the left and bottom boundaries symmetry BCs of Dirichlet type are prescribed. The top and right boundaries are loaded by prescribing an axial and a confining pressure $p_{\text{con}}$, respectively. The loading consists of two stages, similar to \autoref{sec:mtestResults}: iI) a linear ramp until a hydrostatic stress state with $p=p_{\text{con}}=200\,$kPa is reached (with an OCR=$1$) and ii) a further increase of the axial pressure while the confining pressure $p_{\text{con}}$ is held constant. As the simulation time is irrelevant it is again set to $1\,$s. The material parameters are taken from \autoref{tab:matParaCamClayTriax}.
+As a benchmark to existing results an axially-symmetric triaxial
+compression test was performed. For this, a cylindrical domain of height
+$100$\,m and radius $25$\,m is meshed with $100\times 25$ finite
+elements. At the left and bottom boundaries symmetry BCs of Dirichlet
+type are prescribed. The top and right boundaries are loaded by
+prescribing an axial and a confining pressure $p_{\text{con}}$,
+respectively. The loading consists of two stages, similar to
+\autoref{sec:mtestResults}: iI) a linear ramp until a hydrostatic stress
+state with $p=p_{\text{con}}=200\,$kPa is reached (with an OCR=$1$) and
+ii) a further increase of the axial pressure while the confining
+pressure $p_{\text{con}}$ is held constant. As the simulation time is
+irrelevant it is again set to $1\,$s. The material parameters are taken
+from \autoref{tab:matParaCamClayTriax}.
 
-\begin{table}[h!]
-  \centering
-  \caption{Material parameters for the basic modified Cam clay model}
-  \label{tab:matParaCamClayTriax}
-  \begin{tabular}{c c c c c c c c c c}
-  \firsthline
-    {$E$} / Pa & {$\nu$} & {$M$} & {$\lambda$} & {$\kappa$} & {$\phi_0$} & {$p_{\c0}$} / Pa & {$p_\text{amb}$} / Pa\\
-    \hline
-    $52\cdot10^{6}$ & $0.3$ & $1.2$ & $7.7\pnkt10^{\minus2}$ & $6.6\pnkt10^{\minus3}$ & $0.44$ & $200\cdot10^{3}$ & $1\cdot10^{3}$ \\
-    \lasthline
-  \end{tabular}
-\end{table}
-The material and loading parameters were chosen such that the stress trajectory approaches the CSL from the right but does not meet it (cf. \autoref{fig:triaxStressTrajectory}). When this happens there will be zero resistance to plastic flow causing an infinite strain increment in the stress-controlled test and no convergence can be expected. The tendency can already be seen in \autoref{fig:triaxStressStrain} with the steep increase of the equivalent plastic strain.
++-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------+
+| $E (Pa)$        | $\nu$ | $M$   | $\lambda$              | $\kappa$               | $\phi_0$ | $p_\c0 (Pa)      | $p_\textamb (Pa)$ |
++:===============:+:=====:+:=====:+:======================:+:======================:+:========:+:================:+:=================:+
+| $52\cdot10^{6}$ | $0.3$ | $1.2$ | $7.7\cdot10^{\minus2}$ | $6.6\cdot10^{\minus3}$ | $0.44$   | $200\cdot10^{3}$ | $1\cdot10^{3}$    |
++-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------+
+
+: Material parameters for the basic modified Cam clay model {#tbl:matParaCamClayTriax}
+
+The material and loading parameters were chosen such that the stress
+trajectory approaches the CSL from the right but does not meet it (cf.
+Figure @fig:triaxStressTrajectory). When this happens there will be zero
+resistance to plastic flow causing an infinite strain increment in the
+stress-controlled test and no convergence can be expected. The tendency
+can already be seen in Figure @fig:triaxStressStrain with the steep
+increase of the equivalent plastic strain.
+
 \begin{figure}[h!]\centering
   \includegraphics[width=0.4\textwidth]{pdf/TriaxCamClay_StressControl_ux.png}\vspace{10mm}
   \includegraphics[width=0.4\textwidth]{pdf/TriaxCamClay_StressControl_uy.png}
   \caption{Triaxial benchmark results: shown are the displacement coefficients in the radial (here $x$) and the vertical (here $y$) direction. }\label{fig:triaxDisplacement}
 \end{figure}
 
-The curve of the pre-consolidation pressure (cf. \autoref{fig:triaxStressStrain} left) shows monotonic hardening related to the plastic compaction (cf. \autoref{fig:triaxStressStrain} right).
+The curve of the pre-consolidation pressure (cf. Figure
+@fig:triaxStressStrain top) shows monotonic hardening related to the
+plastic compaction (cf. Figure @fig:triaxStressStrain bottom).
+
 \begin{figure}[h!]
   \includegraphics[width=0.52\textwidth]{pdf/TriaxCamClay_StressControl_StressCurves.png}
   \includegraphics[width=0.52\textwidth]{pdf/TriaxCamClay_StressControl_StrainCurves.png}
-  \caption{Triaxial benchmark results: shown is the evolution of stress (\textsl{left}, unit Pa) and strain measures (\textsl{right}) at some arbitrary integration point.}\label{fig:triaxStressStrain}
+  \caption{Triaxial benchmark results: shown is the evolution of stress (`left`, unit Pa) and strain measures (`right`) at some arbitrary integration point.}\label{fig:triaxStressStrain}
 \end{figure}
 
 \begin{figure}[h!]\centering
@@ -660,16 +692,38 @@ The curve of the pre-consolidation pressure (cf. \autoref{fig:triaxStressStrain}
   \caption{Triaxial benchmark results: depicted is the stress trajectory and the evolving yield surface as well as the CSL.}\label{fig:triaxStressTrajectory}
 \end{figure}
 
-In order to check the accuracy of the numerical results, they were compared to an analytical solution \cite{Peric2006} for proportional loading. For this, the straight stress path from $(q=0, p=p_{\text{con}})$ until the final state is considered (cf. \autoref{fig:triaxStressTrajectory}). The plot of the von-Mises stress over the corresponding equivalent strain defined by $\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ shows accurate agreement between numerical and analytical solution (cf. also the appendix). Minor deviations might arise from the assumption \eqref{eq:evolutionP} \cite{Peric2006}, whereas a constant bulk modulus according to Eq. \eqref{eq:constK} was applied here. Considering the radial and circumferential strains another peculiarity is found (cf. \autoref{fig:triaxStressStrains}): The initial plastic compaction causes lateral (i.\,e. radial and circumferential) contraction. However, with increasing axial compression this necessarily turns into expansion. Note also that for this \emph{numerical} test the magnitude of the strains is beyond the scope of the linear strain measure.
-%remark on large strains: linear strain measure, physically not meaningful, but numerical test
+In order to check the accuracy of the numerical results, they were
+compared to an analytical solution [@Peric2006] for proportional
+loading. For this, the straight stress path from $(q=0,
+p=p_{\text{con}})$ until the final state is considered (cf.
+\autoref{fig:triaxStressTrajectory}). The plot of the von-Mises stress
+over the corresponding equivalent strain defined by
+$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\
+\tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ shows accurate
+agreement between numerical and analytical solution (cf. also the
+appendix). Minor deviations might arise from the assumption
+\eqref{eq:evolutionP} [@Peric2006], whereas a constant bulk modulus
+according to Eq. \eqref{eq:constK} was applied here. Considering the
+radial and circumferential strains another peculiarity is found (cf.
+Figure @fig:triaxStressStrains): The initial plastic compaction causes
+lateral (i.\,e. radial and circumferential) contraction. However, with
+increasing axial compression this necessarily turns into expansion. Note
+also that for this \emph{numerical} test the magnitude of the strains is
+beyond the scope of the linear strain measure.
 
 \begin{figure}[h!]
   \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_TriaxStudy_Strains.pdf}
   \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_TriaxStudy_NumVsAnal.pdf}
-  \caption{Triaxial benchmark results: depicted are the strain trajectories (\textsl{left}) and a comparison between analytical and numerical solution (\textsl{right}).}\label{fig:triaxStressStrains}
+  \caption{Triaxial benchmark results: depicted are the strain trajectories (`left`) and a comparison between analytical and numerical solution (`right`).}\label{fig:triaxStressStrains}
 \end{figure}
 
-As an alternative the test can, of course, also be conducted displacement-controlled. However, in doing so it was found that the homogeneous solution becomes unstable and strain localization occurs at the top of the domain. Apparently, at some integration points softening sets in even though the homogeneous solution only shows monotonic hardening. Varying the mesh size and topology, convergence could be achieved in some cases, indicating a strong mesh dependency.
+As an alternative the test can, of course, also be conducted
+displacement-controlled. However, in doing so it was found that the
+homogeneous solution becomes unstable and strain localization occurs at
+the top of the domain. Apparently, at some integration points softening
+sets in even though the homogeneous solution only shows monotonic
+hardening. Varying the mesh size and topology, convergence could be
+achieved in some cases, indicating a strong mesh dependency.
 
 # Concluding remarks
 
@@ -682,12 +736,11 @@ the captured material behaviour. The provided numerical refinements can
 stabilize this only to a limited degree. It seems that the softening can
 cause a pronounced strain localization, which requires special
 strategies for regularization of the underlying ill-posed mathematical
-problem \cite[cf. e.\,g.][]{Manica2018}. In order to include finite
-cohesion different modifications of the Cam clay model have been
-proposed \cite[cf. e.\,g.][]{Gaume2018}. Finally, mechanical loading in
-the vicinity of the critical state can easily cause large deformations,
-a finite strain formulation should be considered in the future \cite[cf.
-e.\,g.][]{Borja1998,Callari1998}.
+problem [@Manica2018]. In order to include finite cohesion different
+modifications of the Cam clay model have been proposed [@Gaume2018].
+Finally, mechanical loading in the vicinity of the critical state can
+easily cause large deformations, a finite strain formulation should be
+considered in the future [@Borja1998;@Callari1998].
 
 # Appendix
 
@@ -697,12 +750,18 @@ In order to check the convergence rate of the Cam clay implementation the consol
 
 \begin{figure}[h!]%\centering
   \includegraphics[width=1.04\textwidth]{pdf/convergence_plot.pdf}
-  \caption{Convergence plot: depicted is the norm of the residuals from the global iteration (colored) and the local iteration (grey) using the modified Cam clay `MFront` implementation and \textsl{mtest}. Within the first $12$ steps the behavior is purely elastic (\textsl{top}), followed by contractant plastic flow (\textsl{bottom}).}\label{fig:convergencePlot}
+  \caption{Convergence plot: depicted is the norm of the residuals from the global iteration (colored) and the local iteration (grey) using the modified Cam clay `MFront` implementation and `MTest`. Within the first $12$ steps the behavior is purely elastic (`top`), followed by contractant plastic flow (`bottom`).}\label{fig:convergencePlot}
 \end{figure}
 
 %with slight hardening (compaction)
 
-As can be seen in \autoref{fig:convergencePlot}, convergence is achieved in one step in the elastic stage (\textsl{top}). In the plastic stage (\textsl{bottom}), the typical acceleration of convergence when approaching the solution is observed (asymptotic quadratic convergence). However, the convergence depends on the plastic flow behavior dictated by the parameters $M$, $\lambda\minus\kappa$ and $p_{\c0}$ and can reduce to super-linear (order $\in [1,2]$). 
+As can be seen in \autoref{fig:convergencePlot}, convergence is achieved
+in one step in the elastic stage (`top`). In the plastic stage
+(`bottom`), the typical acceleration of convergence when approaching the
+solution is observed (asymptotic quadratic convergence). However, the
+convergence depends on the plastic flow behavior dictated by the
+parameters $M$, $\lambda\minus\kappa$ and $p_{\c0}$ and can reduce to
+super-linear (order $\in [1,2]$).
 
 \subsection*{Orthotropic modified Cam clay model implementation}
 
@@ -764,33 +823,24 @@ A straight stress path from $(p,q)=(0, p_{\c0})$ until the final state $(p,q)=(3
 \[
     q = k\,(p-p_{\c0}) \ .
 \]
-The analytical solution \cite{Peric2006} for the corresponding equivalent strain $\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ reads
+
+The analytical solution [@Peric2006] for the corresponding equivalent
+strain $\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\
+\tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ reads
 
 \[
     \varepsilon_{\text{q}} = \varepsilon^\e_{\text{q}} + \varepsilon^\p_{\text{q}}
 \]
-and to be precise, using the abbreviations $C = (\lambda\minus\kappa)$ and $\alpha = 3(1-2\nu) / (2(1+\nu))$ it is
+
+and to be precise, using the abbreviations $C = (\lambda\minus\kappa)$
+and $\alpha = 3(1-2\nu) / (2(1+\nu))$ it is
+
 \begin{align}
     (1+e_0)\,\varepsilon^\e_{\text{q}} &= \ln\left[\left(1-\frac{q}{kp}\right)^{\frac{2Ck}{k^2-M^2}-\frac{\kappa k}{3\alpha}}\right]\ ,\\
     (1+e_0)\,\varepsilon^\p_{\text{q}} &= \ln\left[\left(1-\frac{q}{Mp}\right)^{\frac{Ck}{M(M-k)}} 
                                           \cdot\left(1+\frac{q}{Mp}\right)^{\frac{Ck}{M(M+k)}}\right]
                                           - 2 \frac{C}{M}\arctan\left(\frac{q}{Mp}\right)\ .
 \end{align}
-
-\iffalse
-a = 3 * (1-2*nu) / (2*(1+nu))
-k = vMstress/ (pressure - pc0)
-c = (la-ka) / M
-nP = 30
-qRangeAna = np.linspace(0.0, vMstress, nP)
-pRangeAna = np.linspace(pc0, pressure, nP)
-x = qRangeAna / (M * pRangeAna)
-y = 1 - qRangeAna / (k * pRangeAna)  # = (pc0/pRangeAna)
-
-v0xEpsQp = np.log(np.power((1-x), c*k/(M-k)) * np.power((1+x), c*k/(M+k))) - 2*c*np.arctan(x)
-v0xEpsQe = np.log(np.power(y, 2 * c/(k/M - M/k) - ka*k/(3*a)))
-v0xEpsQ = v0xEpsQe + v0xEpsQp
-\fi
 
 -->
 
