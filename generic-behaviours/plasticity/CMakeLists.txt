@@ -19,3 +19,10 @@ mfront_behaviours_library(Plasticity
   ${MFRONT_BEHAVIOURS_PLASTICITY_SOURCES})
 
 astermtest(Plasticity asteriwan)
+#
+astermtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR astersemiimplicitmodifiedcamclay_opengeosys2020
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+genericmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR SemiImplicitModifiedCamClay_OpenGeoSys2020
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)

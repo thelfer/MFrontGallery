@@ -1,4 +1,4 @@
-@Behaviour<generic> 'src/libBehaviour.so' 'SemiImplicitModifiedCamClay_OpenGeoSys2020';
+@Behaviour<@interface@> @library@ @behaviour@;
 @ExternalStateVariable "Temperature" 293.15;
 @MaximumNumberOfSubSteps 1;
 
@@ -23,4 +23,4 @@
 //@OutputFile 'SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref';
 //@OutputFilePrecision 14;
 
-@Test<file> '@CMAKE_CURRENT_SOURCE_DIR@/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref' {'SZZ':10} 1.e-1; 
+@Test<file> @reference_file@ {'SZZ':10} 1.e-1; 

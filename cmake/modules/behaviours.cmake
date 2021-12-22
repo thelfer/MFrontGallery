@@ -59,6 +59,23 @@ function(add_mfront_behaviour_sources lib mat interface search_paths file)
   endif(file_OK)
 endfunction(add_mfront_behaviour_sources)
 
+function(get_mfront_behaviour_library_name mat interface)
+  if(${interface} STREQUAL "castem")
+    getCastemBehaviourName(${mat})
+  elseif(${interface} STREQUAL "ansys")
+    getAnsysBehaviourName(${mat})
+  elseif(${interface} STREQUAL "abaqus")
+    getAbaqusBehaviourName(${mat})
+  elseif(${interface} STREQUAL "abaqusexplicit")
+    getAbaqusExplicitBehaviourName(${mat})
+  elseif(${interface} STREQUAL "calculix")
+    getCalculixBehaviourName(${mat})
+  else()
+    set(lib "${mat}Behaviours-${interface}")
+  endif()
+  set(mfront_behaviour_library_name ${lib} PARENT_SCOPE)
+endfunction(get_mfront_behaviour_library_name)
+
 function(mfront_behaviours_library mat)
   parse_mfront_library_sources(${ARGN})
   list(APPEND mfront_search_paths 
@@ -68,147 +85,137 @@ function(mfront_behaviours_library mat)
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models")
   foreach(interface ${mfront-behaviours-interfaces})
-    if(${interface} STREQUAL "castem")
-      getCastemBehaviourName(${mat})
-    elseif(${interface} STREQUAL "ansys")
-      getAnsysBehaviourName(${mat})
-    elseif(${interface} STREQUAL "abaqus")
-      getAbaqusBehaviourName(${mat})
-    elseif(${interface} STREQUAL "abaqusexplicit")
-      getAbaqusExplicitBehaviourName(${mat})
-    elseif(${interface} STREQUAL "calculix")
-      getCalculixBehaviourName(${mat})
-    else((${interface} STREQUAL "castem"))
-      set(lib "${mat}Behaviours-${interface}")
-    endif(${interface} STREQUAL "castem")
+    get_mfront_behaviour_library_name(${mat} ${interface})
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}")
     foreach(source ${mfront_sources})
       if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	set(${lib}_SOURCES ${source} ${${lib}_SOURCES})
+	set(${mfront_behaviour_library_name}_SOURCES ${source} ${${mfront_behaviour_library_name}_SOURCES})
       else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	  add_mfront_behaviour_sources(${lib} ${mat} ${interface}
+	  add_mfront_behaviour_sources(${mfront_behaviour_library_name} ${mat} ${interface}
                                    "${mfront_search_paths}"
                                    ${source})
       endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
     endforeach(source ${mfront_sources})
-    list(LENGTH ${lib}_SOURCES nb_sources)
+    list(LENGTH ${mfront_behaviour_library_name}_SOURCES nb_sources)
     if(nb_sources GREATER 0)
       add_custom_command(
-        OUTPUT  ${${lib}_SOURCES}
+        OUTPUT  ${${mfront_behaviour_library_name}_SOURCES}
         COMMAND "${MFRONT}"
         ARGS    "--interface=${interface}"
         ARGS    ${mfront_search_paths}
-        ARGS    ${${lib}_MFRONT_SOURCES}
-        DEPENDS ${${lib}_MFRONT_SOURCES}
+        ARGS    ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
+        DEPENDS ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-        COMMENT "mfront sources ${${lib}_MFRONT_SOURCES} for interface ${interface}")
-      message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
-      add_library(${lib} SHARED ${${lib}_SOURCES})
-      target_include_directories(${lib}
+        COMMENT "mfront sources ${${mfront_behaviour_library_name}_MFRONT_SOURCES} for interface ${interface}")
+      message(STATUS "Adding library : ${mfront_behaviour_library_name} (${${mfront_behaviour_library_name}_SOURCES})")
+      add_library(${mfront_behaviour_library_name} SHARED ${${mfront_behaviour_library_name}_SOURCES})
+      target_include_directories(${mfront_behaviour_library_name}
         PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
         PRIVATE "${TFEL_INCLUDE_PATH}")
       if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
-        target_include_directories(${lib}
+        target_include_directories(${mfront_behaviour_library_name}
           PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
       endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
       if(${interface} STREQUAL "castem")
 	if(CASTEMHOME)
 	  if(enable-castem-pleiades)
-	    target_include_directories(${lib}
+	    target_include_directories(${mfront_behaviour_library_name}
 	      PRIVATE "${CASTEMHOME}/include")
 	  else(enable-castem-pleiades)
-	    target_include_directories(${lib}
+	    target_include_directories(${mfront_behaviour_library_name}
 	      PRIVATE "${CASTEMHOME}/include/c")
 	  endif(enable-castem-pleiades)
 	endif(CASTEMHOME)
       endif(${interface} STREQUAL "castem")
     if(WIN32)
 	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-	  set_target_properties(${lib}
+	  set_target_properties(${mfront_behaviour_library_name}
 	    PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
 	endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-	install(TARGETS ${lib} DESTINATION bin)
+	install(TARGETS ${mfront_behaviour_library_name} DESTINATION bin)
       else(WIN32)
-	install(TARGETS ${lib} DESTINATION lib${LIB_SUFFIX})
+	install(TARGETS ${mfront_behaviour_library_name} DESTINATION lib${LIB_SUFFIX})
       endif(WIN32)
       if(${interface} STREQUAL "castem")
 	if(CASTEMHOME)
-	  target_include_directories(${lib}
+	  target_include_directories(${mfront_behaviour_library_name}
 	    PRIVATE "${CASTEMHOME}/include")
 	endif(CASTEMHOME)
 	if(CASTEM_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${CASTEM_CPPFLAGS}")
 	endif(CASTEM_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CastemInterface})
       elseif(${interface} STREQUAL "aster")
 	if(ASTER_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${ASTER_CPPFLAGS}")
 	endif(ASTER_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AsterInterface})
       elseif(${interface} STREQUAL "epx")
 	if(EUROPLEXUS_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${EUROPLEXUS_CPPFLAGS}")
 	endif(EUROPLEXUS_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${EuroplexusInterface})
       elseif(${interface} STREQUAL "abaqus")
 	if(ABAQUS_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_CPPFLAGS}")
 	endif(ABAQUS_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "abaqusexplicit")
 	if(ABAQUS_EXPLICIT_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${ABAQUS_EXPLICIT_CPPFLAGS}")
 	endif(ABAQUS_EXPLICIT_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AbaqusInterface})
       elseif(${interface} STREQUAL "ansys")
 	if(ANSYS_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${ANSYS_CPPFLAGS}")
 	endif(ANSYS_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${AnsysInterface})
       elseif(${interface} STREQUAL "calculix")
 	if(CALCULIX_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${CALCULIX_CPPFLAGS}")
 	endif(CALCULIX_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CalculiXInterface})
       elseif(${interface} STREQUAL "cyrano")
 	if(CYRANO_CPPFLAGS)
-	  set_target_properties(${lib} PROPERTIES
+	  set_target_properties(${mfront_behaviour_library_name} PROPERTIES
 	    COMPILE_FLAGS "${CYRANO_CPPFLAGS}")
 	endif(CYRANO_CPPFLAGS)
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES}
+	target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${TFEL_MFRONT_LIBRARIES}
 	  ${CyranoInterface})
       elseif(${interface} STREQUAL "zmat")
-	set_target_properties(${lib} PROPERTIES
-	  COMPILE_FLAGS "${ZSET_CPPFLAGS}")
-	target_include_directories(${lib}
-	  SYSTEM PRIVATE "${ZSET_INCLUDE_DIR}")
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES})
+	    set_target_properties(${mfront_behaviour_library_name} PROPERTIES
+	      COMPILE_FLAGS "${ZSET_CPPFLAGS}")
+	    target_include_directories(${mfront_behaviour_library_name}
+	      SYSTEM PRIVATE "${ZSET_INCLUDE_DIR}")
+	    target_link_libraries(${mfront_behaviour_library_name}
+          PRIVATE ${TFEL_MFRONT_LIBRARIES})
       elseif(${interface} STREQUAL "generic")
-	target_link_libraries(${lib} PRIVATE ${TFEL_MFRONT_LIBRARIES})
+	    target_link_libraries(${mfront_behaviour_library_name}
+          PRIVATE ${TFEL_MFRONT_LIBRARIES})
       else(${interface} STREQUAL "generic")
 	message(FATAL_ERROR "mfront_behaviours_library : "
 	  "unsupported interface ${interface}")
       endif(${interface} STREQUAL "castem")
       foreach(link_library ${mfront_libraries})
-        target_link_libraries(${lib} PRIVATE ${link_library})
+        target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${link_library})
       endforeach(link_library ${mfront_libraries})
     else(nb_sources GREATER 0)
       message(STATUS "No sources selected for "
-	"library ${lib} for interface ${interface}")
+	"library ${mfront_behaviour_library_name} for interface ${interface}")
     endif(nb_sources GREATER 0)
   endforeach(interface)
 endfunction(mfront_behaviours_library)
@@ -220,6 +227,7 @@ function(add_mtest interface lib)
   set ( _MTEST_FILES )
   set ( _LIBRARY )
   set ( _REFERENCE_FILE )
+  set ( _TEST_INTERFACE)
   set ( _INTERFACE)
   set ( _MATERIAL_PROPERTIES_LIBRARIES )
   foreach ( _ARG ${ARGN})
@@ -252,7 +260,8 @@ function(add_mtest interface lib)
         set ( _BEHAVIOUR "--@behaviour@='${_ARG}'" )
         set ( _CMD TEST_NAME )
       elseif ( ${_CMD} MATCHES INTERFACE )
-        set ( _INTERFACE "--@interface@=${_ARG}" )
+        set ( _TEST_INTERFACE "${_ARG}")
+        set ( _INTERFACE "--@interface@=${_TEST_INTERFACE}" )
         set ( _CMD TEST_NAME )
       elseif ( ${_CMD} MATCHES REFERENCE_FILE )
         set ( _REFERENCE_FILE "--@reference_file@='${_ARG}'" )
@@ -277,6 +286,9 @@ function(add_mtest interface lib)
   endif(NOT _INTERFACE)
   foreach(_index RANGE _NB_TESTS)
     list(GET _TESTS ${_index} _TEST_NAME)
+    if(_TEST_INTERFACE)
+      set(_TEST_NAME "${_TEST_NAME}_${_TEST_INTERFACE}")
+    endif(_TEST_INTERFACE)
     list(GET _MTEST_FILES ${_index} _MTEST_FILE)
     if(CMAKE_CONFIGURATION_TYPES)
       foreach(conf ${CMAKE_CONFIGURATION_TYPES})
@@ -384,6 +396,13 @@ function(calculixmtest mat)
     add_mtest("calculix" ${lib} INTERFACE calculix ${ARGN})
   endif(MFM_CALCULIX_INTERFACE)
 endfunction(calculixmtest)
+
+function(genericmtest mat)
+  if(MFM_CALCULIX_INTERFACE)
+    set(lib "${mat}Behaviours-generic")
+    add_mtest("generic" ${lib} INTERFACE generic ${ARGN})
+  endif(MFM_CALCULIX_INTERFACE)
+endfunction(genericmtest)
 
 function(add_python_test interface lib)
   if(TFEL_PYTHON_BINDINGS)
