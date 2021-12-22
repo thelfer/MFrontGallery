@@ -1,0 +1,26 @@
+@Behaviour<generic> 'src/libBehaviour.so' 'SemiImplicitModifiedCamClay_OpenGeoSys2020';
+@ExternalStateVariable "Temperature" 293.15;
+@MaximumNumberOfSubSteps 1;
+
+@Parameter 'AmbientPressure' 1.0e3;
+
+@MaterialProperty<constant> 'PoissonRatio' 0.3;
+@MaterialProperty<constant> 'YoungModulus' 52e6;
+@MaterialProperty<constant> 'CriticalStateLineSlope' 1.2;
+@MaterialProperty<constant> 'SwellingLineSlope' 6.6e-3;
+@MaterialProperty<constant> 'VirginConsolidationLineSlope' 7.7e-2;
+
+@InternalStateVariable 'PreConsolidationPressure' 2.e5;
+@InternalStateVariable 'Porosity' 0.4407158836689038;
+@InternalStateVariable 'VolumeRatio' 1.788;
+
+
+@ImposedStress 'SXX' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SYY' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SZZ' {0 : 0., 0.02 : -2.0e5, 1: -5.87387e5};
+@Times {0.,1 in 200};
+
+//@OutputFile 'SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref';
+//@OutputFilePrecision 14;
+
+@Test<file> '@CMAKE_CURRENT_SOURCE_DIR@/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref' {'SZZ':10} 1.e-1; 
