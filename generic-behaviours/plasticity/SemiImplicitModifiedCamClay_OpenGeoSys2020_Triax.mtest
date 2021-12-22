@@ -1,6 +1,6 @@
+@MaximumNumberOfSubSteps 1;
 @Behaviour<@interface@> @library@ @behaviour@;
 @ExternalStateVariable "Temperature" 293.15;
-@MaximumNumberOfSubSteps 1;
 
 @Parameter 'AmbientPressure' 1.0e3;
 
