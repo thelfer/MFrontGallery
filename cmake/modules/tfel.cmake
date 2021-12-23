@@ -25,6 +25,8 @@ if(TFEL_FLAVOUR)
     HINTS "${TFELHOME}/bin")
   find_program(MFRONT_QUERY  mfront-query-${TFEL_FLAVOUR}
     HINTS "${TFELHOME}/bin")
+  find_program(MTEST mtest-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
   find_program(MFMTG mfm-test-generator-${TFEL_FLAVOUR}
     HINTS "${TFELHOME}/bin")
 else(TFEL_FLAVOUR)
@@ -37,6 +39,8 @@ else(TFEL_FLAVOUR)
   find_program(MFRONT_QUERY  mfront-query
     HINTS "${TFELHOME}/bin")
   find_program(MFMTG mfm-test-generator
+    HINTS "${TFELHOME}/bin")
+  find_program(MTEST mtest
     HINTS "${TFELHOME}/bin")
 endif(TFEL_FLAVOUR)
 

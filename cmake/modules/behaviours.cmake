@@ -342,13 +342,13 @@ function(add_mtest interface lib)
     endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest.in)    
 	foreach(rm ${IEEE754_ROUNDING_MODES})
 	  add_test(NAME ${_TEST_NAME}_${conf}_${rm}_mtest
-	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0
-                      --result-file-output=false
-                      --xml-output=true
-                      --@XMLOutputFile="${_TEST_NAME}_${conf}_${rm}_mtest.xml"
-                      ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
-                      ${_ACCELERATION_ALGORITHM} ${_STIFFNESS_MATRIX_TYPE}
-                      ${test_file}
+	    COMMAND ${MTEST} --rounding-direction-mode=${rm} --verbose=level0
+                         --result-file-output=false
+                         --xml-output=true
+                         --@XMLOutputFile="${_TEST_NAME}_${conf}_${rm}_mtest.xml"
+                         ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
+                         ${_ACCELERATION_ALGORITHM} ${_STIFFNESS_MATRIX_TYPE}
+                         ${test_file}
 	     CONFIGURATIONS ${conf})
        set_property(TEST ${_TEST_NAME}_${conf}_${rm}_mtest
          PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
@@ -370,13 +370,13 @@ function(add_mtest interface lib)
     endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FILE}.mtest.in)    
     foreach(rm ${IEEE754_ROUNDING_MODES})
 	  add_test(NAME ${_TEST_NAME}_${rm}_mtest
-	    COMMAND mtest --rounding-direction-mode=${rm} --verbose=level0 
-                      --xml-output=true
-                      --@XMLOutputFile="${_TEST_NAME}_${rm}_mtest.xml"
-                      --result-file-output=false
-                      ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
-                      ${_ACCELERATION_ALGORITHM} ${_STIFFNESS_MATRIX_TYPE}
-                      ${test_file})
+	    COMMAND ${MTEST} --rounding-direction-mode=${rm} --verbose=level0 
+                         --xml-output=true
+                         --@XMLOutputFile="${_TEST_NAME}_${rm}_mtest.xml"
+                         --result-file-output=false
+                         ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
+                         ${_ACCELERATION_ALGORITHM} ${_STIFFNESS_MATRIX_TYPE}
+                         ${test_file})
 	  set_property(TEST ${_TEST_NAME}_${rm}_mtest
 	    PROPERTY DEPENDS ${lib} ${_MATERIAL_PROPERTIES_LIBRARIES})
     endforeach(rm ${IEEE754_ROUNDING_MODES})
