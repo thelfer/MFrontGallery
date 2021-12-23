@@ -197,6 +197,15 @@ if(enable-aster)
   include(cmake/modules/aster.cmake)
 endif(enable-aster)
 
+option(enable-diana-fea   "generate DIANA-FEA interface for mechanical behaviours"  OFF)
+if(enable-diana-fea)
+  check_if_behaviour_interface_is_supported("dianafea")
+  set(MFM_DIANA_FEA_INTERFACE ON)
+  find_tfel_library(DianaFEAInterface)
+  set(mfront-behaviours-interfaces "dianafea" ${mfront-behaviours-interfaces})
+  include(cmake/modules/diana-fea.cmake)
+endif(enable-diana-fea)
+
 # europlexus
 option(enable-europlexus   "generate europlexus-interface for mechanical behaviours"  OFF)
 if(enable-europlexus)
