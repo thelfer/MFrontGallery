@@ -15,6 +15,7 @@ function(check_aster_compatibility mat search_paths source)
     # cohesive zone model, do nothing
   else(behaviour_type STREQUAL "1")
     # unsupported behaviour type
+    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
     set(file_OK OFF PARENT_SCOPE)
   endif(behaviour_type STREQUAL "1")    
 endfunction(check_aster_compatibility)

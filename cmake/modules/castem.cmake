@@ -16,6 +16,7 @@ function(check_castem_compatibility mat search_paths source)
   else(behaviour_type STREQUAL "1")
     # unsupported behaviour type
     set(file_OK OFF PARENT_SCOPE)
+    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
   endif(behaviour_type STREQUAL "1")    
 endfunction(check_castem_compatibility)
 

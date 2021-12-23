@@ -10,17 +10,23 @@ function(check_europlexus_compatibility mat search_paths source)
       ${mat} "${search_paths}" ${source} "--is-strain-measure-defined")
     if(behaviour_has_strain_measure STREQUAL "true")
       behaviour_query(behaviour_strain_measure
-	${mat} "${search_paths}" ${source} "--strain-measure")
+        ${mat} "${search_paths}" ${source} "--strain-measure")
       if(behaviour_strain_measure STREQUAL "Linearised")
-	# small strain behaviours are not supported, skipping
-	set(file_OK OFF PARENT_SCOPE)
+	    # small strain behaviours are not supported, skipping
+        set(compatibility_failure
+            "small strain behaviours are not supported" PARENT_SCOPE)
+	    set(file_OK OFF PARENT_SCOPE)
       endif(behaviour_strain_measure STREQUAL "Linearised")
     else(behaviour_has_strain_measure STREQUAL "true")
       # no strain measure defined, skipping
+      set(compatibility_failure
+          "small strain behaviours are not supported" PARENT_SCOPE)
       set(file_OK OFF PARENT_SCOPE)
     endif(behaviour_has_strain_measure STREQUAL "true")
   else(behaviour_type STREQUAL "2")
     # unsupported behaviour type
+    set(compatibility_failure
+        "unsupported behaviour type" PARENT_SCOPE)
     set(file_OK OFF PARENT_SCOPE)
   endif(behaviour_type STREQUAL "2")    
 endfunction(check_europlexus_compatibility)
