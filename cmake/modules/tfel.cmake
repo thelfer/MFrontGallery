@@ -16,16 +16,33 @@ else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
   add_definitions("-DTFEL_ARCH32")
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
-find_program(MFRONT       mfront
-  HINTS "${TFELHOME}/bin")
-find_program(TFEL_CHECK   tfel-check
-  HINTS "${TFELHOME}/bin")
-find_program(TFEL_CONFIG  tfel-config
-  HINTS "${TFELHOME}/bin")
-find_program(MFRONT_QUERY  mfront-query
-  HINTS "${TFELHOME}/bin")
-find_program(MFMTG        mfm-test-generator
-  HINTS "${TFELHOME}/bin")
+if(TFEL_FLAVOUR)
+  find_program(MFRONT mfront-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+  find_program(TFEL_CHECK tfel-check-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+  find_program(TFEL_CONFIG  tfel-config-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+  find_program(MFRONT_QUERY  mfront-query-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+  find_program(MTEST mtest-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+  find_program(MFMTG mfm-test-generator-${TFEL_FLAVOUR}
+    HINTS "${TFELHOME}/bin")
+else(TFEL_FLAVOUR)
+  find_program(MFRONT mfront
+    HINTS "${TFELHOME}/bin")
+  find_program(TFEL_CHECK tfel-check
+    HINTS "${TFELHOME}/bin")
+  find_program(TFEL_CONFIG  tfel-config
+    HINTS "${TFELHOME}/bin")
+  find_program(MFRONT_QUERY  mfront-query
+    HINTS "${TFELHOME}/bin")
+  find_program(MFMTG mfm-test-generator
+    HINTS "${TFELHOME}/bin")
+  find_program(MTEST mtest
+    HINTS "${TFELHOME}/bin")
+endif(TFEL_FLAVOUR)
 
 IF(NOT (TFEL_CONFIG AND MFRONT AND MFRONT_QUERY))
   MESSAGE(FATAL_ERROR "tfel not found")
@@ -98,9 +115,15 @@ else(TFEL_PYTHON_BINDINGS)
 endif(TFEL_PYTHON_BINDINGS)
   
 macro(find_tfel_library name)
-  find_library(${name}
-    NAMES ${name}
-    HINTS ${TFEL_LIBRARY_PATH})
+  if(TFEL_FLAVOUR)
+    find_library(${name}
+      NAMES ${name}-${TFEL_FLAVOUR}
+      HINTS ${TFEL_LIBRARY_PATH})
+  else(TFEL_FLAVOUR)
+    find_library(${name}
+      NAMES ${name}
+      HINTS ${TFEL_LIBRARY_PATH})
+  endif(TFEL_FLAVOUR)
   if(NOT ${name})
     MESSAGE(FATAL_ERROR "${name} library not found")
   endif(NOT ${name})
