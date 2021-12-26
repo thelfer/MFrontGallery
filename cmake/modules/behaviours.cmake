@@ -123,9 +123,9 @@ function(mfront_behaviours_library mat)
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}")
     foreach(source ${mfront_sources})
       if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	    list(APPEND ${mfront_behaviour_library_name}_SOURCES ${source})
+	list(APPEND ${mfront_behaviour_library_name}_SOURCES  "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
       else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	    add_mfront_behaviour_sources(${mfront_behaviour_library_name} ${mat} ${interface}
+	add_mfront_behaviour_sources(${mfront_behaviour_library_name} ${mat} ${interface}
                                      "${mfront_search_paths}" ${source})
       endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
     endforeach(source ${mfront_sources})
