@@ -14,6 +14,12 @@ if(NOT MSVC)
   list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES JohnsonCook_s)
 endif(NOT MSVC)
 
+if(enable-fortran-behaviours-wrappers)
+  list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES
+       umat_hcea.f
+       HypoplasticClayModelWrapper.mfront)
+endif(enable-fortran-behaviours-wrappers)
+
 mfront_behaviours_library(Plasticity
   ${MFRONT_BEHAVIOURS_PLASTICITY_SOURCES})
 
