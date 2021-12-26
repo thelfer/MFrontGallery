@@ -21,6 +21,7 @@ function(check_abaqus_compatibility mat search_paths source)
   else(behaviour_type STREQUAL "2")
     # unsupported behaviour type
     set(file_OK OFF PARENT_SCOPE)
+    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
   endif(behaviour_type STREQUAL "2")    
 endfunction(check_abaqus_compatibility)
 

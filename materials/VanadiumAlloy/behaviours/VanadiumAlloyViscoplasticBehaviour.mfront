@@ -1,11 +1,11 @@
 @Parser    MultipleIsotropicMisesFlows;
 @Material  VanadiumAlloy;
 @Behaviour ViscoplasticBehaviour;
-@Author    É. Brunon;
+@Author    Ã‰. Brunon;
 @Date      26/06/09;
 
 @ElasticMaterialProperties {"VanadiumAlloy_YoungModulus_SRMA.mfront",
-    "VanadiumAlloy_PoissonRatio_SRMA.mfront"};
+                            "VanadiumAlloy_PoissonRatio_SRMA.mfront"};
 
 @Parameter A0 = 14.e-30;
 @Parameter T0 = 4.1722e+04;

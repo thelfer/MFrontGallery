@@ -79,6 +79,26 @@ function(get_mfront_behaviour_library_name mat interface)
   set(mfront_behaviour_library_name ${lib} PARENT_SCOPE)
 endfunction(get_mfront_behaviour_library_name)
 
+function(generate_mfront_doc search_paths mfront_file)
+  get_filename_component(directory ${mfront_file} DIRECTORY)
+  get_filename_component(raw_file ${mfront_file} NAME_WE)
+  set(markdown_file "${CMAKE_CURRENT_BINARY_DIR}/${raw_file}.md")
+  set(html_file "${CMAKE_CURRENT_BINARY_DIR}/${raw_file}.html")
+  set(mfront_doc_args "${search_paths}")
+  if(MFRONT_DOC_HAS_STANDALONE_OPTION)
+    list(APPEND mfront_doc_args "--standalone")
+  endif(MFRONT_DOC_HAS_STANDALONE_OPTION)
+  add_custom_command(
+      OUTPUT    ${markdown_file}
+      DEPENDS   ${mfront_file}
+      COMMAND   ${MFRONT_DOC}
+      ARGS      ${mfront_doc_args}
+      ARGS      ${mfront_file})
+  add_custom_target(${raw_file}-md ALL DEPENDS ${markdown_file})
+  add_dependencies(doc ${raw_file}-md)
+  pandoc_html_base(${raw_file} ${markdown_file} ${html_file} "--toc")
+endfunction(generate_mfront_doc)
+
 function(mfront_behaviours_library mat)
   parse_mfront_library_sources(${ARGN})
   list(APPEND mfront_search_paths 
@@ -87,16 +107,26 @@ function(mfront_behaviours_library mat)
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours")
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models")
+  foreach(source ${mfront_sources})
+    set(mfront_file)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront.in")
+      set(mfront_file "${CMAKE_CURRENT_BINARY_DIR}/${source}.mfront")
+    elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
+      set(mfront_file "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront.in")
+    if(mfront_file)
+      generate_mfront_doc("${mfront_search_paths}" ${mfront_file})
+    endif()
+  endforeach()
   foreach(interface ${mfront-behaviours-interfaces})
     get_mfront_behaviour_library_name(${mat} ${interface})
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}")
     foreach(source ${mfront_sources})
       if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	set(${mfront_behaviour_library_name}_SOURCES ${source} ${${mfront_behaviour_library_name}_SOURCES})
+	    list(APPEND ${mfront_behaviour_library_name}_SOURCES ${source})
       else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
-	  add_mfront_behaviour_sources(${mfront_behaviour_library_name} ${mat} ${interface}
-                                   "${mfront_search_paths}"
-                                   ${source})
+	    add_mfront_behaviour_sources(${mfront_behaviour_library_name} ${mat} ${interface}
+                                     "${mfront_search_paths}" ${source})
       endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
     endforeach(source ${mfront_sources})
     list(LENGTH ${mfront_behaviour_library_name}_SOURCES nb_sources)
