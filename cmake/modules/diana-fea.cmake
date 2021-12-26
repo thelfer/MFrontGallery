@@ -1,14 +1,25 @@
-set(ANSYS_CPPFLAGS)
-function(check_ansys_compatibility mat search_paths source)
+set(DIANA_FEA_CPPFLAGS)
+function(check_diana_fea_compatibility mat search_paths source)
   behaviour_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
-    # strain based behaviour, do nothing
+    # strain based behaviour, check if isotropic
+    behaviour_query(behaviour_symmetry
+      ${mat} "${search_paths}" ${source} "--symmetry")
+    if(behaviour_symmetry STREQUAL "0")
+      # do nohing
+    else()
+      # orthotropic behaviour are not supported
+      set(compatibility_failure
+          "orthotropic behaviours are not supported" PARENT_SCOPE)
+      set(file_OK OFF PARENT_SCOPE)      
+    endif()
   elseif(behaviour_type STREQUAL "2")
-    # finite strain behaviour, do nothing
+    set(file_OK OFF PARENT_SCOPE)
   else(behaviour_type STREQUAL "1")
     # unsupported behaviour type
-    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
+    set(compatibility_failure
+        "finite strain behaviours are not supported" PARENT_SCOPE)
     set(file_OK OFF PARENT_SCOPE)
   endif(behaviour_type STREQUAL "1")    
   if(file_OK)
@@ -18,6 +29,8 @@ function(check_ansys_compatibility mat search_paths source)
     separate_arguments(modelling_hypotheses)
     list(LENGTH modelling_hypotheses nb_modelling_hypotheses)
     if(nb_modelling_hypotheses EQUAL 0)
+      set(compatibility_failure
+          "no modelling hypothesis defined" PARENT_SCOPE)
       set(file_OK OFF PARENT_SCOPE)
     endif(nb_modelling_hypotheses EQUAL 0)
     set(_external_state_variable_test OFF)
@@ -38,9 +51,8 @@ function(check_ansys_compatibility mat search_paths source)
       set(file_OK OFF PARENT_SCOPE)
     endif()
   endif(file_OK)
-endfunction(check_ansys_compatibility)
+endfunction(check_diana_fea_compatibility)
 
-function(getAnsysBehaviourName name)
-  string(TOUPPER "${name}" uname)
-  set(lib "${uname}ANSYSBEHAVIOURS" PARENT_SCOPE)
-endfunction(getAnsysBehaviourName)
+function(getDianaFEABehaviourName mat)
+  set(lib "${mat}DianaFEABehaviours" PARENT_SCOPE)
+endfunction(getDianaFEABehaviourName)

@@ -1,5 +1,7 @@
-pandoc_html(index)
-pandoc_html(OrthotropicGeneralizedMaxwell)
+pandoc_html(index "--number-sections")
+pandoc_html(install "--toc")
+pandoc_html(cmake-infrastructure "--toc")
+pandoc_html(OrthotropicGeneralizedMaxwell.md "--toc")
 
 if(MFM_APPEND_SUFFIX)
   install(DIRECTORY js css img

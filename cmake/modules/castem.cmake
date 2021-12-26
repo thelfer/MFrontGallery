@@ -4,9 +4,9 @@ option(enable-castem-pleiades "use a pleiades version of castem" OFF)
 find_path(CASTEM_HEADER castem.h
     HINTS ${TFEL_INCLUDE_PATH})
 
-function(check_castem_compatibility mat source)
+function(check_castem_compatibility mat search_paths source)
   behaviour_query(behaviour_type
-    ${mat} ${source} "--type")
+    ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing
   elseif(behaviour_type STREQUAL "2")
@@ -16,6 +16,7 @@ function(check_castem_compatibility mat source)
   else(behaviour_type STREQUAL "1")
     # unsupported behaviour type
     set(file_OK OFF PARENT_SCOPE)
+    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
   endif(behaviour_type STREQUAL "1")    
 endfunction(check_castem_compatibility)
 

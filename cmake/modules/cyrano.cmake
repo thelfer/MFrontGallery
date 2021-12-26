@@ -13,11 +13,17 @@ function(check_cyrano_compatibility mat search_paths source)
   list(FIND modelling_hypotheses "AxisymmetricalGeneralisedPlaneStress"
     agpstress)
   if((agpstress EQUAL -1) AND (agpstrain EQUAL -1))
+    set(msg "behaviour does not support any of the ")
+    set(msg "${msg} 'AxisymmetricalGeneralisedPlaneStrain' or ")
+    set(msg "${msg} 'AxisymmetricalGeneralisedPlaneStress modelling' hypothesis")
+    set(compatibility_failure "${msg}" PARENT_SCOPE)
     set(file_OK OFF PARENT_SCOPE)
   else((agpstress EQUAL -1) AND (agpstrain EQUAL -1))
     behaviour_query(behaviour_type
       ${mat} "${search_paths}" ${source} "--type")
     if(NOT (behaviour_type STREQUAL "1"))
+      set(compatibility_failure
+          "only strain-based behaviours are supported" PARENT_SCOPE)
       set(file_OK OFF PARENT_SCOPE)
     else(NOT (behaviour_type STREQUAL "1"))
       behaviour_query(behaviour_has_strain_measure
@@ -28,6 +34,8 @@ function(check_cyrano_compatibility mat search_paths source)
 	if(behaviour_strain_measure STREQUAL "Linearised")
     elseif(behaviour_strain_measure STREQUAL "Hencky")
 	else(behaviour_strain_measure STREQUAL "Linearised")
+      set(compatibility_failure
+          "unsupported strain measure '${behaviour_strain_measure}'" PARENT_SCOPE)
 	  set(file_OK OFF PARENT_SCOPE)
 	endif(behaviour_strain_measure STREQUAL "Linearised")
       endif(behaviour_has_strain_measure STREQUAL "true")
