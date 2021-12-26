@@ -93,11 +93,17 @@ studies:
   which use different solvers. From the same `MFront` source file, the
   `MFrontGallery` can generate shared libraries for all the solvers of
   interest.
+- **Maintainability over decades**: Some safety critical studies can be
+  used to desing buildings, plants, systems for decades. Over such
+  periods of time, both the solvers and the material knowledge may
+  evolve.
 - **Continuous integration and unit testing**: Each implementation has
   associated unit tests with can check no-regression during the
   development of `MFront`.
 - **Documentation**: the project can generate the documentation
   associated with the various implementations.
+
+
 
 # Implementations available {#sec:mfm:introduction:implementations}
 
