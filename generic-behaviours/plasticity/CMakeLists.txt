@@ -17,7 +17,7 @@ endif(NOT MSVC)
 if(enable-fortran-behaviours-wrappers)
   list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES
        umat_hcea.f
-       HypoplasticClayModelWrapper.mfront)
+       HypoplasticClayModelWrapper_Masin)
 endif(enable-fortran-behaviours-wrappers)
 
 mfront_behaviours_library(Plasticity

@@ -1,6 +1,6 @@
 @DSL Default;
-@Behaviour HypoplasticClayModelWrapper;
-@Author Thomas Helfer;
+@Behaviour HypoplasticClayModelWrapper_Masin;
+@Author Thomas Helfer, Éric Simo;
 @Date 11 / 02 / 2021;
 
 @ModellingHypothesis Tridimensional;
@@ -59,7 +59,7 @@
   AbaqusRealType ddsddt[6];
   AbaqusRealType drplde[6];
   AbaqusRealType drpldt;
-  AbaqusRealType time[2];
+  AbaqusRealType time_values[2];
   AbaqusRealType pred[1] = {0};
   AbaqusRealType dpred[1] = {0};
   AbaqusRealType coords[3] = {0, 0, 0};
@@ -79,7 +79,7 @@
       &K(0, 0), /* tangent operator         */
       &sse, &spd, &scd, &rpl, ddsddt, drplde, &drpldt, e, /* strain tensor    */
       de,                                                 /* strain increment */
-      time,                                               //
+      time_values,                                               //
       &dt,                                                /* time increment   */
       &T,                                                 /* temperature      */
       &dT,                       /* temperature increment    */
