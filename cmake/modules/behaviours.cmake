@@ -145,6 +145,10 @@ function(mfront_behaviours_library mat)
       target_include_directories(${mfront_behaviour_library_name}
         PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
         PRIVATE "${TFEL_INCLUDE_PATH}")
+      if(mfront_include_directories)
+        target_include_directories(${mfront_behaviour_library_name}
+          PRIVATE ${mfront_include_directories})
+      endif()
       if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
         target_include_directories(${mfront_behaviour_library_name}
           PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
