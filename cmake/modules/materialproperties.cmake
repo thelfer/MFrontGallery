@@ -20,6 +20,11 @@ function(mfront_properties_standard_library2 lib mat interface)
   foreach(source ${mfront_sources})
     add_mfront_property_source(${lib} ${mat} ${interface} "${mfront_search_paths}" ${source})
   endforeach(source)
+  set(mfront_args)
+  list(APPEND mfront_args "--interface=${interface}")
+  if(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+    list(APPEND mfront_args "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"

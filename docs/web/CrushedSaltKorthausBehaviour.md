@@ -3,8 +3,6 @@ title: Implementation of the Korthaus' behaviour for crushed salt
 author: Thomas Helfer, Éric Simo, Christian Lerch
 date: 17/11/2021
 lang: en-EN
-toc: true
-numbersections: true
 link-citations: true
 colorlinks: true
 figPrefixTemplate: "$$i$$"
@@ -15,13 +13,6 @@ abstract: |
   This paper is dedicated to the implementation a porous visco-plastic
   behaviour for crushed salt proposed by Korthaus based on the work of
   Heim et al.
-geometry:
-- paper=a4paper
-- margin=2cm
-header-includes:
-- \usepackage{tcolorbox}
-- \newtcolorbox{myquote}{colframe=gray}
-- \renewenvironment{quote}{\begin{myquote}}{\end{myquote}}
 ---
 
 \newcommand{\dtot}{\mathrm{d}}
