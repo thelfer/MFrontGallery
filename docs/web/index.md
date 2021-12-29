@@ -252,9 +252,11 @@ However, this approach still has severe drawbacks:
 
 ### Solution based on user-defined subroutines
 
- - can be self-contained in the above sense
- - version compatibility issues (solver release, compilers)
- - use in another solver typically requires re-implementation (Hypela2, ...)
+ - can be either generic or self-contained in the above sense
+ - often outdated interfaces or languages, very solver-specific
+ - information transfer limited by what the interface provides
+ - version compatibility issues (solver release that changed an interface, compilers)
+ - use of the model in another solver typically requires re-implementation (Hypela2, ...)
 
 ### Conclusions
 
