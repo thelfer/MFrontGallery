@@ -16,10 +16,10 @@ a typical usage of the project is divided in four steps (common to most
 `cmake` projects):
 
 - **Configuration**, which allows to select the interfaces to be used.
-- **Compilation**, which builds the shared libraries associated wit the
+- **Compilation**, which builds the shared libraries associated with the
   selected interfaces.
-- **Unit testing**, which allows to verify that no regression occured.
-- **Installation**, which can deploy the build shared libraries.
+- **Unit testing**, which allows to verify that no regression has occured.
+- **Installation**, which can deploy the built shared libraries.
 
 # Cloning the `master` branch of the `MFrontGallery` project
 
@@ -33,7 +33,9 @@ $ git clone https://github.com/thelfer/MFrontGallery
 # Configuration
 
 The sources are assumed to be in the `MFrontGallery` directory. While
-not strictly required, it is convienient to create a `build` directory:
+not strictly required, it is convienient to create a `build` directory
+(the example assumes it to be at the same level as the `MFrontGallery`
+directory):
 
 ~~~~{.bash}
 $ mkdir build

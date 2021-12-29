@@ -16,7 +16,7 @@ eqnPrefixTemplate: "($$i$$)"
 The `MFrontMaterials` project is developped by CEA, EDF and Framatome a
 part of the `PLEAIDES` platform
 [@plancq_pleiades_2004;@marelle_new_2016]. It is dedicated to the
-material knowledge management of fuel performance codes developped in
+material knowledge management of fuel performance codes developed in
 this platform. As it contains valuable and sensitive material data, the
 `MFrontMaterials` has a restricted access.
 

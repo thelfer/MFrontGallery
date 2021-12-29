@@ -33,7 +33,7 @@ $ git checkout MFrontGallery/master -- cmake
 
 # Top-level `CMakeLists.txt` file
 
-The next step consist in creating a top level `CMakeLists.txt` file.
+The next step consist of creating a top level `CMakeLists.txt` file.
 Here is a minimal example:
 
 ~~~~{.cmake}
