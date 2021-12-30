@@ -24,7 +24,7 @@ elseif(MFM_PANDOC_CROSSREF)
   message(STATUS "pandoc-crossref: not found")
 endif(MFM_PANDOC_CROSSREF)
 
-function(pandoc_html_base file markdown_file html_file)
+function(pandoc_html_base target markdown_file html_file)
   if(MFM_PANDOC)
     set(pandoc_args)
     list(APPEND pandoc_args "-f" "markdown-markdown_in_html_blocks+tex_math_single_backslash+grid_tables")
@@ -57,8 +57,8 @@ function(pandoc_html_base file markdown_file html_file)
       ARGS      ${pandoc_args}
       ARGS      ${ARGN}
       ARGS      ${markdown_file} -o ${html_file})
-    add_custom_target(${file}-html ALL DEPENDS ${html_file})
-    add_dependencies(website ${file}-html)
+    add_custom_target(${target}-html ALL DEPENDS ${html_file})
+    add_dependencies(website ${target}-html)
     if(MFM_APPEND_SUFFIX)
       install(FILES ${html_file}
         DESTINATION share/doc/mfm-${MFM_SUFFIX}/web

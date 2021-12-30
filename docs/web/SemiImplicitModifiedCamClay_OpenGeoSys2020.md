@@ -1,5 +1,5 @@
 ---
-title: Implementation of the modified Cam Clay model in MFront/OpenGeoSys
+title: Implementation of the modified Cam Clay. Tests in MTest and OpenGeoSys
 author: Christian Silbermann, Thomas Nagel
 date: 18/12/2021
 lang: en-EN
@@ -420,8 +420,8 @@ new porosity value using the relation
 # Implementation into `MFront`
 
 For the `MFront` implementation the domain specific language (DSL)
-`Implicit` was used, cf. [@Helfer2015;Marois2020]. The coupling to
-`OpenGeoSys` [@Kolditz2012a;Bilke2019] is done using `MGIS`
+`Implicit` was used, cf. [@Helfer2015;@Marois2020]. The coupling to
+`OpenGeoSys` [@Kolditz2012a;@Bilke2019] is done using `MGIS`
 [@Helfer2020]. The implementation is part of the `OpenGeoSys` source
 code, cf. <https://gitlab.opengeosys.org>.
 
@@ -563,7 +563,7 @@ to $1\,$s. The material parameters were taken from
 Table @tbl:matParaCamClay with only one difference: As the test has
 no pre-consolidation phase, it is starting from zero stress and due to
 the reasons explained in Section @sec:stabilization some small initial
-ambient pressure $p_\text{amb}=1\cdot10^{3}$\,Pa was added.
+ambient pressure $p_{\text{amb}}=1\cdot10^{3}$\,Pa was added.
 
 \footnote{If the test is stress-controlled and the material is initially
 on the critical state with zero stress, this causes an infinite strain
@@ -648,18 +648,21 @@ elements. At the left and bottom boundaries symmetry BCs of Dirichlet
 type are prescribed. The top and right boundaries are loaded by
 prescribing an axial and a confining pressure $p_{\text{con}}$,
 respectively. The loading consists of two stages, similar to
-\autoref{sec:mtestResults}: iI) a linear ramp until a hydrostatic stress
-state with $p=p_{\text{con}}=200\,$kPa is reached (with an OCR=$1$) and
-ii) a further increase of the axial pressure while the confining
-pressure $p_{\text{con}}$ is held constant. As the simulation time is
-irrelevant it is again set to $1\,$s. The material parameters are taken
-from \autoref{tab:matParaCamClayTriax}.
+Section @sec:mtestResults:
 
-+-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------+
-| $E (Pa)$        | $\nu$ | $M$   | $\lambda$              | $\kappa$               | $\phi_0$ | $p_\c0 (Pa)      | $p_\textamb (Pa)$ |
-+:===============:+:=====:+:=====:+:======================:+:======================:+:========:+:================:+:=================:+
-| $52\cdot10^{6}$ | $0.3$ | $1.2$ | $7.7\cdot10^{\minus2}$ | $6.6\cdot10^{\minus3}$ | $0.44$   | $200\cdot10^{3}$ | $1\cdot10^{3}$    |
-+-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------+
+1. a linear ramp until a hydrostatic stress state with
+  $p=p_{\text{con}}=200\,$kPa is reached (with an OCR=$1$)
+2. a further increase of the axial pressure while the confining pressure
+  $p_{\text{con}}$ is held constant.
+
+As the simulation time is irrelevant it is again set to $1\,$s. The
+material parameters are taken from \autoref{tab:matParaCamClayTriax}.
+
++-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------------+
+| $E (Pa)$        | $\nu$ | $M$   | $\lambda$              | $\kappa$               | $\phi_0$ | $p_\c0 (Pa)      | $p_{\text{amb}}$  (Pa)$ |
++:===============:+:=====:+:=====:+:======================:+:======================:+:========:+:================:+:=======================:+
+| $52\cdot10^{6}$ | $0.3$ | $1.2$ | $7.7\cdot10^{\minus2}$ | $6.6\cdot10^{\minus3}$ | $0.44$   | $200\cdot10^{3}$ | $1\cdot10^{3}$          |
++-----------------+-------+-------+------------------------+------------------------+----------+------------------+-------------------------+
 
 : Material parameters for the basic modified Cam clay model {#tbl:matParaCamClayTriax}
 
@@ -671,37 +674,27 @@ stress-controlled test and no convergence can be expected. The tendency
 can already be seen in Figure @fig:triaxStressStrain with the steep
 increase of the equivalent plastic strain.
 
-\begin{figure}[h!]\centering
-  \includegraphics[width=0.4\textwidth]{pdf/TriaxCamClay_StressControl_ux.png}\vspace{10mm}
-  \includegraphics[width=0.4\textwidth]{pdf/TriaxCamClay_StressControl_uy.png}
-  \caption{Triaxial benchmark results: shown are the displacement coefficients in the radial (here $x$) and the vertical (here $y$) direction. }\label{fig:triaxDisplacement}
-\end{figure}
+![Triaxial benchmark results: shown are the displacement coefficients in
+the radial (here $x$) and the vertical (here $y$)
+direction.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/TriaxCamClay_StressControl_Displacements.svg){#fig:triaxDisplacement  width=90%}
 
 The curve of the pre-consolidation pressure (cf. Figure
 @fig:triaxStressStrain top) shows monotonic hardening related to the
 plastic compaction (cf. Figure @fig:triaxStressStrain bottom).
 
-\begin{figure}[h!]
-  \includegraphics[width=0.52\textwidth]{pdf/TriaxCamClay_StressControl_StressCurves.png}
-  \includegraphics[width=0.52\textwidth]{pdf/TriaxCamClay_StressControl_StrainCurves.png}
-  \caption{Triaxial benchmark results: shown is the evolution of stress (`left`, unit Pa) and strain measures (`right`) at some arbitrary integration point.}\label{fig:triaxStressStrain}
-\end{figure}
+![Triaxial benchmark results: shown is the evolution of stress (`top`, unit Pa) and strain measures (`bottom`) at some arbitrary integration point.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/TriaxCamClay_StressControl_StressStrainCurves.svg){#fig:triaxStressStrain width=90%}
 
-\begin{figure}[h!]\centering
-  \includegraphics[width=1.0\textwidth]{pdf/TriaxCamClay_StressControl_Trajectory.png}
-  \caption{Triaxial benchmark results: depicted is the stress trajectory and the evolving yield surface as well as the CSL.}\label{fig:triaxStressTrajectory}
-\end{figure}
+![Triaxial benchmark results: depicted is the stress trajectory and the evolving yield surface as well as the CSL.](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/TriaxCamClay_StressControl_Trajectory.png){#fig:triaxStressTrajectory width=90%}
 
 In order to check the accuracy of the numerical results, they were
 compared to an analytical solution [@Peric2006] for proportional
 loading. For this, the straight stress path from $(q=0,
-p=p_{\text{con}})$ until the final state is considered (cf.
-\autoref{fig:triaxStressTrajectory}). The plot of the von-Mises stress
-over the corresponding equivalent strain defined by
-$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\
-\tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ shows accurate
-agreement between numerical and analytical solution (cf. also the
-appendix). Minor deviations might arise from the assumption
+p=p_{\text{con}})$ until the final state is considered (cf. Figure
+@fig:triaxStressTrajectory). The plot of the von-Mises stress over the
+corresponding equivalent strain defined by $\varepsilon_{\text{q}}^2=
+{\tfrac{2}{3}\ \tensor\varepsilon^\D\ppkt\tensor\varepsilon^\D}$ shows
+accurate agreement between numerical and analytical solution (cf. also
+the appendix). Minor deviations might arise from the assumption
 \eqref{eq:evolutionP} [@Peric2006], whereas a constant bulk modulus
 according to Eq. \eqref{eq:constK} was applied here. Considering the
 radial and circumferential strains another peculiarity is found (cf.
@@ -711,11 +704,10 @@ increasing axial compression this necessarily turns into expansion. Note
 also that for this \emph{numerical} test the magnitude of the strains is
 beyond the scope of the linear strain measure.
 
-\begin{figure}[h!]
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_TriaxStudy_Strains.pdf}
-  \includegraphics[width=0.52\textwidth]{pdf/ModCamClay_TriaxStudy_NumVsAnal.pdf}
-  \caption{Triaxial benchmark results: depicted are the strain trajectories (`left`) and a comparison between analytical and numerical solution (`right`).}\label{fig:triaxStressStrains}
-\end{figure}
+![Triaxial benchmark results: depicted are the strain trajectories
+(`top`) and a comparison between analytical and numerical solution
+(`bottom`).](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/ModCamClay_TriaxStudy.svg){#fig:triaxStressStrains
+width=90%}
 
 As an alternative the test can, of course, also be conducted
 displacement-controlled. However, in doing so it was found that the
@@ -744,18 +736,25 @@ considered in the future [@Borja1998;@Callari1998].
 
 # Appendix
 
-\subsection*{Numerical convergence behavior of the modified Cam clay implementation}
+## Numerical convergence behavior of the modified Cam clay implementation
 
-In order to check the convergence rate of the Cam clay implementation the consolidated shear test from Section~\ref{sec:mtestResults} was considered again. The parameters were taken from \autoref{tab:matParaCamClay}. The hydrostatic pressure $p$ was increased until $0.66\,p_{\c0}$ resulting in an OCR of $1.5$. From this hydrostatic stress state, shear is applied up to the strain $\varepsilon_{xy}=5\cdot10^{-4}$ within $20$ time steps.
+In order to check the convergence rate of the Cam clay implementation
+the consolidated shear test from Section~\ref{sec:mtestResults} was
+considered again. The parameters were taken from
+Table @tbl:matParaCamClay. The hydrostatic pressure $p$ was increased
+until $0.66\,p_{\c0}$ resulting in an OCR of $1.5$. From this
+hydrostatic stress state, shear is applied up to the strain
+$\varepsilon_{xy}=5\cdot10^{-4}$ within $20$ time steps.
 
-\begin{figure}[h!]%\centering
-  \includegraphics[width=1.04\textwidth]{pdf/convergence_plot.pdf}
-  \caption{Convergence plot: depicted is the norm of the residuals from the global iteration (colored) and the local iteration (grey) using the modified Cam clay `MFront` implementation and `MTest`. Within the first $12$ steps the behavior is purely elastic (`top`), followed by contractant plastic flow (`bottom`).}\label{fig:convergencePlot}
-\end{figure}
+![Convergence plot: depicted is the norm of the residuals from the
+global iteration (colored) and the local iteration (grey) using the
+modified Cam clay `MFront` implementation and `MTest`. Within the first
+$12$ steps the behavior is purely elastic (`top`), followed by
+contractant plastic flow
+(`bottom`).](img/SemiImplicitModifiedCamClay_OpenGeoSys2020/convergence_plot.svg){#fig:convergencePlot
+width=90%}
 
-%with slight hardening (compaction)
-
-As can be seen in \autoref{fig:convergencePlot}, convergence is achieved
+As can be seen in Figure @fig:convergencePlot, convergence is achieved
 in one step in the elastic stage (`top`). In the plastic stage
 (`bottom`), the typical acceleration of convergence when approaching the
 solution is observed (asymptotic quadratic convergence). However, the
@@ -763,9 +762,11 @@ convergence depends on the plastic flow behavior dictated by the
 parameters $M$, $\lambda\minus\kappa$ and $p_{\c0}$ and can reduce to
 super-linear (order $\in [1,2]$).
 
-\subsection*{Orthotropic modified Cam clay model implementation}
+## Orthotropic modified Cam clay model implementation
 
-The implementation of the modified Cam clay model can be extended to orthotropic elastic behavior using the so-called standard bricks within `MFront`. Thus just one line of code need to be added:
+The implementation of the modified Cam clay model can be extended to
+orthotropic elastic behavior using the so-called standard bricks within
+`MFront`. Thus just one line of code need to be added:
 
 ~~~~{.cxx}
 @Brick StandardElasticity;
@@ -787,7 +788,7 @@ M.setEntryName("CriticalStateLineSlope");
 However, from the physical point of view it might be more realistic to
 consider the anisotropy both for the elastic and plastic behavior.
 
-\subsection*{Analytical expressions for porosity and pre-consolidation pressure evolution}
+## Analytical expressions for porosity and pre-consolidation pressure evolution
 
 Given is the evolution equation for the porosity:
 
@@ -816,10 +817,9 @@ Combining \eqref{eq:totalEvolutionPhi} with \eqref{eq:evolutionPc} finally yield
   \dot{p}_\c = -\frac{\dot{\varepsilon}_\p^\text{V} p_\c}{(\lambda - \kappa)(1-{}^{0}\!\phi) \exp(\minus\varepsilon^\text{V})}  \ .
 \]
 
-\subsection*{Analytical solution of the Cam clay model for proportional loading}
+## Analytical solution of the Cam clay model for proportional loading
 
 A straight stress path from $(p,q)=(0, p_{\c0})$ until the final state $(p,q)=(387387, 330129)\ $Pa is considered:
-%(cf. \autoref{fig:triaxStressTrajectory}). the von-Mises stress $q$ over
 \[
     q = k\,(p-p_{\c0}) \ .
 \]
@@ -841,7 +841,5 @@ and $\alpha = 3(1-2\nu) / (2(1+\nu))$ it is
                                           \cdot\left(1+\frac{q}{Mp}\right)^{\frac{Ck}{M(M+k)}}\right]
                                           - 2 \frac{C}{M}\arctan\left(\frac{q}{Mp}\right)\ .
 \end{align}
-
--->
 
 # References

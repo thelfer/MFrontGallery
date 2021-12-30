@@ -302,6 +302,7 @@ endmacro(install_mfront)
 #
 # - mfront_sources: list of sources
 # - mfront_search_paths: search paths
+# - mfront_include_directories: include directories
 # - mfront_link_libraries: list of link libraries
 function(parse_mfront_library_sources )
   set ( _CMD SOURCES )
@@ -309,13 +310,6 @@ function(parse_mfront_library_sources )
   set ( _INCLUDE_DIRECTORIES )
   set ( _LINK_LIBRARIES )
   set ( _SEARCH_PATHS )
-  if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
-    set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities}")
-  else((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
-    set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities};${TFELPhysicalConstants}")
-  endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
   foreach ( _ARG ${ARGN})
     if ( ${_ARG} STREQUAL "SOURCES" )
       set ( _CMD SOURCES )
