@@ -8,7 +8,8 @@ set(MFRONT_BEHAVIOURS_PLASTICITY_SOURCES
   DruckerPerfectPlasticity_Cazacu2001
   OrthotropicDruckerPerfectPlasticity2090T3_Cazacu2001
   OrthotropicDruckerPerfectPlasticityYdLin6016T4_Cazacu2001
-  DruckerPragerCap)
+  DruckerPragerCap
+  SemiImplicitModifiedCamClay_OpenGeoSys2020)
 
 if(NOT MSVC)
   list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES JohnsonCook_s)
@@ -18,3 +19,31 @@ mfront_behaviours_library(Plasticity
   ${MFRONT_BEHAVIOURS_PLASTICITY_SOURCES})
 
 astermtest(Plasticity asteriwan)
+#
+castemmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR umatsemiimplicitmodifiedcamclay_opengeosys2020
+  STIFFNESS_MATRIX_TYPE ConsistentTangentOperator
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+castemmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR umatsemiimplicitmodifiedcamclay_opengeosys2020
+  ACCELERATION_ALGORITHM Cast3M
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+astermtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR astersemiimplicitmodifiedcamclay_opengeosys2020
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+abaqusmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR SEMIIMPLICITMODIFIEDCAMCLAY_OPENGEOSYS2020_3D
+  STIFFNESS_MATRIX_TYPE ConsistentTangentOperator
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+ansysmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR SemiImplicitModifiedCamClay_OpenGeoSys2020_3D
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+dianafeamtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR SemiImplicitModifiedCamClay_OpenGeoSys2020
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+#calculixmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+#  BEHAVIOUR SEMIIMPLICITMODIFIEDCAMCLAY_OPENGEOSYS2020
+#  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+genericmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
+  BEHAVIOUR SemiImplicitModifiedCamClay_OpenGeoSys2020
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
