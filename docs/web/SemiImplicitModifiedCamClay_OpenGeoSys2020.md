@@ -35,7 +35,7 @@ abstract: |
 \newcommand{\e}{\text{e}}
 \newcommand{\p}{\text{p}}
 \newcommand{\with}{\text{with}}
-\newcommand{\trace}{\mathrm{trace}}
+\newcommand{\trace}{\mathrm{tr}}
 \newcommand{\divergence}{\mathrm{div}}
 \newcommand{\minus}{-}
 \newcommand{\inv}{{-1}}
@@ -73,7 +73,7 @@ strain tensor reading
 
 The generalized Hooke's law relates elastic strains with stresses as
 \[
-  \tensor\sigma = \tensor{D}\ppkt\tensor\varepsilon_\e \ .
+  \tensor\sigma = \tensorf{D}\ppkt\tensor\varepsilon_\e \ .
 \]
 
 Splitting the stress tensor\footnote{In soil mechanics, this would be
@@ -116,7 +116,7 @@ The following set of equations fully describes the basic modified Cam
 clay model. Elasticity is
 
 \[\label{eq:linearElasticity}
-  \tensor\sigma = \tensor{D}\ppkt\left(\tensor\varepsilon - \tensor\varepsilon_\p \right) \ .
+  \tensor\sigma = \tensorf{D}\ppkt\left(\tensor\varepsilon - \tensor\varepsilon_\p \right) \ .
 \]
 
 Then, the \emph{modified} Cam clay yield function with the parameters
@@ -230,7 +230,7 @@ With this, the discretized set of equations has the form
 
 \[\label{eq:incrementalSystem}
 \begin{align}
-  \tensor{D}_{\!\varepsilon_\e} &= \varDelta\tensor\varepsilon_\e + \varDelta\varLambda_p\ \tensor{n} - \varDelta\tensor\varepsilon = \tensor0 \ ,\\
+  \tensor{f}_{\!\varepsilon_\e} &= \varDelta\tensor\varepsilon_\e + \varDelta\varLambda_p\ \tensor{n} - \varDelta\tensor\varepsilon = \tensor0 \ ,\\
   f_{\!\varLambda_p} &= q^2 + M^2(p^2 - p\,p_\c) = 0 \ , \label{eq:flp}\\ %\dfrac{1}{E^2}
   f_{p_\c} &= \varDelta p_\c + \varDelta\varepsilon_\p^\text{V} \vartheta(\phi)\ p_\c = 0 \ , \label{eq:fpc} \\
   f_{\phi} &= \varDelta\phi - (1-\phi) \varDelta\varepsilon^\text{V} = 0 \ , \label{eq:fphi}
@@ -241,7 +241,7 @@ where the total values are the values at the next instant of time, meaning $q={}
 
 \[\label{eq:functionalDependence}
 \begin{align}
-  \tensor{D}_{\!\varepsilon_\e} &= \tensor{D}_{\!\varepsilon_\e}(\varDelta\tensor\varepsilon_\e, \varDelta\varLambda_p, \varDelta p_\c) \ ,\\
+  \tensor{f}_{\!\varepsilon_\e} &= \tensorf{D}_{\!\varepsilon_\e}(\varDelta\tensor\varepsilon_\e, \varDelta\varLambda_p, \varDelta p_\c) \ ,\\
   f_{\!\varLambda_p} &= f_{\varLambda_p}(\varDelta\tensor\varepsilon_\e, \varDelta p_\c) \ , \\
   f_{p_\c} &= f_{p_\c}(\varDelta\tensor\varepsilon_\e, \varDelta\varLambda_p, \varDelta p_\c, \varDelta\phi)\ , \\
   f_{\phi} &= f_{\phi}(\varDelta\phi) \ ,
@@ -257,13 +257,13 @@ For the solution of the incremental set of equations \eqref{eq:incrementalSystem
 
 \[\label{eqset:partialDerivatives}
 \begin{align}
-  \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta\tensor\varepsilon_\e} &= \tensorf{I} + \varDelta\varLambda_p\frac{\partial\tensor{n}}{\partial\varDelta\tensor\varepsilon_\e} \quad\with\quad \tensorf{I}=\vec{e}_a\dyad\vec{e}_b\dyad\vec{e}_a\dyad\vec{e}_b \ ,
+  \frac{\partial\tensor{f}_{\!\varepsilon_\e}}{\partial\varDelta\tensor\varepsilon_\e} &= \tensorf{I} + \varDelta\varLambda_p\frac{\partial\tensor{n}}{\partial\varDelta\tensor\varepsilon_\e} \quad\with\quad \tensorf{I}=\vec{e}_a\dyad\vec{e}_b\dyad\vec{e}_a\dyad\vec{e}_b \ ,
   \\
-  \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta\varLambda_p} &= \tensor{n}\ ,
+  \frac{\partial\tensor{f}_{\!\varepsilon_\e}}{\partial\varDelta\varLambda_p} &= \tensor{n}\ ,
   \\
-  \frac{\partial\tensor{D}_{\!\varepsilon_\e}}{\partial\varDelta p_\c} &= \varDelta\varLambda_p \ \frac{\partial\tensor{n}}{\partial\varDelta p_\c} ,
+  \frac{\partial\tensor{f}_{\!\varepsilon_\e}}{\partial\varDelta p_\c} &= \varDelta\varLambda_p \ \frac{\partial\tensor{n}}{\partial\varDelta p_\c} ,
   \\[2mm]
-  \frac{\partial f_{\!\varLambda_p}}{\partial\varDelta\tensor\varepsilon_\e} &= \frac{\partial f_{\!\varLambda_p}}{\partial \tensor\sigma} : \frac{\partial \tensor\sigma}{\partial \tensor\varepsilon_\e} : \frac{\partial\tensor\varepsilon_\e}{\partial\varDelta\tensor\varepsilon_\e} = \tensor{m} : \tensor{D}\ \theta\ , %: \theta\tensorf{I}
+  \frac{\partial f_{\!\varLambda_p}}{\partial\varDelta\tensor\varepsilon_\e} &= \frac{\partial f_{\!\varLambda_p}}{\partial \tensor\sigma} : \frac{\partial \tensor\sigma}{\partial \tensor\varepsilon_\e} : \frac{\partial\tensor\varepsilon_\e}{\partial\varDelta\tensor\varepsilon_\e} = \tensor{m} : \tensorf{D}\ \theta\ , %: \theta\tensorf{I}
   \\
   \frac{\partial f_{\!\varLambda_p}}{\partial\varDelta p_\c} &= \frac{f_{\!\varLambda_p}}{\partial p_\c}\ \frac{\partial p_\c}{\partial \varDelta p_\c}
                                                               = -p M^2\, \theta\ , 
@@ -303,12 +303,12 @@ Now, the missing expressions in overview \eqref{eqset:partialDerivatives} can be
   \frac{\partial\tensor{m}}{\partial\tensor\varepsilon_\e} &= \left\{ \frac{\partial\tensor{m}}{\partial q}\,\frac{\partial q}{\partial \tensor\sigma} 
                                                               + \frac{\partial\tensor{m}}{\partial p}\,\frac{\partial p}{\partial \tensor\sigma} \right\}
                                                               : \frac{\partial \tensor\sigma}{\partial \tensor\varepsilon_\e} 
-                                                      = \left\{ 3\tensorf{P} + \dfrac{2}{9} M^2 \tensor{I}\dyad\tensor{I} \right\} : \tensor{D} \ , 
+                                                      = \left\{ 3\tensorf{P} + \dfrac{2}{9} M^2 \tensor{I}\dyad\tensor{I} \right\} : \tensorf{D} \ , 
   \\
   \frac{\partial m^2}{\partial\tensor\varepsilon_\e} &= \left\{ \frac{\partial m^2}{\partial q}\,\frac{\partial q}{\partial \tensor\sigma} 
                                                                       +\frac{\partial m^2}{\partial p}\,\frac{\partial p}{\partial \tensor\sigma} \right\}
                                                                       : \frac{\partial \tensor\sigma}{\partial \tensor\varepsilon_\e} 
-  = \left\{ 18\tensor\sigma^\D - \dfrac{4}{9} M^4 (2p-p_\c)\tensor{I} \right\} : \tensor{D} \ , 
+  = \left\{ 18\tensor\sigma^\D - \dfrac{4}{9} M^4 (2p-p_\c)\tensor{I} \right\} : \tensorf{D} \ , 
   \\
   \frac{\partial\tensor{n}}{\partial\varDelta\tensor\varepsilon_\e} &= 
   \frac{1}{m}\left\{\frac{\partial\tensor{m}}{\partial\tensor\varepsilon_\e} - \frac{1}{2}\,\tensor{n}\dyad\frac{1}{m}\frac{\partial m^2}{\partial\tensor\varepsilon_\e} \right\} :  
