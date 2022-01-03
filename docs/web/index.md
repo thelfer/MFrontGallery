@@ -26,7 +26,8 @@ This project has two main almost orthogonal goals:
   Section @sec:mfm:introduction:safety_critical_studies.
 
 The distinction between those two approaches is profound and discussed
-in depth in Section @sec:mfm:introduction:statement_of_need.
+in depth in Sections @sec:mfm:introduction:statement_of_need and
+@sec:mfm:introduction:typical_use_case.
 
 While the first goal is common to all (mechanical) solvers, one
 originality of the `MFrontGallery` project is to address the second
@@ -97,6 +98,9 @@ Section @sec:mfm:introduction:statement_of_need discusses why a new
 approach to material knowledge management is needed in the context of
 safety criticial studies.
 
+Section @sec:mfm:introduction:typical_use_case describes some typical
+use case of projects derived from `MFrontGallery`.
+
 Section @sec:mfm:introduction:files discusses how `MFront`
 implementations are stored in the project.
 
@@ -134,6 +138,11 @@ The `MFrontGallery` project has been developed to address various
 issues related to material knowledge management for safety-critical
 studies:
 
+- **Intellectual property**: Material knowledge reflects the know-how of
+  industrials and shall be kept private for various reasons. For
+  example, some mechanical behaviours result from years of experimental
+  testing in dedicated facilities and are thus highly valuable. In some
+  cases, material knowledge can be a competitive advantage.
 - **Portability**: safety-critical studies may involve several partners
   which use different solvers for independent assessment and review. 
   From the same `MFront` source file, the
@@ -279,6 +288,12 @@ However, an important argument in favor of generic implementation is
 **code-reuse**. `MFront` provides several techniques to facilitate code
   factorisation between implementations as described in the ["Best
   practices" page](best-practices.html)
+
+# Typical use case of projects derived from `MFrontGallery` {#sec:mfm:introduction:typical_use_case}
+
+## Generic behaviours delivered along with a general purpose solver
+
+## Domain-specific tools built-in on top of general purpose solver
 
 # Files organization {#sec:mfm:introduction:files}
 
