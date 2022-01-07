@@ -411,6 +411,8 @@ follows:
 @Includes {
 #include "MFrontUmatWrapper.hxx"
 
+#ifndef MFRONT_UMAT_FUNCTION_DECLARATION
+#define MFRONT_UMAT_FUNCTION_DECLARATION 1
 extern "C" {
 
 void umat_(
@@ -454,7 +456,7 @@ void umat_(
     const int /* hidden fortran parameter */);
 
 } // end of extern "C"
-
+#endif MFRONT_UMAT_FUNCTION_DECLARATION 1
 }
 ~~~~
 
@@ -721,23 +723,57 @@ $ mtest SmallStrainUmatWrapper.mtest
 
 # A better solution {#sec:umat_wrapper:fortran95}
 
-- Reducing the number of parameters to the minimum.
-- Solving the portability issue using the `BIND(C)` attribute.
+The previous implementation can be improved in several ways. In this
+section, we propose a new implementations which:
+
+- Reduces the number of parameters to the minimum, as the `UMAT`
+  implementation effectively uses only a very limited subset of the
+  arguments required by the `UMAT` interface.
+- Solves the portability issue using the `BIND(C)` attribute.
 
 ## Modification of the `fortran` sources
+
+The first thing to do is to rename the file `umat.f` in `umat.f90` which
+is a more or less standard file extension for free-form fortran source
+greater than `Fortran 90` (extension like `f95` and `f03` does not seem
+to be supported by build systems and text editors, as explained
+[here](https://fortranwiki.org/fortran/show/File+extensions)).
+
+After converting the code to free form and removing the unsued
+variables, the `umat2` subroutine has the following declaration:
 
 ~~~~{.fortran}
 subroutine umat2(stress, ddsdde, stran, dstran, ntens, props, nprops) &
   BIND(C,NAME="umat2")
 ~~~~
 
+See Listing @lst:umat_wrapper:umat2_source_code in Appendix
+@sec:umat_wrapper:umat2_source_code for the full code of the `umat2`
+subroutine.
+
+The `NAME` option specifies the name of the exported symbol. This is the
+name of the function on the `C++` side. This name is now perfectly
+portable across implementations.
+
 ## Modification of the `MFront` wrapper
 
+Two code blocks of the `MFront` wrapper must be changed:
+
+- The `@Includes` code block to change the declaration of the `umat`
+  function.
+- The `@Integrator` code block to change the call of the `umat`
+  function.
+
 ### Modifying the `@Includes` code block
+
+The `@Includes` code block is now much shorter, as follows:
 
 ~~~~{.cxx}
 @Includes {
 #include "MFrontUmatWrapper.hxx"
+
+#ifndef MFRONT_UMAT2_FUNCTION_DECLARATION
+#define MFRONT_UMAT2_FUNCTION_DECLARATION 1
 
 extern "C" {
 
@@ -753,10 +789,15 @@ void umat2(
 
 } // end of extern "C"
 
+#endif MFRONT_UMAT2_FUNCTION_DECLARATION 1
+
 } // end of @Includes
 ~~~~
 
 ### Modifying the `@Integrator` code block
+
+Once useless variables are removed, the source code of the `@Integrator`
+code block is also much shorter:
 
 ~~~~{.cxx}
 @Integrator {
@@ -787,8 +828,144 @@ void umat2(
 }
 ~~~~
 
+As a rule of thumb, reducing the number of arguments passed from `C++`
+to `fortran` to the bare minimum is highly recommended as there is no
+way for the compiler of the linker to check the consistency of those
+arguments. It is the responsability of the developper to make the `C++`
+call match the `fortran` declaration. This is the source of hours of
+painful debugging.
+
 # Introducing the wrapped implementation in `MFrontGallery`
 
+## The `MFrontUserWrapper.hxx` header
+
+The `MFrontUserWrapper.hxx` header may be shared between several
+wrappers. Such headers may be rightfully be placed in the `include`
+directory at the root of the `MFrontGallery` project.
+
+If it exists, this directory is automatically added to the compiler'
+include path by the [`cmake` infrastructure](cmake-infrastructure.html).
+
+However, as the project grows, such shared utility headers may multiply,
+with the risk of a cluttering of the `include` directory.
+
+To sort things out, we choose to create an `MFront/Wrappers`
+subdirectory. We also choose to rename the file `UmatWrapper.hxx` to
+avoid a redundant `MFront`.
+
+## Building the libraries
+
+We choose to create two libraries `v1` and `v1` for each versions of the
+wrapped behaviour. Those directories are placed in the
+`mfront-wrappers/fortran/umat/` directory.
+
+> **The `enable-fortran-behaviours-wrappers` options**
+>
+> The subdirectories of the `mfront-wrappers/fortran` directory are only
+> treated if the `enable-fortran-behaviours-wrappers` has been set to
+> `ON` at the `cmake` configuration stage (see the
+> [install page](install.html) for details).
+>
+> This options ensures that proper support of `Fortran` language has
+> been set up.
+
+The content of those directories is the following:
+
+~~~~{.bash}
+mfront-wrappers/fortran/umat
+├── mfront-wrappers/fortran/umat/v1
+│   ├── mfront-wrappers/fortran/umat/v1/CMakeLists.txt
+│   ├── mfront-wrappers/fortran/umat/v1/SmallStrainUmatWrapper_v1.mfront
+│   └── mfront-wrappers/fortran/umat/v1/umat.f
+└── mfront-wrappers/fortran/umat/v2
+    ├── mfront-wrappers/fortran/umat/v2/CMakeLists.txt
+    ├── mfront-wrappers/fortran/umat/v2/SmallStrainUmatWrapper_v2.mfront
+    └── mfront-wrappers/fortran/umat/v2/umat2.f90
+~~~~
+
+For the sake of clarity, the `MFront` implementations have been renamed
+and the name of the generated behaviours changes accordingly.
+
+### Second version of the wrapper
+
+The contents of the `CMakeLists.txt` are very simple for the second
+version, as shown by the following listing:
+
+~~~~{.cmake}
+mfront_behaviours_library(UmatWrapperV2
+  SmallStrainUmatWrapperV2
+  umat2.f90)
+~~~~
+
+The `mfront_behaviour_library` function is described in the documentation
+of the [cmake infrastructure](cmake-infrastructure.html) of the project.
+
+This call to the `mfront_behaviour_library` function generates the following output:
+
+~~~~{.bash}
+-- Adding library : UMATWRAPPERV2CALCULIXBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/calculix/src/calculixSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/calculix/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UMATWRAPPERV2ANSYSBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/ansys/src/ansysSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/ansys/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UMATWRAPPERV2ABAQUSBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/abaqus/src/abaqusSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/abaqus/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- SmallStrainUmatWrapper_v2 has been discarded for interface cyrano (behaviour does not support any of the  'AxisymmetricalGeneralisedPlaneStrain' or  'AxisymmetricalGeneralisedPlaneStress modelling' hypothesis)
+-- Only external sources provided for library UmatWrapperV2Behaviours-cyrano for interface cyrano. The generation of this library is disabled by default. It can be enabled by passing the GENERATE_WITHOUT_MFRONT_SOURCES
+-- SmallStrainUmatWrapper_v2 has been discarded for interface epx (small strain behaviours are not supported)
+-- Only external sources provided for library UmatWrapperV2Behaviours-epx for interface epx. The generation of this library is disabled by default. It can be enabled by passing the GENERATE_WITHOUT_MFRONT_SOURCES
+-- Adding library : UmatWrapperV2DianaFEABehaviours (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/dianafea/src/DianaFEASmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/dianafea/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours-aster (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/aster/src/asterSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/aster/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/castem/src/umatSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/castem/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours-generic (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2-generic.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+~~~~
+
+This output shows that:
+
+- The wrapped behaviour is not compatible with some interfaces
+  (`cyrano`, `europlexus` for instance) for reasons explicitely stated
+  in the previous output.
+- No library is generated by default if no `MFront` sources are
+  compatible with the given interface. This could be changed by passing
+  the `GENERATE_WITHOUT_MFRONT_SOURCES` option to the
+  `mfront_behaviour_library` function.
+
+> **Compiling the `fortran` sources in a separate shared library**
+>
+> Contrary to the standalone example, the `fortran` sources are compiled
+> in the same shared library than the `MFront` file. Note that the
+> `fortran` sources are compiled once for each interfaces.
+>
+> Another strategy would be to compile the `fortran` file in a separate
+> shared library and link the `MFront` shared libraries to this shared
+> library. This can be done as follows:
+>
+> ~~~~{.cmake}
+> add_library(UmatImplementations SHARED umat2.f90)
+> mfm_install_library(UmatImplementations)
+> 
+> mfront_behaviours_library(UmatWrapperV2
+>  SmallStrainUmatWrapper_v2
+>  LINK_LIBRARIES UmatImplementations)
+> ~~~~
+
+### First version of the wrapper
+
+The `CMakeLists.txt` file for the first version of the wrapper is a bit
+more involved as we try to avoid the portability issue by compiling the
+`UmatWrapper_v2` only if:
+
+- the `fortran` compiler is `gfortran`.
+- the targeted system is `Linux`.
+
+This is illustrated by the following script:
+
+~~~~{.cxx}
+if(GNU_FORTRAN_COMPILER AND (${CMAKE_SYSTEM_NAME} STREQUAL "Linux"))
+  mfront_behaviours_library(UmatWrapperV1
+    SmallStrainUmatWrapper_v1
+    umat.f)
+endif()
+~~~~
+
+The `GNU_FORTRAN_COMPILER` variable is automatically defined by the
+`cmake` infrastructure of the project.
 
 # Appendix
 

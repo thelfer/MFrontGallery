@@ -1,0 +1,19 @@
+@Author HELFER Thomas 202608;
+@Date   17/02/2021;
+@Description{
+
+};
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<generic> 'src/libBehaviour.so' 'SmallStrainUmatWrapper';
+
+// material properties
+@MaterialProperty<constant> 'YoungModulus' 150e9;
+@MaterialProperty<constant> 'PoissonRatio' 0.3;
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+@ImposedStrain 'EXX' {0 : 0, 100 : -1.e-2};
+
+@Times{0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};

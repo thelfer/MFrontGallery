@@ -181,10 +181,11 @@ function(mfront_behaviours_library mat)
         DEPENDS ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
         COMMENT "mfront sources ${${mfront_behaviour_library_name}_MFRONT_SOURCES} for interface ${interface}")
-      message(STATUS "Adding library : ${mfront_behaviour_library_name} (${${mfront_behaviour_library_name}_SOURCES})")
-      add_library(${mfront_behaviour_library_name} SHARED
-        ${${mfront_behaviour_library_name}_SOURCES}
-        ${${mfront_behaviour_library_name}_OTHER_SOURCES})
+      set(_all_sources)
+      list(APPEND _all_sources ${${mfront_behaviour_library_name}_SOURCES})
+      list(APPEND _all_sources ${${mfront_behaviour_library_name}_OTHER_SOURCES})
+      message(STATUS "Adding library : ${mfront_behaviour_library_name} (${_all_sources})")
+      add_library(${mfront_behaviour_library_name} SHARED ${_all_sources})
       target_include_directories(${mfront_behaviour_library_name}
         PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
         PRIVATE "${TFEL_INCLUDE_PATH}")
@@ -211,15 +212,7 @@ function(mfront_behaviours_library mat)
 	  endif(enable-castem-pleiades)
 	endif(CASTEMHOME)
       endif(${interface} STREQUAL "castem")
-    if(WIN32)
-	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-	  set_target_properties(${mfront_behaviour_library_name}
-	    PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
-	endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-	install(TARGETS ${mfront_behaviour_library_name} DESTINATION bin)
-      else(WIN32)
-	install(TARGETS ${mfront_behaviour_library_name} DESTINATION lib${LIB_SUFFIX})
-      endif(WIN32)
+    mfm_install_library(${mfront_behaviour_library_name})
       if(${interface} STREQUAL "castem")
 	if(CASTEMHOME)
 	  target_include_directories(${mfront_behaviour_library_name}
@@ -303,15 +296,15 @@ function(mfront_behaviours_library mat)
 	message(FATAL_ERROR "mfront_behaviours_library : "
 	  "unsupported interface ${interface}")
       endif(${interface} STREQUAL "castem")
-      foreach(link_library ${mfront_libraries})
-        target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${link_library})
-      endforeach(link_library ${mfront_libraries})
+      foreach(_link_library ${mfront_link_libraries})
+        target_link_libraries(${mfront_behaviour_library_name} PRIVATE ${_link_library})
+      endforeach(_link_library ${mfront_link_libraries})
     else(generate_library)
       if(nb_other_sources GREATER 0)
         message(STATUS "Only external sources provided for "
 	      "library ${mfront_behaviour_library_name} for interface ${interface}. "
           "The generation of this library is disabled by default. It can be enabled "
-          "by passing the ALLOW_EXTERNAL_SOURCES_ONLY")
+          "by passing the GENERATE_WITHOUT_MFRONT_SOURCES")
       else(nb_other_sources GREATER 0)
         message(STATUS "No sources selected for "
 	      "library ${mfront_behaviour_library_name} for interface ${interface}")

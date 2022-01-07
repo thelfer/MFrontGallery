@@ -126,6 +126,13 @@ be generated. This requires `pandoc` (mandatory) and `pandoc-crossref`
 
 - `enable-fortran-behaviours-wrappers`:
 
+### Automatic documentation generation using `mfront-doc`
+
+- `enable-mfront-documentation-generation`: this option enable or
+  disable the generation of a documentation using `mfront-doc`. This
+  option is disabled by default.
+
+
 ### Options related to tests
 
 - `enable-random-tests`:

@@ -39,15 +39,7 @@ function(mfront_properties_standard_library2 lib mat interface)
   target_include_directories(${lib}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
     PRIVATE "${TFEL_INCLUDE_PATH}")
-  if(WIN32)
-    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-      set_target_properties(${lib}
-	PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
-    endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    install(TARGETS ${lib} DESTINATION bin)
-  else(WIN32)
-    install(TARGETS ${lib} DESTINATION lib${LIB_SUFFIX})
-  endif(WIN32)
+  mfm_install_library(${lib})
 endfunction(mfront_properties_standard_library2)
 
 function(mfront_properties_standard_library mat interface)

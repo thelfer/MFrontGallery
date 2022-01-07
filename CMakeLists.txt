@@ -2,10 +2,6 @@ project(MFrontGallery)
 set(PACKAGE mfront-gallery)
 
 cmake_minimum_required(VERSION 3.0.2)
-cmake_policy(SET CMP0005 OLD)
-cmake_policy(SET CMP0026 OLD)
-cmake_policy(SET CMP0007 NEW)
-cmake_policy(SET CMP0053 NEW)
 
 include(cmake/modules/mfm.cmake)
 

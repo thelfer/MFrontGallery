@@ -5,6 +5,18 @@ cmake_policy(SET CMP0053 NEW)
 
 set(MFM_USE_FORTRAN OFF)
 
+function(mfm_install_library lib)
+  if(WIN32)
+	if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+	  set_target_properties(${lib}
+	    PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
+    endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    install(TARGETS ${lib} DESTINATION bin)
+  else(WIN32)
+	install(TARGETS ${lib} DESTINATION lib${LIB_SUFFIX})
+  endif(WIN32)
+endfunction(mfm_install_library)
+
 # portable-build
 option(enable-portable-build "produce binary that can be shared between various machine (same architecture, same gcc version, different processors" OFF)
 

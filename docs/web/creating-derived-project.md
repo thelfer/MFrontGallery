@@ -27,7 +27,7 @@ repository from it as follows:
 
 ~~~~{.bash}
 $ git remote add MFrontGallery https://github.com/thelfer/MFrontGallery
-$ git fetch MFrontGallery 
+$ git fetch MFrontGallery master
 $ git checkout MFrontGallery/master -- cmake 
 ~~~~
 
@@ -76,3 +76,12 @@ materials/
 This structure is used to automatically declare `MFront` search paths by
 the `mfront_properties_library` and `mfront_behaviours_library`.
 
+# Synchronizing the `cmake/modules` directory
+
+The lastest version of `cmake/modules` directory can be retrieved as
+follows:
+
+~~~~{.bash}
+$ git fetch MFrontGallery master
+$ git checkout MFrontGallery/master cmake
+~~~~
