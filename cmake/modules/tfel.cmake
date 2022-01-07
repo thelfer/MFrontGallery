@@ -366,6 +366,8 @@ function(parse_mfront_library_sources )
   set(mfront_link_libraries      ${_LINK_LIBRARIES} PARENT_SCOPE)
 endfunction(parse_mfront_library_sources)
 
+option(enable-mfront-documentation-generation "automatically generate documentation using mfront-doc" OFF)
+
 include(cmake/modules/materialproperties.cmake)
 include(cmake/modules/behaviours.cmake)
 include(cmake/modules/models.cmake)

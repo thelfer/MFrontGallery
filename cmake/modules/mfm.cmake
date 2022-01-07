@@ -1,3 +1,8 @@
+cmake_policy(SET CMP0005 OLD)
+cmake_policy(SET CMP0026 OLD)
+cmake_policy(SET CMP0007 NEW)
+cmake_policy(SET CMP0053 NEW)
+
 set(MFM_USE_FORTRAN OFF)
 
 # portable-build
