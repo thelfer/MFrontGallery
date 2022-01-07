@@ -1,3 +1,7 @@
+# This file is part of the MFrontGallery project
+# website: <https://thelfer.github.io/MFrontGallery/web/index.html>
+# github repository: <https://github.com/thelfer/MFrontGallery>
+
 function(check_behaviour_compatibility mat interface search_paths mfront_file)
   set(file_OK ON)
   set(compatibility_failure)
