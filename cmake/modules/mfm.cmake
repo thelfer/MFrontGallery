@@ -296,11 +296,23 @@ endif(mfront-behaviours-interfaces)
 #compiler options
 include(cmake/modules/compiler.cmake)
 
+add_custom_target(doc)
+
 # Documentation
 option(enable-website "enable generation of the website" ON)
 if(enable-website)
-  add_custom_target(doc)
   add_custom_target(website)
   add_dependencies(doc website)
   include(cmake/modules/pandoc.cmake)
 endif(enable-website)
+
+# Looking for LaTeX
+option(enable-reference-doc "enable generation of the reference documentation" OFF)
+if(enable-reference-doc)
+  add_custom_target(doc-pdf)
+  add_dependencies(doc doc-pdf)
+  include(cmake/modules/latex.cmake)
+endif(enable-reference-doc)
+
+# Looking for Gnuplot
+include(cmake/modules/gnuplot.cmake)
