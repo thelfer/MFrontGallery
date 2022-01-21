@@ -17,13 +17,15 @@ else(CMAKE_CONFIGURATION_TYPES)
     ${CMAKE_CTEST_COMMAND} -T test )
 endif(CMAKE_CONFIGURATION_TYPES)
 
-add_subdirectory(generic-behaviours)
-add_subdirectory(mfront-wrappers)
-add_subdirectory(materials)
+#add_subdirectory(generic-behaviours)
+#add_subdirectory(mfront-wrappers)
+#add_subdirectory(materials)
+#
+#if(enable-website)
+#  add_subdirectory(docs/web)
+#endif(enable-website)
 
-if(enable-website)
-  add_subdirectory(docs/web)
-endif(enable-website)
+add_subdirectory(unit-tests/madnex/behaviours)
 
 # if(TFEL_CHECK)
 #   add_test(NAME tfel_check COMMAND ${TFEL_CHECK})

@@ -252,20 +252,39 @@ function(get_mfront_all_specific_targets_generated_sources interface mat file)
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_all_specific_targets_generated_sources)
 
-function(get_mfront_generated_sources mat interface search_paths file)
+function(get_mfront_generated_sources kind mat interface search_paths file)
+  get_filename_component(file_ext "${file}" EXT)
+  set(mfront_query_args )
+  list(APPEND mfront_query_args "--verbose=quiet")
+  list(APPEND mfront_query_args "--interface=${interface}")
+  list(APPEND mfront_query_args "--generated-sources=unsorted")
+  message(STATUS "mfront file: ${file} ${file_ext}")
+  if ((${file_ext} STREQUAL ".madnex") OR (${file_ext} STREQUAL ".mdnx"))
+    list(APPEND mfront_query_args "--material=${mat}")
+    list(APPEND mfront_query_args "--all-behaviours")
+#    if(${kind} STREQUAL "material-property")
+#      list(APPEND mfront_query_args "--all-material-properties")
+#    elif(${kind} STREQUAL "behaviour")
+#      list(APPEND mfront_query_args "--all-behaviours")
+#    elif(${kind} STREQUAL "model")
+#      list(APPEND mfront_query_args "--all-models")
+#    else(${kind} STREQUAL "material-property")
+#      message(FATAL_ERROR "get_mfront_generated_sources: unexpected argument ('${kind}')")
+#    endif(${kind} STREQUAL "material-property")
+  endif ((${file_ext} STREQUAL ".madnex") OR (${file_ext} STREQUAL ".mdnx"))
+  list(APPEND mfront_query_args "${file}")
+  message(STATUS "mfront-query arguments: ${mfront_query_args}")
   execute_process(COMMAND ${MFRONT_QUERY}
-    "--verbose=quiet"
-    "--interface=${interface}" "${file}"
-    "--generated-sources=unsorted"
+    ${mfront_query_args}
     ${search_paths}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-	if(MFRONT_SOURCES)
-      string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
-    else(MFRONT_SOURCES)
-      set(MFRONT_GENERATED_SOURCES )
-    endif(MFRONT_SOURCES)
+  if(MFRONT_SOURCES)
+    string(REPLACE " " ";" MFRONT_GENERATED_SOURCES ${MFRONT_SOURCES})
+  else(MFRONT_SOURCES)
+    set(MFRONT_GENERATED_SOURCES )
+  endif(MFRONT_SOURCES)
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_generated_sources)
 
