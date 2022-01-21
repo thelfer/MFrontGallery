@@ -1,0 +1,24 @@
+@article{Helfer2015,
+abstract = {The PLEIADES software environment is devoted to the thermomechanical simulation of nuclear fuel elements behaviour under irradiation. This platform is co-developed in the framework of a research cooperative program between {\'{E}}lectricit{\'{e}} de France (EDF), AREVA and the French Atomic Energy Commission (CEA). As many thermomechanical solvers are used within the platform, one of the PLEAIADES's main challenge is to propose a unified software environment for capitalisation of material knowledge coming from research and development programs on various nuclear systems. This paper introduces a tool called mfront which is basically a code generator based on C++ (Stroustrup and Eberhardt, 2004). Domain specific languages are provided which were designed to simplify the implementations of new material properties, mechanical behaviours and simple material models. mfront was recently released under the GPL open-source licence and is available on its web site: http://tfel.sourceforge.net/. The authors hope that it will prove useful for researchers and engineers, in particular in the field of solid mechanics. mfront interfaces generate code specific to each solver and language considered. In this paper, after a general overview of mfront functionalities, a particular focus is made on mechanical behaviours which are by essence more complex and may have significant impact on the numerical performances of mechanical simulations. mfront users can describe all kinds of mechanical phenomena, such as viscoplasticity, plasticity and damage, for various types of mechanical behaviour (small strain or finite strain behaviour, cohesive zone models). Performance benchmarks, performed using the Code-Aster finite element solver, show that the code generated using mfront is in most cases on par or better than the behaviour implementations written in fortran natively available in this solver. The material knowledge management strategy that was set up within the PLEIADES platform is briefly discussed. A material database named sirius proposes a rigorous material verification workflow. We illustrate the use of mfront through two case of studies: a simple FFC single crystal viscoplastic behaviour and the implementation of a recent behaviour for the fuel material which describes various phenomena: fuel cracking, plasticity and viscoplasticity.},
+author = {Helfer, Thomas and Michel, Bruno and Proix, Jean-Michel and Salvo, Maxime and Sercombe, J{\'{e}}r{\^{o}}me and Casella, Michel},
+doi = {10.1016/j.camwa.2015.06.027},
+file = {:home/cbs/Forschung/Literatur/Artikel/Alle/Helfer et al. - 2015 - Introducing the open-source mfront code generator Application to mechanical behaviours and material knowledge man.pdf:pdf},
+issn = {08981221},
+journal = {Computers {\&} Mathematics with Applications},
+keywords = {Domain specific languages,Implicit integration schemes,Material knowledge management,Mechanical behaviour integration,Single crystal plasticity},
+month = {sep},
+number = {5},
+pages = {994--1023},
+title = {{Introducing the open-source mfront code generator: Application to mechanical behaviours and material knowledge management within the PLEIADES fuel element modelling platform}},
+url = {https://linkinghub.elsevier.com/retrieve/pii/S0898122115003132},
+volume = {70},
+year = {2015}
+}
+
+@misc{cea_edf_mfront_2021,
+	title = {{TFEL/MFront website}},
+	url = {https://thelfer.github.io/tfel/web/index.html},
+	author = {{CEA, EDF}},
+    key = {CEA_TFEL_MFRONT},
+	year = {2021}
+}
