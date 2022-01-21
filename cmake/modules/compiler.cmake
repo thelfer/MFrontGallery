@@ -169,13 +169,6 @@ else(HAVE_NORETURN_ATTRIBUTE)
   MESSAGE(STATUS "disabling [[ noreturn ]] attribute")
 endif(HAVE_NORETURN_ATTRIBUTE)
 			  
-add_definitions("-DOPTIMISATION_FLAGS0=\\\"\"${VISIBILITY_FLAGS} ${OPTIMISATION_FLAGS}\"\\\"")
-add_definitions("-DOPTIMISATION_FLAGS=\\\"\"${OPTIMISATION_FLAGS_MARCH}\"\\\"")
-add_definitions("-DOPTIMISATION_FLAGS2=\\\"\"${OPTIMISATION_FLAGS2}\"\\\"")
-add_definitions("-DCOMPILER_WARNINGS=\\\"\"${COMPILER_WARNINGS}\"\\\"")
-add_definitions("-DCOMPILER_FLAGS=\\\"\"${COMPILER_FLAGS}\"\\\"")
-add_definitions("-DCOMPILER_CXXFLAGS=\\\"\"${COMPILER_CXXFLAGS}\"\\\"")
-
 # This option has been added for building conda package.
 # It circumvents the following issue: `cmake` discards `Boost_INCLUDEDIRS`
 # which is equal to `$PREFIX/include`. The same applies to

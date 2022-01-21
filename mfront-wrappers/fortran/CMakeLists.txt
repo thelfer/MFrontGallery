@@ -1,3 +1,5 @@
 if(enable-fortran-behaviours-wrappers)
   add_subdirectory(behaviours)
+  add_subdirectory(umat/v1)
+  add_subdirectory(umat/v2)
 endif(enable-fortran-behaviours-wrappers)

@@ -1,0 +1,157 @@
+@DSL Default;
+@Behaviour SmallStrainUmatWrapper_v1;
+@Author Thomas Helfer;
+@Date 11 / 02 / 2021;
+
+@ModellingHypothesis Tridimensional;
+
+@MaterialProperty stress E;
+E.setGlossaryName("YoungModulus");
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+
+@Includes {
+#include "MFront/Wrappers/UmatWrapper.hxx"
+
+#ifndef MFRONT_UMAT_FUNCTION_DECLARATION
+#define MFRONT_UMAT_FUNCTION_DECLARATION 1
+
+extern "C" {
+
+void umat_(
+    AbaqusRealType *const /* STRESS */, /* stress                   */
+    AbaqusRealType *const /* STATEV */, /* internal state variables */
+    AbaqusRealType *const /* DDSDDE */, /* tangent operator         */
+    AbaqusRealType *const /* SSE */,
+    AbaqusRealType *const /* SPD */,
+    AbaqusRealType *const /* SCD */,
+    AbaqusRealType *const /* RPL */,
+    AbaqusRealType *const /* DDSDDT */,
+    AbaqusRealType *const /* DRPLDE */,
+    AbaqusRealType *const /* DRPLDT */,
+    const AbaqusRealType *const /* STRAN */,  /* strain tensor    */
+    const AbaqusRealType *const /* DSTRAN */, /* strain increment */
+    const AbaqusRealType *const /* TIME */,
+    const AbaqusRealType *const /* DTIME */,  /* time increment   */
+    const AbaqusRealType *const /* TEMP */,   /* temperature      */
+    const AbaqusRealType *const /* DTEMP */,  /* temperature increment    */
+    const AbaqusRealType *const /* PREDEF */, /* external state variables */
+    const AbaqusRealType
+        *const /* DPRED */, /* external state variables increments   */
+    const char *const /* CMNAME */,
+    const AbaqusIntegerType *const /* NDI */,
+    const AbaqusIntegerType *const /* NSHR */,
+    const AbaqusIntegerType
+        *const /* NTENS */, /* number of components of tensors */
+    const AbaqusIntegerType
+        *const /* NSTATV */, /* number of internal state variables */
+    const AbaqusRealType *const /* PROPS */, /* material properties */
+    const AbaqusIntegerType
+        *const /* NPROPS */, /* number of material properties */
+    const AbaqusRealType *const /* COORDS */,
+    const AbaqusRealType *const /* DROT, incremental rotation matrix */,
+    const AbaqusRealType
+        *const /* PNEWDT, estimation of the next time increment */,
+    const AbaqusRealType *const /* CELENT */,
+    const AbaqusRealType *const /* DFGRD0 */,
+    const AbaqusRealType *const /* DFGRD1 */,
+    const AbaqusIntegerType *const /* NOEL */,
+    const AbaqusIntegerType *const /* NPT */,
+    const AbaqusIntegerType *const /* LAYER */,
+    const AbaqusIntegerType *const /* KSPT */,
+    const AbaqusIntegerType *const /* KSTEP */,
+    AbaqusIntegerType *const /* KINC */,
+    const int /* hidden fortran parameter */);
+}
+
+#endif MFRONT_UMAT_FUNCTION_DECLARATION 1
+
+}
+
+@LocalVariable StiffnessTensor K;
+
+@Integrator {
+  //
+  const AbaqusRealType drot[9] = {1, 0, 0,  //
+                                  0, 1, 0,  //
+                                  0, 0, 1};
+  const AbaqusIntegerType KSTEP[3u] = {0, 0, 0};
+  // returned value
+  AbaqusIntegerType KINC = 1;
+  //
+  const char name[81] =
+      "Elasticity                              "  //
+      "                                        ";
+  //
+  const AbaqusRealType props[2] = {E, nu};
+  //
+  AbaqusRealType e[6];
+  AbaqusRealType de[6];
+  AbaqusRealType s[6];
+  AbaqusRealType rdt;
+  //
+  mfront_umat_wrapper::convertStrainToAbaqus<hypothesis>(e, &eto[0]);
+  mfront_umat_wrapper::convertStrainToAbaqus<hypothesis>(de, &deto[0]);
+  mfront_umat_wrapper::convertStressToAbaqus<hypothesis>(s, &sig[0]);
+  //
+  const auto nprops = static_cast<AbaqusIntegerType>(2);
+  const auto nstatv = static_cast<AbaqusIntegerType>(0);
+  const auto ntens = static_cast<AbaqusIntegerType>(6);
+  const auto ndi = static_cast<AbaqusIntegerType>(3);
+  const auto nshr = static_cast<AbaqusIntegerType>(3);
+  const auto noel = static_cast<AbaqusIntegerType>(0);
+  const auto npt = static_cast<AbaqusIntegerType>(0);   // ??
+  //
+  // unused variables
+  AbaqusRealType sse, spd, scd, rpl;  // unused variables
+  AbaqusRealType ddsddt[6];
+  AbaqusRealType drplde[6];
+  AbaqusRealType drpldt;
+  AbaqusRealType time[2];
+  AbaqusRealType pred[1];
+  AbaqusRealType dpred[1];
+  AbaqusRealType isvs[1];
+  AbaqusRealType coords[3] = {0, 0, 0};
+  const AbaqusRealType dfgrd0[9] = {0, 0, 0,  //
+                                    0, 1, 0,  //
+                                    0, 0, 1};
+  const AbaqusRealType dfgrd1[9] = {0, 0, 0,  //
+                                    0, 1, 0,  //
+                                    0, 0, 1};
+  AbaqusRealType celent;
+  AbaqusIntegerType layer;
+  AbaqusIntegerType kspt;
+  //
+  //
+  umat_(s,        /* stress                   */
+        &isvs[0], /* &isvs[0], internal state variables */
+        &K(0, 0), /* tangent operator         */
+        &sse, &spd, &scd, &rpl, ddsddt, drplde, &drpldt,
+        e,                         /* strain tensor    */
+        de,                        /* strain increment */
+        time,                      //
+        &dt,                       /* time increment   */
+        &T,                        /* temperature      */
+        &dT,                       /* temperature increment    */
+        pred,                      /* &esvs[0], external state variables */
+        dpred,                     /* &desvs[0], external state variables */
+        name, &ndi, &nshr, &ntens, /* number of components of tensors */
+        &nstatv,                   /* number of internal state variables */
+        &props[0],                 /* material properties                   */
+        &nprops,                   /* number of material properties */
+        coords, drot,              /* rotation matrix                       */
+        &rdt,                      /* estimation of the next time increment */
+        &celent, dfgrd0, dfgrd1, &noel, &npt, &layer, &kspt, KSTEP, &KINC, 80);
+  //
+  if(KINC!=1){
+    return FAILURE;
+  }
+  //
+  mfront_umat_wrapper::convertStressFromAbaqus<hypothesis>(&sig[0], s);
+}
+
+@TangentOperator {
+  static_cast<void>(smt);
+  mfront_umat_wrapper::convertStiffnessMatrixFromAbaqus<hypothesis>(&Dt(0, 0),
+                                                                    &K(0, 0));
+}

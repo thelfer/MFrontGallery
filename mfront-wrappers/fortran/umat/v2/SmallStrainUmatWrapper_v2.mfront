@@ -1,0 +1,70 @@
+@DSL Default;
+@Behaviour SmallStrainUmatWrapper_v2;
+@Author Thomas Helfer;
+@Date 11 / 02 / 2021;
+
+@ModellingHypothesis Tridimensional;
+
+@MaterialProperty stress E;
+E.setGlossaryName("YoungModulus");
+@MaterialProperty real nu;
+nu.setGlossaryName("PoissonRatio");
+
+@Includes {
+#include "MFront/Wrappers/UmatWrapper.hxx"
+
+#ifndef MFRONT_UMAT2_FUNCTION_DECLARATION
+#define MFRONT_UMAT2_FUNCTION_DECLARATION 1
+
+extern "C" {
+
+void umat2(
+    AbaqusRealType *const,          /* STRESS,  stress                   */
+    AbaqusRealType *const,          /* DDSDDE,  tangent operator         */
+    const AbaqusRealType *const,    /* STRAN, strain tensor    */
+    const AbaqusRealType *const,    /* DSTRAN,  strain increment */
+    const AbaqusIntegerType *const, /* NTENS, number of components of tensors */
+    const AbaqusRealType *const,    /* PROPS, material properties */
+    const AbaqusIntegerType *const  /* NPROPS, number of material properties*/
+);
+
+} // end of extern "C"
+
+#endif MFRONT_UMAT2_FUNCTION_DECLARATION 1
+
+} // end of @Includes
+
+@LocalVariable StiffnessTensor K;
+
+@Integrator {
+  //
+  const AbaqusRealType props[2] = {E, nu};
+  //
+  AbaqusRealType e[6];
+  AbaqusRealType de[6];
+  AbaqusRealType s[6];
+  //
+  mfront_umat_wrapper::convertStrainToAbaqus<hypothesis>(e, &eto[0]);
+  mfront_umat_wrapper::convertStrainToAbaqus<hypothesis>(de, &deto[0]);
+  mfront_umat_wrapper::convertStressToAbaqus<hypothesis>(s, &sig[0]);
+  //
+  const auto nprops = static_cast<AbaqusIntegerType>(2);
+  const auto ntens = static_cast<AbaqusIntegerType>(6);
+  //
+  umat2(s,         /* stress              */
+        &K(0, 0),  /* tangent operator    */
+        e,         /* strain tensor       */
+        de,        /* strain increment    */
+        &ntens,    /* number of components of the stress tensor*/
+        &props[0], /* material properties */
+        &nprops    /* number of material properties*/
+  );
+  //
+  mfront_umat_wrapper::convertStressFromAbaqus<hypothesis>(&sig[0], s);
+}
+
+@TangentOperator {
+  static_cast<void>(smt);
+  mfront_umat_wrapper::convertStiffnessMatrixFromAbaqus<hypothesis>(&Dt(0, 0),
+                                                                    &K(0, 0));
+}

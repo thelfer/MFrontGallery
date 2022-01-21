@@ -20,6 +20,11 @@ function(mfront_properties_standard_library2 lib mat interface)
   foreach(source ${mfront_sources})
     add_mfront_property_source(${lib} ${mat} ${interface} "${mfront_search_paths}" ${source})
   endforeach(source)
+  set(mfront_args)
+  list(APPEND mfront_args "--interface=${interface}")
+  if(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+    list(APPEND mfront_args "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
@@ -34,15 +39,7 @@ function(mfront_properties_standard_library2 lib mat interface)
   target_include_directories(${lib}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
     PRIVATE "${TFEL_INCLUDE_PATH}")
-  if(WIN32)
-    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-      set_target_properties(${lib}
-	PROPERTIES LINK_FLAGS "-Wl,--kill-at -Wl,--no-undefined")
-    endif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    install(TARGETS ${lib} DESTINATION bin)
-  else(WIN32)
-    install(TARGETS ${lib} DESTINATION lib${LIB_SUFFIX})
-  endif(WIN32)
+  mfm_install_library(${lib})
 endfunction(mfront_properties_standard_library2)
 
 function(mfront_properties_standard_library mat interface)

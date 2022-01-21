@@ -300,22 +300,20 @@ endmacro(install_mfront)
 #
 # The following values are set in the parent scopes
 #
+# - generate_without_mfront_sources: boolean stating if the library must
+#   be generated even if no MFront implementation is selected for the
+#   given interface
 # - mfront_sources: list of sources
-# - mfront_search_paths: search paths
+# - mfront_include_directories: include directories
 # - mfront_link_libraries: list of link libraries
+# - mfront_search_paths: search paths
 function(parse_mfront_library_sources )
   set ( _CMD SOURCES )
   set ( _SOURCES )
   set ( _INCLUDE_DIRECTORIES )
   set ( _LINK_LIBRARIES )
   set ( _SEARCH_PATHS )
-  if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
-    set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities}")
-  else((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
-    set(TFEL_MFRONT_LIBRARIES
-      "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities};${TFELPhysicalConstants}")
-  endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
+  set(_GENERATE_WITHOUT_MFRONT_SOURCES OFF)
   foreach ( _ARG ${ARGN})
     if ( ${_ARG} STREQUAL "SOURCES" )
       set ( _CMD SOURCES )
@@ -331,6 +329,9 @@ function(parse_mfront_library_sources )
       set ( _CMD INCLUDE_DIRECTORY )
     elseif ( ${_ARG} STREQUAL "INCLUDE_DIRECTORIES" )
       set ( _CMD INCLUDE_DIRECTORIES )
+    elseif ( ${_ARG} STREQUAL "GENERATE_WITHOUT_MFRONT_SOURCES" )
+      set ( _GENERATE_WITHOUT_MFRONT_SOURCES ON)
+      set ( _CMD SOURCES )
     else ()
       if ( ${_CMD} STREQUAL "SOURCES" )
         list ( APPEND _SOURCES "${_ARG}" )
@@ -366,11 +367,14 @@ function(parse_mfront_library_sources )
   if(${_SOURCES_LENGTH} LESS 1)
     message(FATAL_ERROR "parse_mfront_library_sources: no source specified")
   endif(${_SOURCES_LENGTH} LESS 1)
+  set(generate_without_mfront_sources ${_GENERATE_WITHOUT_MFRONT_SOURCES} PARENT_SCOPE)
   set(mfront_sources             ${_SOURCES}        PARENT_SCOPE)
   set(mfront_search_paths        ${_SEARCH_PATHS}   PARENT_SCOPE)
   set(mfront_include_directories ${_INCLUDE_DIRECTORIES}   PARENT_SCOPE)
   set(mfront_link_libraries      ${_LINK_LIBRARIES} PARENT_SCOPE)
 endfunction(parse_mfront_library_sources)
+
+option(enable-mfront-documentation-generation "automatically generate documentation using mfront-doc" OFF)
 
 include(cmake/modules/materialproperties.cmake)
 include(cmake/modules/behaviours.cmake)
