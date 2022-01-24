@@ -1,0 +1,18 @@
+@DSL IsotropicPlasticMisesFlow{
+  automatically_declare_temperature_as_first_external_state_variable : false
+};
+@Behaviour PlasticityWithoutTemperature;
+@Author Helfer Thomas;
+@Date 23 / 11 / 06;
+
+@UseQt true;
+@Epsilon 1.e-14;
+
+@MaterialProperty stress H;
+@MaterialProperty stress s0;
+
+@FlowRule {
+  f = seq - H * p - s0;
+  df_dseq = 1;
+  df_dp = -H;
+}

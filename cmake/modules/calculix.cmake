@@ -12,6 +12,13 @@ function(check_calculix_compatibility mat search_paths source)
     set(file_OK OFF PARENT_SCOPE)
   endif(behaviour_type STREQUAL "1")    
   if(file_OK)
+    check_temperature_is_first_external_state_variable(${mat} "${search_paths}" ${source})
+    if(NOT file_OK)
+      set(file_OK OFF PARENT_SCOPE)
+      set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
+    endif(NOT file_OK)
+  endif(file_OK)
+  if(file_OK)
     behaviour_query(modelling_hypotheses
       ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
     # creating a cmake list

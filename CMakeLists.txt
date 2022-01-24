@@ -18,8 +18,9 @@ else(CMAKE_CONFIGURATION_TYPES)
 endif(CMAKE_CONFIGURATION_TYPES)
 
 add_subdirectory(generic-behaviours)
-add_subdirectory(mfront-wrappers)
 add_subdirectory(materials)
+add_subdirectory(unit-tests/mfront-wrappers)
+add_subdirectory(unit-tests/behaviours-without-temperature)
 
 if(enable-website)
   add_subdirectory(docs/web)

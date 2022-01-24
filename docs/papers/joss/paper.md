@@ -31,11 +31,11 @@ This project has two main almost orthogonal goals:
   knowledge management project based on
   [`MFront`](https://thelfer.github.io/tfel/web/index.html), able to
   meet the requirements of safety-critical studies as discussed in
-  Section \autoref{sec:mfm:introduction:safety_critical_studies}.
+  Section \ref{sec:mfm:introduction:safety_critical_studies}.
 
 The distinction between those two approaches is profound and discussed
-in depth in Sections \autoref{sec:mfm:introduction:statement_of_need}
-and \autoref{sec:mfm:introduction:typical_use_case}.
+in depth in Sections \ref{sec:mfm:introduction:statement_of_need}
+and \ref{sec:mfm:introduction:typical_use_case}.
 
 While the first goal is common to all (mechanical) solvers, one
 originality of the `MFrontGallery` project is to address the second
@@ -86,21 +86,20 @@ In particular, the project provides:
   implemented using `MFront` implementations
 - a set of high-quality `MFront` implementations.
 
-Section \autoref{sec:mfm:introduction:statement_of_need} discusses why a
+Section \ref{sec:mfm:introduction:statement_of_need} discusses why a
 new approach to material knowledge management is needed in the context
 of safety criticial studies.
 
-Section \autoref{sec:mfm:introduction:typical_use_case} describes some
+Section \ref{sec:mfm:introduction:typical_use_case} describes some
 typical use case of projects derived from `MFrontGallery`.
 
-Section \autoref{sec:mfm:introduction:files} discusses how `MFront`
+Section \ref{sec:mfm:introduction:files} discusses how `MFront`
 implementations are stored in the project.
 
-Section \autoref{sec:mfm:introduction:usage} provides a short overview
+Section \ref{sec:mfm:introduction:usage} provides a short overview
 of the usage of the project.
 
-# Statemement of need: material knowledge management for safety criticial studies
-\label{sec:mfm:introduction:statement_of_need}
+# Statemement of need: material knowledge management for safety criticial studies {#sec:mfm:introduction:statement_of_need}
 
 ## Role of material knowledge in numerical simulations of solids
 
