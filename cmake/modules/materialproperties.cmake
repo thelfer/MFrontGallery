@@ -25,11 +25,15 @@ function(mfront_properties_standard_library2 lib mat interface)
   if(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
     list(APPEND mfront_args "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   endif(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  list(APPEND mfront_args ${mfront_search_paths})
+  if(mfm_global_dsl_options)
+    list(APPEND mfront_args ${mfm_global_dsl_options})
+  endif(mfm_global_dsl_options)
+  list(APPEND mfront_args ${${lib}_MFRONT_SOURCES})
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
-      ARGS    "--interface=${interface}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_args}
       ARGS    ${${lib}_MFRONT_SOURCES}
       DEPENDS ${${lib}_MFRONT_SOURCES}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"

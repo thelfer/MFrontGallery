@@ -9,11 +9,17 @@ macro(add_mfront_model_sources lib interface search_paths file)
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront")
   endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
   set(mfront_output "${CMAKE_CURRENT_BINARY_DIR}/src/${file}-${interface}.cxx")
+  set(mfront_args)
+  list(APPEND mfront_args ${search_paths})
+  if(mfm_global_dsl_options)
+    list(APPEND mfront_args ${mfm_global_dsl_options})
+  endif(mfm_global_dsl_options)
+  list(APPEND mfront_args "--interface=${interface}")
+  list(APPEND mfront_args "${mfront_file}")
   add_custom_command(
     OUTPUT  "${mfront_output}"
     COMMAND "${MFRONT}"
-    ARGS    ${search_paths}
-    ARGS    "--interface=${interface}" "${mfront_file}"
+    ARGS    ${mfront_args}
     DEPENDS "${mfront_file}"
     COMMENT "mfront source ${mfront_file}")
   set(${lib}_SOURCES ${mfront_output} ${${lib}_SOURCES})

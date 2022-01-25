@@ -1,5 +1,5 @@
 ---
-title: Introducing legacy `Abaqus/UMAT` implementations in `MFrontGallery`
+title: Introducing small strain legacy `Abaqus/UMAT` implementations in `MFrontGallery`
 author: Thomas Helfer, Éric Simo
 date: 2020
 lang: en-EN
@@ -857,7 +857,7 @@ avoid a redundant `MFront`.
 
 We choose to create two libraries `v1` and `v1` for each versions of the
 wrapped behaviour. Those directories are placed in the
-`mfront-wrappers/fortran/umat/` directory.
+`unit-tests/mfront-wrappers/fortran/umat/` directory.
 
 > **The `enable-fortran-behaviours-wrappers` options**
 >

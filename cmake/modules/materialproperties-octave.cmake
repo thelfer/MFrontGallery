@@ -8,12 +8,17 @@ function(mfront_properties_octave_library mat)
     set(mfront_file   "${source_dir}/${source}.mfront")
     get_mfront_all_specific_targets_generated_sources("octave" ${mat} ${mfront_file})
     list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/octave/src/")
+    set(mfront_args)
+    list(APPEND mfront_args ${mfront_search_paths})
+    if(mfm_global_dsl_options)
+      list(APPEND mfront_args ${mfm_global_dsl_options})
+    endif(mfm_global_dsl_options)
+    list(APPEND mfront_args "--interface=octave")
+    list(APPEND mfront_args "${mfront_file}")
     add_custom_command(
       OUTPUT  ${mfront_generated_sources}
       COMMAND "${MFRONT}"
-      ARGS    "--interface=octave"
-      ARGS    ${mfront_search_paths}
-      ARGS     "${mfront_file}"
+      ARGS    ${mfront_args}
       DEPENDS "${mfront_file}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
       COMMENT "mfront source ${mfront_file} for interface ${interface}")

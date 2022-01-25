@@ -14,12 +14,17 @@ macro(mfront_properties_python_library mat)
   endforeach(source)
   list(APPEND ${lib}_SOURCES ${wrapper_source})
   list(REMOVE_DUPLICATES ${lib}_SOURCES)
+  set(mfront_args)
+  list(APPEND mfront_args ${mfront_search_paths})
+  if(mfm_global_dsl_options)
+    list(APPEND mfront_args ${mfm_global_dsl_options})
+  endif(mfm_global_dsl_options)
+  list(APPEND mfront_args "--interface=${interface}")
+  list(APPEND mfront_args "${mfront_files}")
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
-      ARGS    "--interface=${interface}"
-      ARGS    ${mfront_search_paths}
-      ARGS    ${mfront_files}
+      ARGS    ${mfront_args}
       DEPENDS ${mfront_files}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
       COMMENT "mfront sources ${mfront_files} for interface ${interface}")

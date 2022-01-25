@@ -237,6 +237,16 @@ function(check_if_model_interface_is_supported interface)
   endif()
 endfunction(check_if_model_interface_is_supported interface)
 
+set(mfm_global_dsl_options )
+if(MFM_BUILD_IDENTIFIER)
+  list(APPEND mfm_global_dsl_options
+       "--dsl-option=build_identifier:\"${MFM_BUILD_IDENTIFIER}\"")
+endif(MFM_BUILD_IDENTIFIER)
+if(MFM_TREAT_PARAMETERS_AS_STATIC_VARIABLES)
+  list(APPEND mfm_global_dsl_options
+       "--dsl-option=parameters_as_static_variables:true")
+endif(MFM_TREAT_PARAMETERS_AS_STATIC_VARIABLES)
+
 function(get_mfront_all_specific_targets_generated_sources interface mat file)
   execute_process(COMMAND ${MFRONT_QUERY}
     "--verbose=quiet"
@@ -253,11 +263,17 @@ function(get_mfront_all_specific_targets_generated_sources interface mat file)
 endfunction(get_mfront_all_specific_targets_generated_sources)
 
 function(get_mfront_generated_sources mat interface search_paths file)
+  set(mfront_query_args )
+  list(APPEND mfront_query_args "--verbose=quiet")
+  list(APPEND mfront_query_args ${search_paths})
+  list(APPEND mfront_query_args "--interface=${interface}")
+  if(mfm_global_dsl_options)
+    list(APPEND mfront_query_args ${mfm_global_dsl_options})
+  endif(mfm_global_dsl_options)
+  list(APPEND mfront_query_args "--generated-sources=unsorted")
+  list(APPEND mfront_query_args "${file}")
   execute_process(COMMAND ${MFRONT_QUERY}
-    "--verbose=quiet"
-    "--interface=${interface}" "${file}"
-    "--generated-sources=unsorted"
-    ${search_paths}
+    ${mfront_query_args}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)

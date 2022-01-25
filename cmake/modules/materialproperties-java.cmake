@@ -21,11 +21,16 @@ function(mfront_properties_java_library mat)
   list(REMOVE_DUPLICATES ${lib}_SOURCES)
   set(all_generated_files ${${lib}_SOURCES})
   list(APPEND all_generated_files ${CMAKE_CURRENT_BINARY_DIR}/java/java/${java_file})
+  set(mfront_args)
+  list(APPEND mfront_args ${mfront_search_paths})
+  if(mfm_global_dsl_options)
+    list(APPEND mfront_args ${mfm_global_dsl_options})
+  endif(mfm_global_dsl_options)
   if(MFM_PACKAGE)
     add_custom_command(
       OUTPUT  ${all_generated_files}
       COMMAND "${MFRONT}"
-      ARGS    ${mfront_search_paths}
+      ARGS    ${mfront_args}
       ARGS    "--@Package=${MFM_PACKAGE}"
       ARGS    "--interface=java"
       ARGS    ${mfront_files}
@@ -36,7 +41,7 @@ function(mfront_properties_java_library mat)
     add_custom_command(
       OUTPUT  ${all_generated_files}
       COMMAND "${MFRONT}"
-      ARGS    ${mfront_search_paths}
+      ARGS    ${mfront_args}
       ARGS    "--interface=java"
       ARGS    ${mfront_files}
       DEPENDS "${mfront_files}"

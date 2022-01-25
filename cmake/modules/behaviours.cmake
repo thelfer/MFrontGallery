@@ -205,12 +205,17 @@ function(mfront_behaviours_library mat)
       endif(nb_other_sources GREATER 0)
     endif(nb_sources EQUAL 0)
     if(generate_library)
+      set(mfront_args )
+      list(APPEND mfront_args ${mfront_search_paths})
+      list(APPEND mfront_args "--interface=${interface}")
+      if(mfm_global_dsl_options)
+        list(APPEND mfront_args ${mfm_global_dsl_options})
+      endif(mfm_global_dsl_options)
+      list(APPEND mfront_args ${${mfront_behaviour_library_name}_MFRONT_SOURCES})
       add_custom_command(
         OUTPUT  ${${mfront_behaviour_library_name}_SOURCES}
         COMMAND "${MFRONT}"
-        ARGS    "--interface=${interface}"
-        ARGS    ${mfront_search_paths}
-        ARGS    ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
+        ARGS    ${mfront_args}
         DEPENDS ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
         COMMENT "mfront sources ${${mfront_behaviour_library_name}_MFRONT_SOURCES} for interface ${interface}")
