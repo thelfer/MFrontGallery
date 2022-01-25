@@ -63,13 +63,43 @@ The interfaces are selected by a set of `cmake` options prefixed by
 
 ### Variables affecting the compilation of `MFront` files
 
+#### Option passed to domain specific languages
+
+The following variables can be used to define options passed to domain
+specific languages:
+
 - `MFM_BUILD_IDENTIFIER`: string variable specifying a build identifier.
+  By default, the build identifier exported by `MFront` will be empty.
   Defining this variable is only supported when using a version of
   `TFEL` greater than `4.1`.
-- `MFM_TREAT_PARAMETERS_AS_STATIC_VARIABLES`: boolean variables stating
-  if parameters shall be treated as static variables. Defining this
-  variable is only supported when using a version of `TFEL` greater than
-  `4.1`.
+- `MFM_TREAT_PARAMETERS_AS_STATIC_VARIABLES`: boolean variable stating
+  if the parameters shall be treated as static variables. By default,
+  parameters are not defined as static variables by `MFront` allowing
+  their modifications at runtime. The way of modifying parameters
+  depends on the interface considered. Defining this variable is only
+  supported when using a version of `TFEL` greater than `4.1`.
+- `MFM_ALLOW_PARAMETERS_INITIALIZATION_FROM_FILE`: boolean variable
+  stating if `MFront` shall generate code for reading parameters from an
+  external text file located in the current directory at runtime, a
+  feature supported by most interfaces. By default, `MFront` does
+  generate this code. Defining this variable is only supported when
+  using a version of `TFEL` greater than `4.1`.
+
+`MFrontGallery` may use more refined variables to define the options
+passed to `MFront`' domain specific languages. The name of those
+variables depends on the name of the considered interface and the type
+of the material knowledge considered.
+
+Assuming that the `castem` interface as been enabled for behaviours, the
+build identifier passed to the domain specific languages of `MFront`'
+files compiled with this interface is defined by one of the following
+variables:
+
+- `MFM_CASTEM_BEHAVIOURS_BUILD_IDENTIFIER`
+- `MFM_CASTEM_BUILD_IDENTIFIER`
+- `MFM_BUILD_IDENTIFIER`
+
+The definition of all those variables is optional.
 
 ### Interface selection
 
