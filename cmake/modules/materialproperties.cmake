@@ -5,8 +5,10 @@ function(add_mfront_property_source lib mat interface search_paths file)
     set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
   endif(${ARGC} EQUAL 6)
   set(mfront_file   "${source_dir}/${file}.mfront")
-  get_mfront_generated_sources("material-property" ${mat} ${interface}
-                               "${search_paths}" ${mfront_file})
+  get_material_property_dsl_options(${interface})
+  get_mfront_generated_sources("material-property"
+                                ${mat} ${interface} "${search_paths}"
+                               "${mfront_dsl_options}" ${mfront_file})
   list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
   set(${lib}_MFRONT_SOURCES ${mfront_file} ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
   list(APPEND mfront_generated_sources ${${lib}_SOURCES})
@@ -26,11 +28,16 @@ function(mfront_properties_standard_library2 lib mat interface)
   if(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
     list(APPEND mfront_args "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   endif(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  list(APPEND mfront_args ${mfront_search_paths})
+  get_material_property_dsl_options(${interface})
+  if(mfront_dsl_options)
+    list(APPEND mfront_args ${mfront_dsl_options})
+  endif(mfront_dsl_options)
+  list(APPEND mfront_args ${${lib}_MFRONT_SOURCES})
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
-      ARGS    "--interface=${interface}"
-      ARGS    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
+      ARGS    ${mfront_args}
       ARGS    ${${lib}_MFRONT_SOURCES}
       DEPENDS ${${lib}_MFRONT_SOURCES}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"

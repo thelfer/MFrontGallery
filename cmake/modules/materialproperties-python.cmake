@@ -5,25 +5,32 @@ macro(mfront_properties_python_library mat)
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   set(wrapper_source "${CMAKE_CURRENT_BINARY_DIR}/python/src/${mat}lawwrapper.cxx")
+  get_material_property_dsl_options("python")
   foreach(source ${mfront_sources})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
     list(APPEND mfront_files "${mfront_file}")
-    get_mfront_generated_sources("material-property" ${mat} ${interface}
-                                 "${mfront_search_paths}" ${mfront_file})
-    list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
+    get_mfront_generated_sources("material-property"
+                                 ${mat} "python" "${mfront_search_paths}"
+                                 "${mfront_dsl_options}" ${mfront_file})
+    list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/python/src/")
     list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
   endforeach(source)
   list(APPEND ${lib}_SOURCES ${wrapper_source})
   list(REMOVE_DUPLICATES ${lib}_SOURCES)
+  set(mfront_args)
+  list(APPEND mfront_args ${mfront_search_paths})
+  if(mfront_dsl_options)
+    list(APPEND mfront_args ${mfront_dsl_options})
+  endif(mfront_dsl_options)
+  list(APPEND mfront_args "--interface=python")
+  list(APPEND mfront_args "${mfront_files}")
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
-      ARGS    "--interface=${interface}"
-      ARGS    ${mfront_search_paths}
-      ARGS    ${mfront_files}
+      ARGS    ${mfront_args}
       DEPENDS ${mfront_files}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-      COMMENT "mfront sources ${mfront_files} for interface ${interface}")
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
+      COMMENT "mfront sources ${mfront_files} for interface python")
   message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
   add_library(${lib} SHARED ${${lib}_SOURCES})
   target_include_directories(${lib}

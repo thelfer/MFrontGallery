@@ -196,21 +196,21 @@ endif(TFEL_MADNEX_SUPPORT)
 SET(HAVE_TFEL ON)
 
 # list of available material property interfaces
-EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-material-property-interfaces"
+execute_process(COMMAND ${MFRONT} "--list-material-property-interfaces"
   OUTPUT_VARIABLE MFRONT_MATERIALPROPERTY_INTERFACES_TMP
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCHALL "[a-zA-Z]+"
        MFRONT_MATERIALPROPERTY_INTERFACES ${MFRONT_MATERIALPROPERTY_INTERFACES_TMP})
 
 # list of available behaviour interfaces
-EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-behaviour-interfaces"
+execute_process(COMMAND ${MFRONT} "--list-behaviour-interfaces"
   OUTPUT_VARIABLE MFRONT_BEHAVIOUR_INTERFACES_TMP
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCHALL "[a-zA-Z]+"
        MFRONT_BEHAVIOUR_INTERFACES ${MFRONT_BEHAVIOUR_INTERFACES_TMP})
 
 # list of available model interfaces
-EXECUTE_PROCESS(COMMAND ${MFRONT} "--list-model-interfaces"
+execute_process(COMMAND ${MFRONT} "--list-model-interfaces"
   OUTPUT_VARIABLE MFRONT_MODEL_INTERFACES_TMP
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCHALL "[a-zA-Z]+"
@@ -237,6 +237,80 @@ function(check_if_model_interface_is_supported interface)
   endif()
 endfunction(check_if_model_interface_is_supported interface)
 
+# mkt: material knowledge type
+# interface: interface considered 
+# option: dsl option to be treated
+# cmake_option_name: variable used to build the cmake option name
+function(_get_boolean_dsl_options mkt interface option cmake_option_name)
+  string(TOUPPER ${interface} uppercase_interface)
+  if(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+    list(APPEND mfront_dsl_options
+         "--dsl-option=${option}:true")
+  else(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+    if(MFM_${uppercase_interface}_${cmake_option_name})
+      list(APPEND mfront_dsl_options
+           "--dsl-option=${option}:true")
+    elseif(MFM_${uppercase_interface}_${cmake_option_name})
+      if(MFM_${cmake_option_name})
+        list(APPEND mfront_dsl_options
+             "--dsl-option=${option}:true")
+      endif(MFM_${cmake_option_name})
+    endif(MFM_${uppercase_interface}_${cmake_option_name})
+  endif(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(_get_boolean_dsl_options mkt interface option cmake_option_name)
+
+# mkt: material knowledge type
+# interface: interface considered 
+# option: dsl option to be treated
+# cmake_option_name: variable used to build the cmake option name
+function(_get_string_dsl_options mkt interface option cmake_option_name)
+  string(TOUPPER ${interface} uppercase_interface)
+  if(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+    list(APPEND mfront_dsl_options
+         "--dsl-option=${option}:${MFM_${uppercase_interface}_${mkt}_${cmake_option_name}}")
+  else(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+    if(MFM_${uppercase_interface}_${cmake_option_name})
+      list(APPEND mfront_dsl_options
+           "--dsl-option=${option}:${MFM_${uppercase_interface}_${cmake_option_name}}")
+    elseif(MFM_${uppercase_interface}_${cmake_option_name})
+      if(MFM_${cmake_option_name})
+        list(APPEND mfront_dsl_options
+             "--dsl-option=${option}:${MFM_${cmake_option_name}}")
+      endif(MFM_${cmake_option_name})
+    endif(MFM_${uppercase_interface}_${cmake_option_name})
+  endif(MFM_${uppercase_interface}_${mkt}_${cmake_option_name})
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(_get_string_dsl_options mkt interface option cmake_option_name)
+
+# mkt: material knowledge type
+# interface: interface considered 
+function(_get_dsl_options mkt interface)
+  set(mfront_dsl_options)
+  _get_string_dsl_options(${mkt} ${interface}
+    "build_identifier" "BUILD_IDENTIFIER")
+  _get_boolean_dsl_options(${mkt} ${interface}
+    "parameters_as_static_variables" "TREAT_PARAMETERS_AS_STATIC_VARIABLES")
+  _get_boolean_dsl_options(${mkt} ${interface}
+    "initialize_parameters_from_file" "ALLOW_PARAMETERS_INITIALIZATION_FROM_FILE")
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(_get_dsl_options mkt interface)
+
+function(get_material_property_dsl_options interface)
+  _get_dsl_options("MATERIAL_PROPERTIES" ${interface})
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(get_material_property_dsl_options interface)
+
+function(get_behaviour_dsl_options interface)
+  _get_dsl_options("BEHAVIOURS" ${interface})
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(get_behaviour_dsl_options interface)
+
+function(get_model_dsl_options interface)
+  _get_dsl_options("MODELS" ${interface})
+  set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
+endfunction(get_model_dsl_options interface)
+
 function(get_mfront_all_specific_targets_generated_sources interface mat file)
   execute_process(COMMAND ${MFRONT_QUERY}
     "--verbose=quiet"
@@ -252,31 +326,30 @@ function(get_mfront_all_specific_targets_generated_sources interface mat file)
   set(mfront_generated_sources ${MFRONT_GENERATED_SOURCES} PARENT_SCOPE)
 endfunction(get_mfront_all_specific_targets_generated_sources)
 
-function(get_mfront_generated_sources kind mat interface search_paths file)
+function(get_mfront_generated_sources kind mat interface search_paths dsl_options file)
   get_filename_component(file_ext "${file}" EXT)
   set(mfront_query_args )
   list(APPEND mfront_query_args "--verbose=quiet")
+  list(APPEND mfront_query_args ${dsl_options})
+  list(APPEND mfront_query_args ${search_paths})
   list(APPEND mfront_query_args "--interface=${interface}")
   list(APPEND mfront_query_args "--generated-sources=unsorted")
-  message(STATUS "mfront file: ${file} ${file_ext}")
   if ((${file_ext} STREQUAL ".madnex") OR (${file_ext} STREQUAL ".mdnx"))
     list(APPEND mfront_query_args "--material=${mat}")
     list(APPEND mfront_query_args "--all-behaviours")
-#    if(${kind} STREQUAL "material-property")
-#      list(APPEND mfront_query_args "--all-material-properties")
-#    elif(${kind} STREQUAL "behaviour")
-#      list(APPEND mfront_query_args "--all-behaviours")
-#    elif(${kind} STREQUAL "model")
-#      list(APPEND mfront_query_args "--all-models")
-#    else(${kind} STREQUAL "material-property")
-#      message(FATAL_ERROR "get_mfront_generated_sources: unexpected argument ('${kind}')")
-#    endif(${kind} STREQUAL "material-property")
+    if(${kind} STREQUAL "material-property")
+      list(APPEND mfront_query_args "--all-material-properties")
+    elif(${kind} STREQUAL "behaviour")
+      list(APPEND mfront_query_args "--all-behaviours")
+    elif(${kind} STREQUAL "model")
+      list(APPEND mfront_query_args "--all-models")
+    else(${kind} STREQUAL "material-property")
+      message(FATAL_ERROR "get_mfront_generated_sources: unexpected argument ('${kind}')")
+    endif(${kind} STREQUAL "material-property")
   endif ((${file_ext} STREQUAL ".madnex") OR (${file_ext} STREQUAL ".mdnx"))
   list(APPEND mfront_query_args "${file}")
-  message(STATUS "mfront-query arguments: ${mfront_query_args}")
   execute_process(COMMAND ${MFRONT_QUERY}
     ${mfront_query_args}
-    ${search_paths}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)

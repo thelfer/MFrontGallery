@@ -2,6 +2,39 @@
 # website: <https://thelfer.github.io/MFrontGallery/web/index.html>
 # github repository: <https://github.com/thelfer/MFrontGallery>
 
+function(check_temperature_is_first_external_state_variable mat search_paths source)
+  behaviour_query(modelling_hypotheses
+    ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
+  # creating a cmake list
+  separate_arguments(modelling_hypotheses)
+  list(LENGTH modelling_hypotheses nb_modelling_hypotheses)
+  if(nb_modelling_hypotheses EQUAL 0)
+    set(compatibility_failure
+        "no modelling hypothesis defined" PARENT_SCOPE)
+    set(file_OK OFF PARENT_SCOPE)
+  endif(nb_modelling_hypotheses EQUAL 0)
+  foreach(h ${modelling_hypotheses})
+    set(_external_state_variable_test OFF)
+    behaviour_query(external_state_variables
+      ${mat} "${search_paths}" ${source} 
+      "--modelling-hypothesis=${h}"
+      "--external-state-variables")
+    list(LENGTH external_state_variables nb_external_state_variables)
+    if(nb_external_state_variables GREATER 0)
+      list(GET external_state_variables 0 first_external_state_variable)
+      string(FIND "${first_external_state_variable}" "- Temperature" out)
+      if(${out} EQUAL 0)
+        set(_external_state_variable_test ON)
+      endif()
+    endif(nb_external_state_variables GREATER 0)
+    if(NOT _external_state_variable_test)
+      set(msg "temperature is not the first external state variable")
+      set(compatibility_failure ${msg} PARENT_SCOPE)
+      set(file_OK OFF PARENT_SCOPE)
+    endif()
+  endforeach(h ${modelling_hypotheses})
+endfunction(check_temperature_is_first_external_state_variable)
+
 function(check_behaviour_compatibility mat interface search_paths mfront_file)
   set(file_OK ON)
   set(compatibility_failure)
@@ -54,8 +87,10 @@ function(add_mfront_behaviour_sources lib mat interface search_paths file)
   if(mfront_file)
     check_behaviour_compatibility(${mat} ${interface} "${search_paths}" ${mfront_file})
     if(file_OK)
-      get_mfront_generated_sources("behaviour" ${mat} ${interface}
-                                   "${search_paths}" ${mfront_file})
+      get_behaviour_dsl_options(${interface})
+      get_mfront_generated_sources("behaviour"
+	                           ${mat} ${interface} "${search_paths}"
+                                   "${mfront_dsl_options}" ${mfront_file})
       list(TRANSFORM mfront_generated_sources
            PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
 	  list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
@@ -175,12 +210,18 @@ function(mfront_behaviours_library mat)
       endif(nb_other_sources GREATER 0)
     endif(nb_sources EQUAL 0)
     if(generate_library)
+      set(mfront_args )
+      list(APPEND mfront_args ${mfront_search_paths})
+      list(APPEND mfront_args "--interface=${interface}")
+      get_behaviour_dsl_options(${interface})
+      if(mfront_dsl_options)
+        list(APPEND mfront_args ${mfront_dsl_options})
+      endif(mfront_dsl_options)
+      list(APPEND mfront_args ${${mfront_behaviour_library_name}_MFRONT_SOURCES})
       add_custom_command(
         OUTPUT  ${${mfront_behaviour_library_name}_SOURCES}
         COMMAND "${MFRONT}"
-        ARGS    "--interface=${interface}"
-        ARGS    ${mfront_search_paths}
-        ARGS    ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
+        ARGS    ${mfront_args}
         DEPENDS ${${mfront_behaviour_library_name}_MFRONT_SOURCES}
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
         COMMENT "mfront sources ${${mfront_behaviour_library_name}_MFRONT_SOURCES} for interface ${interface}")
