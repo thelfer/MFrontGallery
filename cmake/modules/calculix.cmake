@@ -1,6 +1,6 @@
 set(CALCULIX_CPPFLAGS)
 function(check_calculix_compatibility mat search_paths source)
-  behaviour_query(behaviour_type
+  mfront_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing
@@ -19,7 +19,7 @@ function(check_calculix_compatibility mat search_paths source)
     endif(NOT file_OK)
   endif(file_OK)
   if(file_OK)
-    behaviour_query(modelling_hypotheses
+    mfront_query(modelling_hypotheses
       ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
     # creating a cmake list
     separate_arguments(modelling_hypotheses)
@@ -29,7 +29,7 @@ function(check_calculix_compatibility mat search_paths source)
           "tridimensional modelling hypothesis not supported" PARENT_SCOPE)
       set(file_OK OFF PARENT_SCOPE)
     else(tridimensional_found EQUAL -1)
-      behaviour_query(external_state_variables
+      mfront_query(external_state_variables
         ${mat} "${search_paths}" ${source}
         "--modelling-hypothesis=Tridimensional"
         "--external-state-variables")

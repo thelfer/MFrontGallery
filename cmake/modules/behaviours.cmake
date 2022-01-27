@@ -3,7 +3,7 @@
 # github repository: <https://github.com/thelfer/MFrontGallery>
 
 function(check_temperature_is_first_external_state_variable mat search_paths source)
-  behaviour_query(modelling_hypotheses
+  mfront_query(modelling_hypotheses
     ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
   # creating a cmake list
   separate_arguments(modelling_hypotheses)
@@ -15,7 +15,7 @@ function(check_temperature_is_first_external_state_variable mat search_paths sou
   endif(nb_modelling_hypotheses EQUAL 0)
   foreach(h ${modelling_hypotheses})
     set(_external_state_variable_test OFF)
-    behaviour_query(external_state_variables
+    mfront_query(external_state_variables
       ${mat} "${search_paths}" ${source} 
       "--modelling-hypothesis=${h}"
       "--external-state-variables")
@@ -90,15 +90,14 @@ function(add_mfront_behaviour_source lib mat interface search_paths mfront_path)
 endfunction(add_mfront_behaviour_source)
 
 function(add_mfront_behaviour_sources lib mat interface search_paths file)
-  # TODO: treat madnex files and extract implementation paths
   get_mfront_source_location(${file})
   if(NOT mfront_path)
-    list(APPEND ${mfront_behaviour_library_name}_OTHER_SOURCES "${source}")
-    set(${mfront_behaviour_library_name}_OTHER_SOURCES
-        ${${mfront_behaviour_library_name}_OTHER_SOURCES} PARENT_SCOPE)
+    list(APPEND ${lib}_OTHER_SOURCES "${source}")
+    set(${lib}_OTHER_SOURCES
+        ${${lib}_OTHER_SOURCES} PARENT_SCOPE)
   else()
     if (madnex_file)
-      behaviour_query(_impls ${mat} "${search_paths}" ${mfront_path}
+      mfront_query(_impls ${mat} "${search_paths}" ${mfront_path}
                       "--all-behaviours" "--list-implementation-paths=unsorted")
       if(_impls)
         string(REPLACE " " ";" _mfront_impls ${_impls})

@@ -5,7 +5,7 @@ else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
 function(check_aster_compatibility mat search_paths source)
-  behaviour_query(behaviour_type
+  mfront_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing

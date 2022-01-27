@@ -23,10 +23,9 @@ add_subdirectory(unit-tests/mfront-wrappers)
 add_subdirectory(unit-tests/behaviours-without-temperature)
 add_subdirectory(unit-tests/madnex/behaviours)
 
-#if(enable-website)
-#  add_subdirectory(docs/web)
-#endif(enable-website)
-
+if(enable-website)
+  add_subdirectory(docs/web)
+endif(enable-website)
 
 # if(TFEL_CHECK)
 #   add_test(NAME tfel_check COMMAND ${TFEL_CHECK})

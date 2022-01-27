@@ -1,52 +1,105 @@
-function(add_mfront_property_source lib mat interface search_paths file)
-  if(${ARGC} EQUAL 6)
-    set(source_dir "${ARGN}")
-  else(${ARGC} EQUAL 6)
-    set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
-  endif(${ARGC} EQUAL 6)
-  set(mfront_file   "${source_dir}/${file}.mfront")
+function(add_mfront_material_property_source lib mat interface search_paths mfront_path)
   get_material_property_dsl_options(${interface})
   get_mfront_generated_sources(${mat} ${interface} "${search_paths}"
-                               "${mfront_dsl_options}" ${mfront_file})
-  list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
+                               "${mfront_dsl_options}" ${mfront_path})
+  list(TRANSFORM mfront_generated_sources PREPEND
+      "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
   set(${lib}_MFRONT_SOURCES ${mfront_file} ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
   list(APPEND mfront_generated_sources ${${lib}_SOURCES})
   list(REMOVE_DUPLICATES mfront_generated_sources)
   set(${lib}_SOURCES ${mfront_generated_sources} PARENT_SCOPE)
-endfunction(add_mfront_property_source)
+endfunction(add_mfront_material_property_source)
+
+function(add_mfront_property_sources lib mat interface search_paths file)
+  get_mfront_source_location(${file})
+  if(NOT mfront_path)
+    list(APPEND ${lib}_OTHER_SOURCES "${source}")
+    set(${lib}_OTHER_SOURCES
+        ${${lib}_OTHER_SOURCES} PARENT_SCOPE)
+  else()
+    if (madnex_file)
+      mfront_query(_impls ${mat} "${search_paths}" ${mfront_path}
+                   "--all-material-properties" "--list-implementation-paths=unsorted")
+      if(_impls)
+        string(REPLACE " " ";" _mfront_impls ${_impls})
+      else(_impls)
+        set(_mfront_impls )
+      endif(_impls)
+      foreach(_impl ${_mfront_impls})
+        add_mfront_material_property_source(${lib} ${mat} ${interface}
+                                            "${search_paths}" ${_impl})
+	    list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${_impl})
+        set(${lib}_MFRONT_IMPLEMENTATION_PATHS
+            ${${lib}_MFRONT_IMPLEMENTATION_PATHS} PARENT_SCOPE)
+      endforeach(_impl ${impls})
+      list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
+      set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
+    else()
+      add_mfront_material_property_source(${lib} ${mat} ${interface}
+                                          "${search_paths}" ${mfront_path})
+	  list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
+      set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
+	  list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${mfront_path})
+      set(${lib}_MFRONT_IMPLEMENTATION_PATHS
+          ${${lib}_MFRONT_IMPLEMENTATION_PATHS} PARENT_SCOPE)
+    endif()
+    set(${lib}_SOURCES ${${lib}_SOURCES} PARENT_SCOPE)
+  endif()
+endfunction(add_mfront_property_sources)
 
 function(mfront_properties_standard_library2 lib mat interface)
   parse_mfront_library_sources(${ARGN})
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   foreach(source ${mfront_sources})
-    add_mfront_property_source(${lib} ${mat} ${interface} "${mfront_search_paths}" ${source})
+    add_mfront_property_sources(${lib} ${mat} ${interface} "${mfront_search_paths}" ${source})
   endforeach(source)
-  set(mfront_args)
-  list(APPEND mfront_args "--interface=${interface}")
-  if(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
-    list(APPEND mfront_args "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
-  endif(EXISTS "${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
-  list(APPEND mfront_args ${mfront_search_paths})
-  get_material_property_dsl_options(${interface})
-  if(mfront_dsl_options)
-    list(APPEND mfront_args ${mfront_dsl_options})
-  endif(mfront_dsl_options)
-  list(APPEND mfront_args ${${lib}_MFRONT_SOURCES})
-  add_custom_command(
-      OUTPUT  ${${lib}_SOURCES}
-      COMMAND "${MFRONT}"
-      ARGS    ${mfront_args}
-      ARGS    ${${lib}_MFRONT_SOURCES}
-      DEPENDS ${${lib}_MFRONT_SOURCES}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
-      COMMENT "mfront sources ${${lib}_MFRONT_SOURCES} for interface ${interface}")
-  message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
-  add_library(${lib} SHARED ${${lib}_SOURCES})
-  target_include_directories(${lib}
-    PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
-    PRIVATE "${TFEL_INCLUDE_PATH}")
-  mfm_install_library(${lib})
+  set(generate_library ON)
+  list(LENGTH ${lib}_SOURCES nb_sources)
+  list(LENGTH ${lib}_OTHER_SOURCES nb_other_sources)
+  if(nb_sources EQUAL 0)
+    if(nb_other_sources GREATER 0)
+      if(NOT generate_without_mfront_sources)
+        set(generate_library OFF)
+      endif(NOT generate_without_mfront_sources)
+    else(nb_other_sources GREATER 0)
+      set(generate_library OFF)
+    endif(nb_other_sources GREATER 0)
+  endif(nb_sources EQUAL 0)
+  if(generate_library)
+    set(mfront_args)
+    list(APPEND mfront_args "--interface=${interface}")
+    list(APPEND mfront_args ${mfront_search_paths})
+    get_material_property_dsl_options(${interface})
+    if(mfront_dsl_options)
+      list(APPEND mfront_args ${mfront_dsl_options})
+    endif(mfront_dsl_options)
+    list(APPEND mfront_args ${${lib}_MFRONT_IMPLEMENTATION_PATHS})
+    message(STATUS "mfront_args: ${mfront_args} ")
+    add_custom_command(
+        OUTPUT  ${${lib}_SOURCES}
+        COMMAND "${MFRONT}"
+        ARGS    ${mfront_args}
+        DEPENDS ${${lib}_MFRONT_SOURCES}
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
+        COMMENT "mfront sources ${${lib}_MFRONT_SOURCES} for interface ${interface}")
+    message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")
+    add_library(${lib} SHARED ${${lib}_SOURCES})
+    target_include_directories(${lib}
+      PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
+      PRIVATE "${TFEL_INCLUDE_PATH}")
+    mfm_install_library(${lib})
+  else(generate_library)
+    if(nb_other_sources GREATER 0)
+      message(STATUS "Only external sources provided for "
+	    "library ${lib} for interface ${interface}. "
+        "The generation of this library is disabled by default. It can be enabled "
+        "by passing the GENERATE_WITHOUT_MFRONT_SOURCES")
+    else(nb_other_sources GREATER 0)
+      message(STATUS "No sources selected for "
+	    "library ${lib} for interface ${interface}")
+    endif(nb_other_sources GREATER 0)
+  endif(generate_library)
 endfunction(mfront_properties_standard_library2)
 
 function(mfront_properties_standard_library mat interface)

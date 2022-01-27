@@ -5,7 +5,7 @@ find_path(CASTEM_HEADER castem.h
     HINTS ${TFEL_INCLUDE_PATH})
 
 function(check_castem_compatibility mat search_paths source)
-  behaviour_query(behaviour_type
+  mfront_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing

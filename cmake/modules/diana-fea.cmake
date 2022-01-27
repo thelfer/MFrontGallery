@@ -1,10 +1,10 @@
 set(DIANA_FEA_CPPFLAGS)
 function(check_diana_fea_compatibility mat search_paths source)
-  behaviour_query(behaviour_type
+  mfront_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, check if isotropic
-    behaviour_query(behaviour_symmetry
+    mfront_query(behaviour_symmetry
       ${mat} "${search_paths}" ${source} "--symmetry")
     if(behaviour_symmetry STREQUAL "0")
       # do nohing
@@ -30,7 +30,7 @@ function(check_diana_fea_compatibility mat search_paths source)
     endif(NOT file_OK)
   endif(file_OK)
   if(file_OK)
-    behaviour_query(modelling_hypotheses
+    mfront_query(modelling_hypotheses
       ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
     # creating a cmake list
     separate_arguments(modelling_hypotheses)
@@ -43,7 +43,7 @@ function(check_diana_fea_compatibility mat search_paths source)
     foreach(h ${modelling_hypotheses})
       if(NOT h STREQUAL "AxisymmetricalGeneralisedPlaneStress")
         set(_external_state_variable_test OFF)
-        behaviour_query(external_state_variables
+        mfront_query(external_state_variables
           ${mat} "${search_paths}" ${source} 
           "--modelling-hypothesis=${h}"
           "--external-state-variables")

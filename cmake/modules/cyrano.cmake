@@ -5,7 +5,7 @@ else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 
 function(check_cyrano_compatibility mat search_paths source)
-  behaviour_query(modelling_hypotheses
+  mfront_query(modelling_hypotheses
     ${mat} "${search_paths}" ${source} "--supported-modelling-hypotheses")
   separate_arguments(modelling_hypotheses)
   list(FIND modelling_hypotheses "AxisymmetricalGeneralisedPlaneStrain"
@@ -19,17 +19,17 @@ function(check_cyrano_compatibility mat search_paths source)
     set(compatibility_failure "${msg}" PARENT_SCOPE)
     set(file_OK OFF PARENT_SCOPE)
   else((agpstress EQUAL -1) AND (agpstrain EQUAL -1))
-    behaviour_query(behaviour_type
+    mfront_query(behaviour_type
       ${mat} "${search_paths}" ${source} "--type")
     if(NOT (behaviour_type STREQUAL "1"))
       set(compatibility_failure
           "only strain-based behaviours are supported" PARENT_SCOPE)
       set(file_OK OFF PARENT_SCOPE)
     else(NOT (behaviour_type STREQUAL "1"))
-      behaviour_query(behaviour_has_strain_measure
+      mfront_query(behaviour_has_strain_measure
         ${mat} "${search_paths}" ${source} "--is-strain-measure-defined")
       if(behaviour_has_strain_measure STREQUAL "true")
-	    behaviour_query(behaviour_strain_measure
+	    mfront_query(behaviour_strain_measure
 	      ${mat} "${search_paths}" ${source} "--strain-measure")
 	if(behaviour_strain_measure STREQUAL "Linearised")
     elseif(behaviour_strain_measure STREQUAL "Hencky")
