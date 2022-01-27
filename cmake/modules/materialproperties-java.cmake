@@ -15,8 +15,7 @@ function(mfront_properties_java_library mat)
   foreach(source ${mfront_sources})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
     list(APPEND mfront_files "${mfront_file}")
-    get_mfront_generated_sources("material-property"
-                                 ${mat} "java" "${mfront_search_paths}" 
+    get_mfront_generated_sources(${mat} "java" "${mfront_search_paths}" 
                                  "${mfront_dsl_options}" ${mfront_file})
     list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/java/src/")
     list(APPEND ${lib}_SOURCES ${mfront_generated_sources})

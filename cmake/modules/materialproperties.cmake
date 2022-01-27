@@ -6,8 +6,7 @@ function(add_mfront_property_source lib mat interface search_paths file)
   endif(${ARGC} EQUAL 6)
   set(mfront_file   "${source_dir}/${file}.mfront")
   get_material_property_dsl_options(${interface})
-  get_mfront_generated_sources("material-property"
-                                ${mat} ${interface} "${search_paths}"
+  get_mfront_generated_sources(${mat} ${interface} "${search_paths}"
                                "${mfront_dsl_options}" ${mfront_file})
   list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
   set(${lib}_MFRONT_SOURCES ${mfront_file} ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
