@@ -86,7 +86,7 @@ to the `MFront` search paths, where:
 
 Other search paths can be added by using any of the options
 `SEARCH_PATH` or `SEARCH_PATHS`, as described in Section
-@@sec:mfm:cmake:parse_mfront_library_sources.
+@sec:mfm:cmake:parse_mfront_library_sources.
 
 ## The `mfront_behaviours_library` function
 
