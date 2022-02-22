@@ -75,7 +75,6 @@ function(mfront_properties_standard_library2 lib mat interface)
       list(APPEND mfront_args ${mfront_dsl_options})
     endif(mfront_dsl_options)
     list(APPEND mfront_args ${${lib}_MFRONT_IMPLEMENTATION_PATHS})
-    message(STATUS "mfront_args: ${mfront_args} ")
     add_custom_command(
         OUTPUT  ${${lib}_SOURCES}
         COMMAND "${MFRONT}"

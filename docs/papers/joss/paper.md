@@ -22,7 +22,7 @@ pandoc -f markdown_strict --bibliography=bibliography.bib --filter pandoc-citepr
 
 # Introduction
 
-This project has two main almost orthogonal goals:
+This project has two main, almost orthogonal, goals:
 
 1. The first one is to show how solver developers may provide to their
   users a set of ready-to-use (mechanical) behaviours which can be
@@ -55,9 +55,9 @@ In particular, the project provides:
 
 - a [`cmake`](https://cmake.org) infrastructure that can be duplicated
   in (academic or industrial) derived projects. This infrastructure allows:
-  - to compile `MFront` sources using all interfaces supported
-    by `MFront`. For example, concerning behaviours, the behaviours can
-    be compiled for the following solvers:
+  - to compile `MFront` sources using all interfaces supported by
+    `MFront`. For example, concerning behaviours, the behaviours can be
+    compiled for the following solvers:
     [`Cast3M`](http://www-cast3m.cea.fr/),
     [`code_aster`](https://code-aster.org),
     [`Europlexus`](https://europlexus.jrc.ec.europa.eu/),
@@ -68,7 +68,8 @@ In particular, the project provides:
     those behaviours are also available in all solvers using the
     [`MFrontGenericInterfaceSupport`
     projet](https://thelfer.github.io/mgis/web/index.html) (MGIS),
-    including: [`OpenGeoSys`](https://www.opengeosys.org/),
+    including [@helfer_mfrontgenericinterfacesupport_2020]:
+    [`OpenGeoSys`](https://www.opengeosys.org/),
     [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
     `MANTA`,
     [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
