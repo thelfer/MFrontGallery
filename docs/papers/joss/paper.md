@@ -67,8 +67,8 @@ In particular, the project provides:
     FEA`](https://dianafea.com/). Thanks to the `generic` interface,
     those behaviours are also available in all solvers using the
     [`MFrontGenericInterfaceSupport`
-    projet](https://thelfer.github.io/mgis/web/index.html) (MGIS),
-    including [@helfer_mfrontgenericinterfacesupport_2020]:
+    projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
+    [@helfer_mfrontgenericinterfacesupport_2020], including:
     [`OpenGeoSys`](https://www.opengeosys.org/),
     [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
     `MANTA`,
@@ -300,21 +300,7 @@ Self-contained implementations are stored in the `materials` directory.
 Under this directory, implementations are stored by material and by kind
 (material property, behaviour or model), as follows:
 
-~~~~{.bash}
-materials/
-├── Bentonite
-│   └── behaviours
-│       └── include
-├── Concrete
-│   └── behaviours
-├── CrushedSalt
-│   └── behaviours
-├── VanadiumAlloy
-│   ├── behaviours
-│   └── properties
-└── Wood
-    └── behaviours
-~~~~
+![](img/materials.pdf){width=100%}
 
 ## Storage of generic behaviours
 
@@ -322,28 +308,16 @@ Generic implementations are stored in the `generic-behaviours`
 directory. Under this directory, the implementations are more or less
 arbitraly classified by the main phenomenon described, as follows:
 
-~~~~{.bash}
-generic-behaviours/
-├── damage
-├── damage_viscoplasticity
-├── finitestrainsinglecrystal
-├── heattransfer
-├── hyperelasticity
-├── hyperviscoelasticity
-├── nonlinearelasticity
-├── plasticity
-├── viscoelasticity
-└── viscoplasticity
-~~~~
 
 These generic implementations have been introduced in the
 `MFrontGallery` project to:
   
-- test if those implementations still compile and run as `̀MFront`
+- test if those implementations still compile and run as `MFront`
   evolves.
 - show to solver developers how they could provide to their users a set
   of ready-to-use behaviours.
 
+![](img/generic-behaviours.pdf){width=100%}
 
 # Acknowledgements
 
