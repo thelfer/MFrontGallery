@@ -34,13 +34,10 @@ This project has two main, almost orthogonal, goals:
   meet the requirements of safety-critical studies as discussed in
   Section \ref{sec:mfm:introduction:safety_critical_studies}.
 
-The distinction between those two approaches is profound and discussed
-in depth in Sections \ref{sec:mfm:introduction:statement_of_need}
-and \ref{sec:mfm:introduction:typical_use_case}.
-
 While the first goal is common to all (mechanical) solvers, one
-originality of the `MFrontGallery` project is to address the second
-goal.
+originality of the `MFrontGallery` project is to address the second goal
+which is discussed in depth in Section
+\ref{sec:mfm:introduction:statement_of_need}.
 
 The `MFrontGallery` project also contains various high-quality `MFront`
 implementations. Those implementations may originate from the `MFront`
@@ -92,7 +89,7 @@ Section \ref{sec:mfm:introduction:cmake_infrastructure} provides an
 overview of the `CMake` infrastructure of the project and discusses how
 `MFront` implementations are stored in the project.
 
-Section \ref{sec:mfm:creating_derived_project) describes how to create a
+Section \ref{sec:mfm:creating_derived_project} describes how to create a
 derived project based on the same `CMake` infrastructure as the
 `MFrontGallery`.
 
@@ -303,8 +300,8 @@ mostly convers:
   properties, behaviours and models.
 - functions related to documentation and website generation.
 
-Section \ref{sec:mfm:cmake:cmake_modules} describes the contents of the
-`cmake/modules` directory.
+Section \ref{sec:mfm:introduction:files} describes a recommended
+organisation of the sources.
 
 ## Main functions
 \label{sec:mfm:cmake:main_functions}
@@ -438,7 +435,7 @@ results to add the shared libraries properly. See Section
 options.
 
 #### Treatment of the sources
-\ref{sec:mfm:cmake:mfront_behaviours_library:sources}
+\label{sec:mfm:cmake:mfront_behaviours_library:sources}
 
 For each shared library to be added, each source returned in the
 `mfront_sources` variable by the `parse_mfront_library_sources` is
@@ -503,7 +500,7 @@ options:
   `parse_mfront_library_sources` function is added to the list of
   include directories.
 
-## Files organization
+## `MFront` files organization
 \label{sec:mfm:introduction:files}
 
 ### Storage of self-contained implementations
