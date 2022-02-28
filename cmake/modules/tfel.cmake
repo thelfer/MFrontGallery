@@ -292,7 +292,7 @@ function(_get_dsl_options mkt interface)
   _get_boolean_dsl_options(${mkt} ${interface}
     "parameters_as_static_variables" "TREAT_PARAMETERS_AS_STATIC_VARIABLES")
   _get_boolean_dsl_options(${mkt} ${interface}
-    "initialize_parameters_from_file" "ALLOW_PARAMETERS_INITIALIZATION_FROM_FILE")
+    "parameters_initialization_from_file" "ALLOW_PARAMETERS_INITIALIZATION_FROM_FILE")
   set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
 endfunction(_get_dsl_options mkt interface)
 
