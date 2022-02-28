@@ -511,14 +511,35 @@ $ git checkout MFrontGallery/master cmake
 
 ## Compilation, testing and deployement
 
-The project can be compiled as follows:
+The project can be configure as follows:
 
 ~~~~{.bash}
 $ cmake  ${MFRONT_GALLERY_SOURCES} -DCMAKE_BUILD_TYPE=Release  \
   -Denable-ansys=ON                                            \
   -DCMAKE_INSTALL_PREFIX=${MFRONT_INSTALL_PATH}
+~~~~
+
+A complete description of the available options are described in the
+[install
+page](https://thelfer.github.io/thelfer/MFrontGallery/install.html) of
+the project.
+
+The selected shared libraries can be compiled as follows:
+
+~~~~{.bash}
 $ cmake --build . --target all
+~~~~
+
+The unit tests can be run through the `check` target:
+
+~~~~{.bash}
 $ cmake --build . --target check
+~~~~
+
+Finally, the generated shared libraries can be installed using the
+`install` target:
+
+~~~~{.bash}
 $ cmake --build . --target install
 ~~~~
 
