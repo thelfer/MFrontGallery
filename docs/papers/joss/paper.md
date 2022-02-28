@@ -9,19 +9,77 @@ authors:
   - name: Thomas Helfer
     orcid: 0000-0003-2460-5816
     affiliation: 1
+  - name: Éric Simo
+    affiliation: 2
+  - name: Thomas Nagel
+    orcid: 0000-0001-8459-4616
+    affiliation: "3, 4"
+  - name: Christian B. Silbermann
+    affiliation: "3"
+  - name: Lorenzo Riparbelli
+    affiliation: "5"
 affiliations:
   - name: CEA, DES, IRESNE, DEC, Cadarache F-13108 Saint-Paul-Lez-Durance, France
     index: 1
+  - name: BGE Tech
+    index: 2
+  - name: Geotechnical Institute, Technische Universität Bergakademie Freiberg, Gustav-Zeuner-Str. 1, 09599 Freiberg, Germany
+    index: 3
+  - name: Department of Environmental Informatics, Helmholtz Centre for Environmental Research -- UFZ, Permoserstr. 15, 04318 Leipzig, Germany
+    index: 4
+  - name: University of Florence, Dagri Dept., Florence, Italy.
+    index: 5
 date: March 2022
 numbersections: true
 bibliography: bibliography.bib
 ---
 
 <!--
-pandoc -f markdown_strict --bibliography=bibliography.bib --citeproc paper.md -o paper.pdf
+pandoc -f markdown  --bibliography=bibliography.bib --citeproc -V geometry:a4paper,margin=2cm --highlight-style=tango --citeproc paper.md -o paper.pdf
 -->
 
 # Introduction
+
+`MFront` is an open-source code generator dedicated to material
+knowledge [@Helfer2015;@cea_edf_mfront_2022] developped by the French
+Alternative Energies and Atomic Energy Commission (CEA) and Électricité
+de France. `MFront` is part of the `PLEIADES` numerical platform, which
+is devoted to multi-physics nuclear fuel simulations and is developped
+by CEA and its industrial partners EDF and Framatome. Since its release
+as an open-source project, `MFront` has been used in numerous
+applications covering a wide range of materials (ceramics, metals,
+concrete, woods, etc.) and physical phenomena (viscoplasticity,
+plasticity, damage, etc.) [^mfront:publications].
+
+[^mfront:publications]: See this page for a list of publications based
+on `MFront`: <https://thelfer.github.io/tfel/web/publications.html>
+
+`MFront` is mostly used to implement advanced mechanical behaviours in a
+portable way, as `MFront` can generate shared libraries usable in many
+solvers through so-called interfaces. For example, concerning mechanical
+behaviours, the behaviours can be compiled for the following commercial
+or academic solvers: [`Cast3M`](http://www-cast3m.cea.fr/),
+[`code_aster`](https://code-aster.org),
+[`Europlexus`](https://europlexus.jrc.ec.europa.eu/), `Abaqus/Standard`,
+`Abaqus/Explicit`, `Ansys`, `AMITEX_FFTP`,
+[`CalculiX`](http://www.calculix.de/),
+[`ZSet`](http://www.zset-software.com/), [`DIANA
+FEA`](https://dianafea.com/). Thanks to the `generic` interface, those
+behaviours are also available in all solvers using the
+[`MFrontGenericInterfaceSupport`
+projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
+[@helfer_mfrontgenericinterfacesupport_2020], including:
+[`OpenGeoSys`](https://www.opengeosys.org/) [@Kolditz:1990;
+@Wollrath:1990; @Kroehn:1991; @Helmig:1993; @kolditz_opengeosys:_2012;
+@Bilke2019],
+[`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
+`MANTA`,
+[`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
+[`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
+
+However, the question of the management of `MFront`' implementations
+including their compilation, unit testing and deployement has not been
+adressed yet.
 
 The [MFrontGallery project](https://github.com/thelfer/MFrontGallery)
 has two main, almost orthogonal, goals:
@@ -41,38 +99,18 @@ which is discussed in depth in Section
 
 The `MFrontGallery` project also contains various high-quality `MFront`
 implementations. Those implementations may originate from the `MFront`
-tutorials, i.e. the [`MFront gallery`
-page](https://thelfer.github.io/tfel/web/gallery.html) (hence the name
-of the project).
-
-This project is also meant to store various contributions of academic or
-industrial users of `MFront` willing to share their material knowledge
-and also benefit from the continuous integration process to guarantee
-that no regression would happen as `MFront` evolves.
+tutorials, but `MFrontGallery` is also meant to store various
+contributions of academic or industrial users of `MFront` willing to
+share their material knowledge and also benefit from the continuous
+integration process to guarantee that no regression would happen as
+`MFront` evolves.
 
 In particular, the project provides:
 
 - a [`CMake`](https://cmake.org) infrastructure that can be duplicated
   in (academic or industrial) derived projects. This infrastructure allows:
   - to compile `MFront` sources using all interfaces supported by
-    `MFront`. For example, concerning behaviours, the behaviours can be
-    compiled for the following solvers:
-    [`Cast3M`](http://www-cast3m.cea.fr/),
-    [`code_aster`](https://code-aster.org),
-    [`Europlexus`](https://europlexus.jrc.ec.europa.eu/),
-    `Abaqus/Standard`, `Abaqus/Explicit`, `Ansys`, `AMITEX_FFTP`,
-    [`CalculiX`](http://www.calculix.de/),
-    [`ZSet`](http://www.zset-software.com/), [`DIANA
-    FEA`](https://dianafea.com/). Thanks to the `generic` interface,
-    those behaviours are also available in all solvers using the
-    [`MFrontGenericInterfaceSupport`
-    projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
-    [@helfer_mfrontgenericinterfacesupport_2020], including:
-    [`OpenGeoSys`](https://www.opengeosys.org/),
-    [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
-    `MANTA`,
-    [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
-    [`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
+    `MFront`.
   - to execute unit tests based on `MTest`. Those unit tests generate
     `XML` result files conforming to the `JUnit` standard that can
     readily be used by continuous integration platforms such as
@@ -202,7 +240,7 @@ reliable and robust way.`
 
 The `MFrontGallery` is based on the assumption that the solvers of
 interest (note the plural) can use shared libraries generated by the
-`MFront` code generator [@Helfer2015;@cea_edf_mfront_2021].
+`MFront` code generator [@Helfer2015;@cea_edf_mfront_2022].
 
 This assumption allows to **decouple the material knowledge management
 from the development (source code) of the solvers of interest**.
@@ -385,7 +423,7 @@ Self-contained implementations are stored in the `materials` directory.
 Under this directory, implementations are stored by material and by kind
 (material property, behaviour or model), as follows:
 
-![](img/materials.pdf){width=100%}
+![](img/materials.pdf){width=100% .center}
 
 ### Storage of generic behaviours
 
@@ -401,7 +439,7 @@ These generic implementations have been introduced in the
 - show to solver developers how they could provide to their users a set
   of ready-to-use behaviours.
 
-![](img/generic-behaviours.pdf){width=100%}
+![](img/generic-behaviours.pdf){width=100% .center}
 
 # Creation of a derived project
 \label{sec:mfm:creating_derived_project}
@@ -483,8 +521,8 @@ $ cmake --build . --target install
 # Acknowledgements
 
 This research was conducted in the framework of the `PLEIADES` project,
-which is supported financially by the CEA (Commissariat à l’Energie
-Atomique et aux Energies Alternatives), EDF (Electricité de France) and
+which is supported financially by the French Alternative Energies and
+Atomic Energy Commission (CEA), Électricité de France (EDF) and
 Framatome.
 
 \appendix
