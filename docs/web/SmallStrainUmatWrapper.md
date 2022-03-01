@@ -9,12 +9,17 @@ figPrefixTemplate: "$$i$$"
 tblPrefixTemplate: "$$i$$"
 secPrefixTemplate: "$$i$$"
 eqnPrefixTemplate: "($$i$$)"
+lstPrefixTemplate: "$$i$$"
 abstract: |
   This document describes how to use `MFront` as a wrapper for an
   existing `UMAT` implementations, which is an interface introduced
   by the `Abaqus/Standard` finite element solver, of a small strain
   behaviour.
 ---
+
+<!--
+$ pandoc --pdf-engine=xelatex -f markdown --csl=iso690-numeric-en.csl  --bibliography=bibliography.bib --filter pandoc-crossref --citeproc -V geometry:a4paper,margin=2cm --highlight-style=tango --number-sections --variable urlcolor=blue --toc SmallStrainUmatWrapper.md -o SmallStrainUmatWrapper.pdf
+-->
 
 Implementing a constitutive model is a long tedious and error-prone
 process, in particular for soils where a wide variety of phenomena must
@@ -903,17 +908,38 @@ of the [cmake infrastructure](cmake-infrastructure.html) of the project.
 This call to the `mfront_behaviour_library` function generates the following output:
 
 ~~~~{.bash}
--- Adding library : UMATWRAPPERV2CALCULIXBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/calculix/src/calculixSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/calculix/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- Adding library : UMATWRAPPERV2ANSYSBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/ansys/src/ansysSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/ansys/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- Adding library : UMATWRAPPERV2ABAQUSBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/abaqus/src/abaqusSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/abaqus/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- SmallStrainUmatWrapper_v2 has been discarded for interface cyrano (behaviour does not support any of the  'AxisymmetricalGeneralisedPlaneStrain' or  'AxisymmetricalGeneralisedPlaneStress modelling' hypothesis)
--- Only external sources provided for library UmatWrapperV2Behaviours-cyrano for interface cyrano. The generation of this library is disabled by default. It can be enabled by passing the GENERATE_WITHOUT_MFRONT_SOURCES
--- SmallStrainUmatWrapper_v2 has been discarded for interface epx (small strain behaviours are not supported)
--- Only external sources provided for library UmatWrapperV2Behaviours-epx for interface epx. The generation of this library is disabled by default. It can be enabled by passing the GENERATE_WITHOUT_MFRONT_SOURCES
--- Adding library : UmatWrapperV2DianaFEABehaviours (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/dianafea/src/DianaFEASmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/dianafea/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- Adding library : UmatWrapperV2Behaviours-aster (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/aster/src/asterSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/aster/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- Adding library : UmatWrapperV2Behaviours (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/castem/src/umatSmallStrainUmatWrapper_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/castem/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
--- Adding library : UmatWrapperV2Behaviours-generic (/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2-generic.cxx;/home/th202608/codes/MFrontGallery/master/src/build/mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UMATWRAPPERV2CALCULIXBEHAVIOURS
+  (mfront-wrappers/fortran/umat/v2/calculix/src/calculixSmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/calculix/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UMATWRAPPERV2ANSYSBEHAVIOURS
+  (mfront-wrappers/fortran/umat/v2/ansys/src/ansysSmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/ansys/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UMATWRAPPERV2ABAQUSBEHAVIOURS
+  (mfront-wrappers/fortran/umat/v2/abaqus/src/abaqusSmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/abaqus/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- SmallStrainUmatWrapper_v2 has been discarded for interface cyrano
+  (behaviour does not support any of the  'AxisymmetricalGeneralisedPlaneStrain'
+   or  'AxisymmetricalGeneralisedPlaneStress modelling' hypothesis)
+-- Only external sources provided for library UmatWrapperV2Behaviours-cyrano for
+   interface cyrano. The generation of this library is disabled by default.
+   It can be enabled by using the GENERATE_WITHOUT_MFRONT_SOURCES option
+-- SmallStrainUmatWrapper_v2 has been discarded for interface epx
+  (small strain behaviours are not supported)
+-- Only external sources provided for library UmatWrapperV2Behaviours-epx for
+   interface epx. The generation of this library is disabled by default.
+   It can be enabled by using the GENERATE_WITHOUT_MFRONT_SOURCES option
+-- Adding library : UmatWrapperV2DianaFEABehaviours
+  (mfront-wrappers/fortran/umat/v2/dianafea/src/DianaFEASmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/dianafea/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours-aster
+  (mfront-wrappers/fortran/umat/v2/aster/src/asterSmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/aster/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours
+  (mfront-wrappers/fortran/umat/v2/castem/src/umatSmallStrainUmatWrapper_v2.cxx;
+   mfront-wrappers/fortran/umat/v2/castem/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
+-- Adding library : UmatWrapperV2Behaviours-generic
+  (mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2-generic.cxx;
+   mfront-wrappers/fortran/umat/v2/generic/src/SmallStrainUmatWrapper_v2.cxx;umat2.f90)
 ~~~~
 
 This output shows that:
@@ -970,6 +996,8 @@ The `GNU_FORTRAN_COMPILER` variable is automatically defined by the
 # Appendix
 
 ## Source code of the `UMAT` subroutine {#sec:umat_wrapper:umat_source_code}
+
+The source code of the `umat2` subroutine is reported in Listing @lst:umat_wrapper:umat_source_code.
 
 ~~~~{#lst:umat_wrapper:umat_source_code .fortran caption="Source code of the `UMAT` subroutine"}
      subroutine umat(stress,statev,ddsdde,sse,spd,scd,
@@ -1038,6 +1066,8 @@ The `GNU_FORTRAN_COMPILER` variable is automatically defined by the
 ~~~~
 
 ## Source code of the `umat2` subroutine in `Fortran 2003` {#sec:umat_wrapper:umat2_source_code}
+
+The source code of the `umat2` subroutine is reported in Listing @lst:umat_wrapper:umat2_source_code.
 
 ~~~~{#lst:umat_wrapper:umat2_source_code .fortran caption="Source code of the `umat2` subroutine"}
 subroutine umat2(stress, ddsdde, stran, dstran, ntens, props, nprops) BIND(C,NAME="umat2")
