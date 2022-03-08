@@ -197,6 +197,11 @@ studies:
   dedicated material knowledge project based on *self-contained*
   implementations, as discussed in Section
   \ref{sec:mfm:introduction:implementations}.
+- **Progression of the state of the art**: Safety-critical studies need
+  to reflect the state of the art. As such, the material knowledge per se,
+  numerical methods and software engineering need to evolve while at the same
+  time ensuring the other principles listed here are not violated in order
+  to maintain quality assurance of past, present and future analyses.
 - **Continuous integration and unit testing**: Each implementation has
   associated unit tests which can check no-regression during the
   development of `MFront`.
