@@ -18,22 +18,27 @@ function(add_mfront_property_sources lib mat interface search_paths file)
         ${${lib}_OTHER_SOURCES} PARENT_SCOPE)
   else()
     if (madnex_file)
-      mfront_query(_impls ${mat} "${search_paths}" ${mfront_path}
-                   "--all-material-properties" "--list-implementation-paths=unsorted")
-      if(_impls)
-        string(REPLACE " " ";" _mfront_impls ${_impls})
-      else(_impls)
-        set(_mfront_impls )
-      endif(_impls)
-      foreach(_impl ${_mfront_impls})
-        add_mfront_material_property_source(${lib} ${mat} ${interface}
-                                            "${search_paths}" ${_impl})
-	    list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${_impl})
-        set(${lib}_MFRONT_IMPLEMENTATION_PATHS
-            ${${lib}_MFRONT_IMPLEMENTATION_PATHS} PARENT_SCOPE)
-      endforeach(_impl ${impls})
-      list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
-      set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
+	  if(TFEL_MADNEX_SUPPORT)
+        mfront_query(_impls ${mat} "${search_paths}" ${mfront_path}
+                     "--all-material-properties" "--list-implementation-paths=unsorted")
+        if(_impls)
+          string(REPLACE " " ";" _mfront_impls ${_impls})
+        else(_impls)
+          set(_mfront_impls )
+        endif(_impls)
+        foreach(_impl ${_mfront_impls})
+          add_mfront_material_property_source(${lib} ${mat} ${interface}
+                                              "${search_paths}" ${_impl})
+	      list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${_impl})
+          set(${lib}_MFRONT_IMPLEMENTATION_PATHS
+              ${${lib}_MFRONT_IMPLEMENTATION_PATHS} PARENT_SCOPE)
+        endforeach(_impl ${impls})
+        list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
+        set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
+      else(TFEL_MADNEX_SUPPORT)
+        message(STATUS "file '${file}' has been discarded since "
+	                   "madnex support has not been enabled")
+      endif(TFEL_MADNEX_SUPPORT)
     else()
       add_mfront_material_property_source(${lib} ${mat} ${interface}
                                           "${search_paths}" ${mfront_path})
