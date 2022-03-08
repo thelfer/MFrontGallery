@@ -1,6 +1,7 @@
 find_package(Gnuplot)
 
-macro(add_gnuplot name)
+function(add_gnuplot name)
+  if(GNUPLOT_FOUND)
   set(commands)
   set(dependencies)
   foreach(_ARG ${ARGN})
@@ -15,4 +16,5 @@ macro(add_gnuplot name)
     ${commands}
     DEPENDS ${dependencies}
     VERBATIM)
-endmacro(add_gnuplot)
+  endif(GNUPLOT_FOUND)
+endfunction(add_gnuplot)

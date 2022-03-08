@@ -18,7 +18,7 @@ abstract: |
 ---
 
 <!--
-$ pandoc --pdf-engine=xelatex -f markdown --csl=iso690-numeric-en.csl  --bibliography=bibliography.bib --filter pandoc-crossref --citeproc -V geometry:a4paper,margin=2cm --highlight-style=tango --number-sections --variable urlcolor=blue --toc SmallStrainUmatWrapper.md -o SmallStrainUmatWrapper.pdf
+pandoc --pdf-engine=xelatex -f markdown --csl=iso690-numeric-en.csl  --bibliography=bibliography.bib --filter pandoc-crossref --citeproc -V geometry:a4paper,margin=2cm --highlight-style=tango --number-sections --variable urlcolor=blue --toc SmallStrainUmatWrapper.md -o SmallStrainUmatWrapper.pdf
 -->
 
 Implementing a constitutive model is a long tedious and error-prone
@@ -43,7 +43,7 @@ solver.
 `MFront`](img/SmallStrainUmatWrapper/mfront-wrapper.svg){#fig:umat_wrapper:workflow
 width=90%}
 
-The `MFront` wrapper manages:
+The `MFront` wrapper:
 
 - handles the transfer of the data from solver to the legacy
   implementation on input and output as illustrated in Figure
@@ -88,7 +88,7 @@ small compared to the total number of arguments:
 
 It is important to note that this implementation does not make any check
 of its arguments. For example, the user may pass any number of material
-properties, which may lead segmentation faults at best or to spurious
+properties, which may lead to segmentation faults at best or to spurious
 results difficult to debug at worse. It is interesting to note that
 `MFront` will ensure the correct usage of the wrapped behaviour and
 automatically generate the correct checks.
@@ -179,7 +179,7 @@ implementation, limited to the tridimensional case, of the
 
 The treatment of the material properties deserves a special discussion.
 
-The first choice that one has to make is wheter the final behaviour
+The first choice that one has to make is whether the final behaviour
 shall be specific to a given material and self-contained or be generic.
 You may refer to the [front page](index.html) of the project for a
 detailled discussion about those concepts.
@@ -210,7 +210,7 @@ discussed.
 ### Declaring an array of material properties
 
 Declaring an array of material properties has one pratical advantage as
-it already meets the requriments that the material properties shall be
+it already meets the requirements that the material properties shall be
 stored in a continuous array.
 
 This array of material properties could be declared as follows:
@@ -259,7 +259,7 @@ This is more explicit and potentially more attractive for the end-user
 if the solver that he uses relies on the metadata exported by `MFront`.
 
 Before calling the `UMAT` implementation, one shall create an array of
-floatting-point values and initialize its values as follows:
+floating-point values and initialize its values as follows:
 
 ~~~~{.cxx}
 const real props[2] = {E,nu};
@@ -648,7 +648,7 @@ operator as follows:
 
 This optional conversion of the consistent tangent operator in a
 separate code block is the main reason why we stored the values of the
-consistennt tangent operator in the local variable `K`.
+consistent tangent operator in the local variable `K`.
 
 # Compiling the wrapper outside the `MFrontGallery`
 
@@ -718,7 +718,7 @@ $ mtest SmallStrainUmatWrapper.mtest
 
 > **Updating `LD_LIBRARY_PATH` **
 > 
-> Note that On some system, one shall add the current directory to the
+> Note that on some systems, one shall add the current directory to the
 > `LD_LIBRARY_PATH` environment variable before calling `mtest` to find
 > the `libUmat.so` library, as follows:
 > 
@@ -744,7 +744,7 @@ greater than `Fortran 90` (extension like `f95` and `f03` does not seem
 to be supported by build systems and text editors, as explained
 [here](https://fortranwiki.org/fortran/show/File+extensions)).
 
-After converting the code to free form and removing the unsued
+After converting the code to free form and removing the unused
 variables, the `umat2` subroutine has the following declaration:
 
 ~~~~{.fortran}
@@ -992,6 +992,15 @@ endif()
 
 The `GNU_FORTRAN_COMPILER` variable is automatically defined by the
 `cmake` infrastructure of the project.
+
+<!--
+# Acknowledgements
+
+This research was conducted in the framework of the `PLEIADES` project,
+which is supported financially by the French Alternative Energies and
+Atomic Energy Commission (CEA), Électricité de France (EDF) and
+Framatome.
+-->
 
 # Appendix
 
