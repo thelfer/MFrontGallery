@@ -10,7 +10,7 @@ authors:
     orcid: 0000-0003-2460-5816
     affiliation: 1
   - name: Éric Simo
-    affiliation: 2
+    affiliation: 2, 3
   - name: Thomas Nagel
     orcid: 0000-0001-8459-4616
     affiliation: "3, 4"
@@ -21,7 +21,7 @@ authors:
 affiliations:
   - name: CEA, DES, IRESNE, DEC, Cadarache F-13108 Saint-Paul-Lez-Durance, France
     index: 1
-  - name: BGE Tech
+  - name: BGE TECHNOLOGY, Eschenstrasse 55, 31224 Peine, Germany
     index: 2
   - name: Geotechnical Institute, Technische Universität Bergakademie Freiberg, Gustav-Zeuner-Str. 1, 09599 Freiberg, Germany
     index: 3
@@ -69,8 +69,7 @@ behaviours are also available in all solvers using the
 [`MFrontGenericInterfaceSupport`
 projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [@helfer_mfrontgenericinterfacesupport_2020], including:
-[`OpenGeoSys`](https://www.opengeosys.org/) [@Kolditz:1990;
-@Wollrath:1990; @Kroehn:1991; @Helmig:1993; @kolditz_opengeosys:_2012;
+[`OpenGeoSys`](https://www.opengeosys.org/) [@kolditz_opengeosys:_2012;
 @Bilke2019],
 [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
 `MANTA`,
@@ -78,8 +77,8 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
 
 However, the question of the management of `MFront`' implementations
-including their compilation, unit testing and deployement has not been
-adressed yet. Moreover, the project also shows several examples on how
+including their compilation, unit testing and deployment has not been
+addressed, yet. Moreover, the project also shows several examples on how
 to use `MFront` as a wrapper around legacy implementations written in
 `C++` and `fortran` [@helfer_using_2020;@Simo2020;@helfer_umat_2022].
 
@@ -122,6 +121,8 @@ In summary, the project provides:
   implemented using `MFront` implementations
 - a set of high-quality `MFront` implementations.
 
+The remainder of the paper is organized as follows.
+
 Section \ref{sec:mfm:introduction:statement_of_need} discusses why a
 new approach to material knowledge management is needed in the context
 of safety criticial studies.
@@ -135,7 +136,7 @@ derived project based on the same `CMake` infrastructure as the
 `MFrontGallery`.
 
 Section \ref{sec:mfm:introduction:usage} provides a short overview of
-the implementation available in `MFrontGallery` and shows how to use the
+the implementations available in `MFrontGallery` and shows how to use the
 project in practice.
 
 # Statemement of need: material knowledge management for safety criticial studies {#sec:mfm:introduction:statement_of_need}
@@ -145,9 +146,9 @@ project in practice.
 Numerical simulations of solids are based on the description of the
 evolution of the thermodynamical state of the materials of interest. In
 the context of the `MFrontGallery` project, this thermodynamical state
-is described at each point of space by a set of internal state variables
+is described at each point in space by a set of internal state variables
 which can evolve with time due to various physical phenomena (plasticity,
-viscoplaticity, damage, phase change, swelling due to dessication,
+viscoplaticity, damage, phase change, shrinkage due to dessication,
 etc.).
 
 The knowledge that one may have about a given material can be represented
@@ -157,7 +158,7 @@ in different forms. Here, the following categorization is employed:
   state of the material.
 - **Behaviours** describe how a material evolves and reacts locally due
   to gradients inside the material. Here, the material reaction is
-  associated with fluxes (or forces) thermodynamically conjugated with
+  associated with fluxes (or forces) thermodynamically conjugate to
   the gradients.
 - **Point-wise models** describe the evolution of some internal state
   variables with the evolution of other state variables. Point-wise
@@ -182,22 +183,27 @@ studies:
   which use different solvers for independent assessment and review.
   From the same `MFront` source file, the `MFrontGallery` can generate
   shared libraries for all the solvers of interest. Moreover, the
-  project allows publishes a guidline of the [best practices
+  project employs [best practices
   guidelines](https://thelfer.github.io/MFrontGallery/web/best-practices.html)[^mfm:best_practices]
   to ensure that a given `MFront` implementation can be shared among
-  several teams.
+  several teams while assuring quality.
 - **Maintainability over decades**: Some safety-critical studies can be
   used to design buildings, plants, or technological systems for
   operation periods of decades or more. Over such periods of time, both
   the solvers and the material knowledge will evolve. The
   safety-critical studies, however, on which design choices or decisions
-  were based, need to remain accessible or reproducible. In the author
-  experience, maintainability can is more easily achieved by having a
+  were based, need to remain accessible or reproducible. In the authors'
+  experience, maintainability is more easily achieved by having a
   dedicated material knowledge project based on *self-contained*
   implementations, as discussed in Section
   \ref{sec:mfm:introduction:implementations}.
+- **Progression of the state of the art**: Safety-critical studies need
+  to reflect the state of the art. As such, the material knowledge per se,
+  numerical methods and software engineering need to evolve while at the same
+  time ensuring the other principles listed here are not violated in order
+  to maintain quality assurance of past, present and future analyses.
 - **Continuous integration and unit testing**: Each implementation has
-  associated unit tests with can check no-regression during the
+  associated unit tests which can check no-regression during the
   development of `MFront`.
 - **Documentation**: the project can generate the documentation
   associated with the various implementations in an automated manner.
@@ -217,7 +223,7 @@ studies:
   implementations are usually shipped with solvers as ready-to-use
   behaviours.
 
-An alternative way of expressing the disctinction between self-contained
+An alternative way of expressing the distinction between self-contained
 and generic implementations is to consider that generic implementations
 only describe a set of constitutive equations while self-contained
 implementations describes a set of constitutive equations
@@ -232,9 +238,9 @@ modulus of a material may be defined by an analytical formula and can't
 thus be reduced to a set of constants. This analytical formula shall be
 part of a self-contained mechanical behaviour implementation. Of course,
 this analytical formula could be included in the set of constitutive
-equations and parametrized to retrieve a bit of genericity. In our
-experience, such a hybrid approach is fragile, less readable and and
-cumbersome. Moreover it does not address the main issue of generic
+equations and parametrized to retrieve a certain degree of generality. In our
+experience, such a hybrid approach is fragile, less readable and
+cumbersome. Moreover, it does not address the main issue of generic
 behaviours which is the management of the physical information in a
 reliable and robust way.`
 
@@ -264,7 +270,7 @@ mostly convers:
   Sections \ref{sec:mfm:cmake:mfront_properties_library} and
   \ref{sec:mfm:cmake:mfront_behaviours_library}.
 - functions related to documentation and website generation. Those
-  functions won't be described in this paper.
+  functions will not be described in this paper.
 
 Section \ref{sec:mfm:introduction:files} describes a recommended
 organisation of the sources.
@@ -307,11 +313,11 @@ process is similar to the following:
 
 which lists the shared libraries that will be compiled and the sources
 that will be generated by `MFront` (for the sake of brievety, the list
-of sources have been replaced by three dots in the previous listing).
+of sources has been replaced by three dots in the previous listing).
 
 Internally, the `mfront_properties_library` relies on the
 [`mfront-query`](https://github/thelfer/mfront-query.html) tool
-[^mfront-query] to get the list generated sources and handle
+[^mfront-query] to get the list of generated sources and handle
 dependencies to other `MFront` files and so on.
 
 [^mfront-query]: <https://thelfer.github.io/tfel/web/mfront_query.html>
@@ -408,9 +414,10 @@ with some of the selected behaviour interfaces and are thus discarded:
 
 In this example, no shared libraries for the `Concrete` material will
 be generated for the interfaces `dianafea`, `calculix`, `ansys` and
-`epx` interfaces since no `MFront` are compatible with them.
+`epx` interfaces since none of the selected `MFront` behaviours are 
+compatible with them.
 
-## `MFront` files organization
+## `MFront` file organization
 \label{sec:mfm:introduction:files}
 
 ### Storage of self-contained implementations
@@ -450,7 +457,7 @@ To create a material management project derived from `MFrontGallery`,
 just copy the contents of the `cmake/modules` directory in your local
 directory.
 
-If you intent to use `git` for version control, one easy way it to add
+If you intent to use `git` for version control, one easy way is to add
 the `MFrontGallery` as a remote ressource and check out the `CMake`
 repository from it as follows:
 
@@ -460,7 +467,7 @@ $ git fetch MFrontGallery master
 $ git checkout MFrontGallery/master -- cmake 
 ~~~~
 
-Of course, the user may also want to follow a stable branch rather than
+Of course, the user may also want to follow another branch rather than
 the `master` branch.
 
 ## Top-level `CMakeLists.txt` file
@@ -514,7 +521,7 @@ hyperviscoelasticity, etc...
 
 ### Self-contained behaviours
 
-The project contains several example of self-contained behaviours
+The project contains several examples of self-contained behaviours
 related to the following materials: bentonite
 [@Simo2020;@helfer_using_2020], concrete
 [@jean-luc_delamonte_burger_edf_ciwap_2021_2021,@jean-luc_delamonte_burger_edf_ciwap_2021_2021-2],
@@ -522,7 +529,7 @@ crushed salt, vanadium alloy and wood.
 
 ## Compilation, testing and deployement
 
-The project can be configure as follows:
+The project can be configured, for example, as follows:
 
 ~~~~{.bash}
 $ cmake  ${MFRONT_GALLERY_SOURCES} -DCMAKE_BUILD_TYPE=Release  \
@@ -530,12 +537,12 @@ $ cmake  ${MFRONT_GALLERY_SOURCES} -DCMAKE_BUILD_TYPE=Release  \
   -DCMAKE_INSTALL_PREFIX=${MFRONT_INSTALL_PATH}
 ~~~~
 
-A complete description of the available options are described in the
+A complete description of the available options can be found on the
 [install
 page](https://thelfer.github.io/thelfer/MFrontGallery/install.html) of
 the project.
 
-The selected shared libraries can be compiled as follows:
+The selected shared libraries can be compiled by:
 
 ~~~~{.bash}
 $ cmake --build . --target all
@@ -553,6 +560,18 @@ Finally, the generated shared libraries can be installed using the
 ~~~~{.bash}
 $ cmake --build . --target install
 ~~~~
+
+# Conclusions
+
+The `MFrontGallery` project is dedicated to material knowledge management
+in safety-critical studies and is built on long-standing experience gathered
+in the `PLEIADES` project. Key concepts built upon are portability,
+maintainability and reproducability over long time periods, continuous integration
+and unit testing, documentation and the safeguarding of intellectual property as 
+well as attribution. Based on the technical infrastructure
+described in this article, it becomes possible to set up derived projects 
+in similar contexts where these concepts are considered relevant.
+
 
 # Acknowledgements
 
