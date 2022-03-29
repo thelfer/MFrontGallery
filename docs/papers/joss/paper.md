@@ -9,7 +9,7 @@ authors:
   - name: Thomas Helfer
     orcid: 0000-0003-2460-5816
     affiliation: 1
-  - name: Éric Simo
+  - name: Eric Simo
     affiliation: 2, 3
   - name: Thomas Nagel
     orcid: 0000-0001-8459-4616
@@ -139,7 +139,7 @@ Section \ref{sec:mfm:introduction:usage} provides a short overview of
 the implementations available in `MFrontGallery` and shows how to use the
 project in practice.
 
-# Statemement of need: material knowledge management for safety criticial studies {#sec:mfm:introduction:statement_of_need}
+# Statement of need: material knowledge management for safety criticial studies {#sec:mfm:introduction:statement_of_need}
 
 ## Role of material knowledge in numerical simulations of solids
 
