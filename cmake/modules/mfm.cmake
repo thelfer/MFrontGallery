@@ -152,7 +152,11 @@ if(enable-octave)
 endif(enable-octave)
 
 # MFront generic interfaces
+option(enable-generic "generate generic interfaces"  OFF)
 option(enable-generic-behaviours "generate generic interface for mechanical behaviours"  OFF)
+if(enable-generic)
+  set(enable-generic-behaviours ON)
+endif(enable-generic)
 if(enable-generic-behaviours)
   check_if_behaviour_interface_is_supported("generic")
   set(MFM_GENERIC_BEHAVIOUR_INTERFACE ON)

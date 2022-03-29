@@ -1,7 +1,7 @@
 ---
 title: Introducing small strain legacy `Abaqus/UMAT` implementations in `MFrontGallery`
-author: Thomas Helfer, Éric Simo
-date: 2020
+author: Thomas Helfer, Eric Simo
+date: 09/03/2022
 lang: en-EN
 colorlinks: true
 link-citations: true
@@ -19,6 +19,8 @@ abstract: |
 
 <!--
 pandoc --pdf-engine=xelatex -f markdown --csl=iso690-numeric-en.csl  --bibliography=bibliography.bib --filter pandoc-crossref --citeproc -V geometry:a4paper,margin=2cm --highlight-style=tango --number-sections --variable urlcolor=blue --toc SmallStrainUmatWrapper.md -o SmallStrainUmatWrapper.pdf
+
+# Introduction
 -->
 
 Implementing a constitutive model is a long tedious and error-prone
@@ -53,6 +55,11 @@ The `MFront` wrapper:
   [`MFrontGenericInterfaceSupport`
   library](https://thelfer.github.io/mgis/web/index.html) (`MGIS`) is
   used by the targeted solver [@Helfer2020;@cea_mgis_2021].
+
+<!--
+The latest version of this document can be found here:
+<https://thelfer.github.io/MFrontGallery/web/SmallStrainUmatWrapper.html>.
+-->
 
 # Description of the wrapped `UMAT` implementation and role of the wrapper
 
@@ -996,10 +1003,16 @@ The `GNU_FORTRAN_COMPILER` variable is automatically defined by the
 <!--
 # Acknowledgements
 
-This research was conducted in the framework of the `PLEIADES` project,
-which is supported financially by the French Alternative Energies and
-Atomic Energy Commission (CEA), Électricité de France (EDF) and
-Framatome.
+The development of TFEL/MFront is conducted in the framework of the
+`PLEIADES` project, which is supported financially by the French
+Alternative Energies and Atomic Energy Commission (CEA), Électricité de
+France (EDF) and Framatome.
+
+We also acknowledge contributions from Thomas Nagel and David Mašín
+during the genesis of this project. The funding by BGE mbH, the German
+federal company for radioactive waste is greatly acknowledged.
+
+\appendix
 -->
 
 # Appendix
