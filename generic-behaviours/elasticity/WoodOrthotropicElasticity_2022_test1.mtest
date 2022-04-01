@@ -1,0 +1,46 @@
+@Author Thomas Helfer;
+@Date   01/04/2022;
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<@interface@> @library@ @behaviour@;
+
+// material properties
+@MaterialProperty<constant> 'YoungModulus1' 635.;
+@MaterialProperty<constant> 'YoungModulus2' 10285;
+@MaterialProperty<constant> 'YoungModulus3' 369;
+@MaterialProperty<constant> 'PoissonRatio12' 0.029;
+@MaterialProperty<constant> 'PoissonRatio23' 0.42;
+@MaterialProperty<constant> 'PoissonRatio13' 0.165;
+@MaterialProperty<constant> 'ShearModulus12' 786.;
+@MaterialProperty<constant> 'ShearModulus23' 838.;
+@MaterialProperty<constant> 'ShearModulus13' 114.;
+@MaterialProperty<constant> 'RadialSwellingCoefficient' 0.00064;
+@MaterialProperty<constant> 'LongitudinalSwellingCoefficient' 0.00013;
+@MaterialProperty<constant> 'TangentialSwellingCoefficient' 0.00115;
+@MaterialProperty<constant> 'MaterialAngleWithRespectToThePith' 0;
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15 ;
+@ExternalStateVariable 'MoistureContent' {0 : 0, 1 : 1};
+
+@ImposedStress 'SXX' {0 : 0, 1 : 1};
+
+@Times{0, 1};
+
+@Real 'EXX_ref' '2.21480e-03';
+@Real 'EYY_ref' '8.43307e-05'; 
+@Real 'EZZ_ref' '8.90157e-04';
+@Test<function>{
+  'EXX' : 'EXX_ref * t',
+  'EYY' : 'EYY_ref * t',
+  'EZZ' : 'EZZ_ref * t',
+  'EXY' : '0',
+  'EXZ' : '0',
+  'EYZ' : '0'
+} 1e-8;
+
+@Test<function> 'SXX' '1 * t' 1.e-8;
+@Test<function> {
+  'SYY' : '0', 'SZZ' : '0', 'SXY' : '0', 'SXZ' : '0', 'SYZ' : '0'
+}
+1e-8;

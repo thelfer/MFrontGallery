@@ -1,0 +1,73 @@
+@DSL DefaultDSL;
+@Behaviour OrthotropicElasticity_2022;
+@Material  Wood;
+@Author    Riparbelli Lorenzo and Helfer Thomas;
+@Date      01/03/22;
+@Description{
+  "This generic behaviour is suitable to describe the "
+  "elastic behaviour of a wood plate with growth rings "
+  "that have conical shape in the vertical direction of "
+  "the tree and which is also subjected to a swelling "
+  "proportional to the moisture content."
+  ""
+  "Most solvers allows to define the orthotropic axes "
+  "in a cylindrical frame but the definition of those "
+  "axes to describe a plane making angle with respect to "
+  "the pith of the tree is much more difficult, so this "
+  "implementation handles the rotation from the cylindrical "
+  "frame to the material frame."
+}
+
+@ModellingHypotheses {Tridimensional};
+@OrthotropicBehaviour;
+@RequireStiffnessOperator;
+
+@MaterialProperty real phi;
+phi.setEntryName("MaterialAngleWithRespectToThePith");
+
+@MaterialProperty real ar;
+ar.setEntryName("RadialSwellingCoefficient");
+@MaterialProperty real al;
+al.setEntryName("LongitudinalSwellingCoefficient");
+@MaterialProperty real at;
+at.setEntryName("TangentialSwellingCoefficient");
+
+@ExternalStateVariable real w;
+w.setEntryName("MoistureContent");
+
+//! stiffness tensor in the global frame
+@LocalVariable StiffnessTensor hh;
+//! rotation matrix
+@LocalVariable tmatrix<3, 3, real> r;
+
+@InitLocalVariables {
+  constexpr auto zero = real{0};
+  const auto c = cos(-phi);
+  const auto s = sin(-phi);
+  r = tmatrix<3, 3, real>{{c, zero, -s,          //
+                           zero, real{1}, zero,  //
+                           s, zero, c}};
+  hh = change_basis(D, r);
+}
+
+@PredictionOperator {
+  static_cast<void>(smt);
+  Dt = hh;
+}
+
+@Integrator{
+  constexpr auto zero = real{0};
+  // swelling in the material frame at the end of the time step
+  const auto el = (w + dw) * Stensor{ar, al, at, zero, zero, zero};
+  // swelling in the global frame
+  const auto eg = change_basis(el, r);
+  // mechanical strain at the end of the time step
+  const auto em = eto + deto - eg;
+  // final stress
+  sig = hh * em;
+}
+
+@TangentOperator {
+  static_cast<void>(smt);
+  Dt = hh;
+}

@@ -1,3 +1,4 @@
+add_subdirectory(elasticity)
 add_subdirectory(heattransfer)
 add_subdirectory(damage)
 add_subdirectory(hyperelasticity)
