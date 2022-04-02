@@ -38,7 +38,7 @@ w.setEntryName("MoistureContent");
 //! stiffness tensor in the global frame
 @LocalVariable StiffnessTensor hh;
 //! rotation matrix
-@LocalVariable tmatrix<3, 3, real> r;
+@LocalVariable tfel::math::tmatrix<3, 3, real> r;
 
 @InitLocalVariables {
   constexpr auto zero = real{0};
