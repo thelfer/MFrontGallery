@@ -76,7 +76,7 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
 [`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
 
-However, the question of the management of `MFront`' implementations
+However, the question of the management of `MFront` implementations
 including their compilation, unit testing and deployment has not been
 addressed, yet. Moreover, the project also shows several examples on how
 to use `MFront` as a wrapper around legacy implementations written in
@@ -85,7 +85,7 @@ to use `MFront` as a wrapper around legacy implementations written in
 The [MFrontGallery project](https://github.com/thelfer/MFrontGallery)
 has two main, almost orthogonal, goals:
 
-1. The first one is to show how solver developers may provide to their
+1. The first one is to show how solver developers may provide their
   users a set of ready-to-use (mechanical) behaviours which can be
   parametrized by their users to match their needs.
 2. The second one is to describe how to set up a high-quality material
@@ -109,7 +109,7 @@ integration process to guarantee that no regression would happen as
 In summary, the project provides:
 
 - a [`CMake`](https://cmake.org) infrastructure that can be duplicated
-  in (academic or industrial) derived projects. This infrastructure allows:
+  in (academics- or industry-) derived projects. This infrastructure allows:
   - to compile `MFront` sources using all interfaces supported by
     `MFront`.
   - to execute unit tests based on `MTest`. Those unit tests generate
@@ -125,7 +125,7 @@ The remainder of the paper is organized as follows.
 
 Section \ref{sec:mfm:introduction:statement_of_need} discusses why a
 new approach to material knowledge management is needed in the context
-of safety criticial studies.
+of safety-criticial studies.
 
 Section \ref{sec:mfm:introduction:cmake_infrastructure} provides an
 overview of the `CMake` infrastructure of the project and discusses how
@@ -139,7 +139,7 @@ Section \ref{sec:mfm:introduction:usage} provides a short overview of
 the implementations available in `MFrontGallery` and shows how to use the
 project in practice.
 
-# Statement of need: material knowledge management for safety criticial studies {#sec:mfm:introduction:statement_of_need}
+# Statement of need: material knowledge management for safety-criticial studies {#sec:mfm:introduction:statement_of_need}
 
 ## Role of material knowledge in numerical simulations of solids
 
@@ -234,7 +234,7 @@ implementations describes a set of constitutive equations
 [^mfm:about_material_coefficients]: In practice, the physical
 information described by self-contained implementations may be more
 complex than a set of material coefficients. For example, the Young
-modulus of a material may be defined by an analytical formula and can't
+modulus of a material may be defined by an analytical formula and cannot
 thus be reduced to a set of constants. This analytical formula shall be
 part of a self-contained mechanical behaviour implementation. Of course,
 this analytical formula could be included in the set of constitutive
@@ -262,8 +262,8 @@ the file `cmake/modules/mfm.cmake` being the main entry point.
 
 Section \ref{sec:mfm:cmake:main_functions} describes the main `CMake`
 functions provided by this infrastructure from the point of view of the
-maintainer and developper of a material knowledge management project. It
-mostly convers:
+maintainer and developer of a material knowledge management project. It
+mostly covers:
 
 - functions used to compile `MFront` files related to material
   properties, behaviours and models. The main functions are described in
@@ -282,7 +282,7 @@ organisation of the sources.
 \label{sec:mfm:cmake:mfront_properties_library}
 
 The `mfront_behaviours_library` function adds shared libraries to the
-project related to `MFront`' behaviours. The number of added shared
+project related to `MFront` behaviours. The number of added shared
 libraries depends on the number of (material properties) interfaces
 selected when the project is configured (see the [`install` page for
 details](install.html`)).
@@ -337,7 +337,7 @@ Other search paths can be added by using any of the options
 \label{sec:mfm:cmake:mfront_behaviours_library}
 
 The `mfront_behaviours_library` function adds shared libraries to the
-project related to `MFront`' behaviours. The number of added shared
+project related to `MFront` behaviours. The number of added shared
 libraries depends on the number of (behaviour) interfaces selected when
 the project is configured (see the [`install` page for
 details](install.html`)).
@@ -457,7 +457,7 @@ To create a material management project derived from `MFrontGallery`,
 just copy the contents of the `cmake/modules` directory in your local
 directory.
 
-If you intent to use `git` for version control, one easy way is to add
+If you intend to use `git` for version control, one easy way is to add
 the `MFrontGallery` as a remote ressource and check out the `CMake`
 repository from it as follows:
 
@@ -538,8 +538,7 @@ $ cmake  ${MFRONT_GALLERY_SOURCES} -DCMAKE_BUILD_TYPE=Release  \
 ~~~~
 
 A complete description of the available options can be found on the
-[install
-page](https://thelfer.github.io/thelfer/MFrontGallery/install.html) of
+[install page](https://thelfer.github.io/thelfer/MFrontGallery/install.html) of
 the project.
 
 The selected shared libraries can be compiled by:
