@@ -9,6 +9,9 @@ authors:
   - name: Thomas Helfer
     orcid: 0000-0003-2460-5816
     affiliation: 1
+  - name: Maxence Wangermez
+    orcid: 0000-0002-3431-5081
+    affiliation: 1
   - name: Eric Simo
     affiliation: 2, 3
   - name: Thomas Nagel
