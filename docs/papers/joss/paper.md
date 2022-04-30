@@ -9,6 +9,9 @@ authors:
   - name: Thomas Helfer
     orcid: 0000-0003-2460-5816
     affiliation: 1
+  - name: Maxence Wangermez 
+    orcid: 0000-0002-3431-5081
+    affiliation: 1
   - name: Eric Simo
     affiliation: 2, 3
   - name: Thomas Nagel
@@ -43,9 +46,9 @@ pandoc -f markdown  --bibliography=bibliography.bib --citeproc -V geometry:a4pap
 `MFront` is an open-source code generator dedicated to material
 knowledge [@Helfer2015;@cea_edf_mfront_2022] developped by the French
 Alternative Energies and Atomic Energy Commission (CEA) and Électricité
-de France. `MFront` is part of the `PLEIADES` numerical platform, which
+de France (EDF). `MFront` is part of the `PLEIADES` numerical platform, which
 is devoted to multi-physics nuclear fuel simulations and is developped
-by CEA and its industrial partners EDF and Framatome. Since its release
+by CEA and its industrial partners EDF and Framatome. Since it was released
 as an open-source project, `MFront` has been used in numerous
 applications covering a wide range of materials (ceramics, metals,
 concrete, woods, etc.) and physical phenomena (viscoplasticity,
@@ -54,18 +57,18 @@ plasticity, damage, etc.) [^mfront:publications].
 [^mfront:publications]: See this page for a list of publications based
 on `MFront`: <https://thelfer.github.io/tfel/web/publications.html>
 
-`MFront` is mostly used to implement advanced mechanical behaviours in a
-portable way, as `MFront` can generate shared libraries usable in many
-solvers through so-called interfaces. For example, concerning mechanical
-behaviours, the behaviours can be compiled for the following commercial
+As `MFront` can generate shared libraries usable in many
+solvers through so-called interfaces, `MFront` is mostly used to implement advanced mechanical behaviours in a
+portable way. For example, mechanical
+behaviours can be compiled for the following commercial
 or academic solvers: [`Cast3M`](http://www-cast3m.cea.fr/),
 [`code_aster`](https://code-aster.org),
 [`Europlexus`](https://europlexus.jrc.ec.europa.eu/), `Abaqus/Standard`,
 `Abaqus/Explicit`, `Ansys`, `AMITEX_FFTP`,
 [`CalculiX`](http://www.calculix.de/),
-[`ZSet`](http://www.zset-software.com/), [`DIANA
-FEA`](https://dianafea.com/). Thanks to the `generic` interface, those
-behaviours are also available in all solvers using the
+[`ZSet`](http://www.zset-software.com/), [`DIANA FEA`](https://dianafea.com/).
+Furthermore, thanks to the `generic` interface, those
+mechanical behaviours are also available in all solvers using the
 [`MFrontGenericInterfaceSupport`
 projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [@helfer_mfrontgenericinterfacesupport_2020], including:
@@ -78,9 +81,7 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 
 However, the question of the management of `MFront` implementations
 including their compilation, unit testing and deployment has not been
-addressed, yet. Moreover, the project also shows several examples on how
-to use `MFront` as a wrapper around legacy implementations written in
-`C++` and `fortran` [@helfer_using_2020;@Simo2020;@helfer_umat_2022].
+addressed, yet. This is the purpose of the `MFrontGallery` project.
 
 The [MFrontGallery project](https://github.com/thelfer/MFrontGallery)
 has two main, almost orthogonal, goals:
@@ -104,7 +105,9 @@ tutorials, but `MFrontGallery` is also meant to store various
 contributions of academic or industrial users of `MFront` willing to
 share their material knowledge and also benefit from the continuous
 integration process to guarantee that no regression would happen as
-`MFront` evolves.
+`MFront` evolves. Moreover, it also shows several examples on how
+to use `MFront` as a wrapper around legacy implementations written in
+`C++` and `fortran` [@helfer_using_2020;@Simo2020;@helfer_umat_2022].
 
 In summary, the project provides:
 
@@ -121,7 +124,7 @@ In summary, the project provides:
   implemented using `MFront` implementations
 - a set of high-quality `MFront` implementations.
 
-The remainder of the paper is organized as follows.
+This paper aims to describe the project and is organized as follows:
 
 Section \ref{sec:mfm:introduction:statement_of_need} discusses why a
 new approach to material knowledge management is needed in the context
@@ -224,12 +227,12 @@ studies:
   behaviours.
 
 An alternative way of expressing the distinction between self-contained
-and generic implementations is to consider that generic implementations
-only describe a set of constitutive equations while self-contained
+and generic implementations is to consider that self-contained
 implementations describes a set of constitutive equations
 **and** the material coefficients[^mfm:about_material_coefficients]
   identified on a well-defined set of experiments for a particular
-  material.
+  material while generic implementations
+only describe a set of constitutive equations.
 
 [^mfm:about_material_coefficients]: In practice, the physical
 information described by self-contained implementations may be more
@@ -242,7 +245,7 @@ equations and parametrized to retrieve a certain degree of generality. In our
 experience, such a hybrid approach is fragile, less readable and
 cumbersome. Moreover, it does not address the main issue of generic
 behaviours which is the management of the physical information in a
-reliable and robust way.`
+reliable and robust way.
 
 In the authors' experience, self-contained behaviours allows to
 **decouple the material knowledge management from the development
@@ -281,8 +284,9 @@ organisation of the sources.
 ### The `mfront_properties_library` function
 \label{sec:mfm:cmake:mfront_properties_library}
 
-The `mfront_behaviours_library` function adds shared libraries to the
-project related to `MFront` behaviours. The number of added shared
+
+The `mfront_properties_library` function adds shared libraries to the
+project related to `MFront` material properties. The number of added shared
 libraries depends on the number of (material properties) interfaces
 selected when the project is configured (see the [`install` page for
 details](install.html`)).
@@ -360,6 +364,9 @@ named respectively `ConcreteBurger_EDF_CIWAP_2021.mfront` and
 
 Note that the `.mfront` suffix has been omitted in this declaration.
 
+The output generated by this function during the `CMake` configuration
+process is similar to the following:
+
 ~~~~{.bash}
 -- ConcreteBurger_EDF_CIWAP_2021 has been discarded for
    interface calculix (behaviours with external state variable
@@ -434,6 +441,8 @@ Generic implementations are stored in the `generic-behaviours`
 directory. Under this directory, the implementations are more or less
 arbitraly classified by the main phenomenon described, as follows:
 
+![](img/generic-behaviours.pdf){width=100% .center}
+
 These generic implementations have been introduced in the
 `MFrontGallery` project to:
   
@@ -441,8 +450,6 @@ These generic implementations have been introduced in the
   evolves.
 - show to solver developers how they could provide to their users a set
   of ready-to-use behaviours.
-
-![](img/generic-behaviours.pdf){width=100% .center}
 
 # Creation of a derived project
 \label{sec:mfm:creating_derived_project}
@@ -509,7 +516,7 @@ $ git checkout MFrontGallery/master cmake
 
 ## Contents
 
-### Generic behaviours
+### Examples of generic behaviours
 
 The projet currently contains several generic implementations described
 in the gallery page of the [`MFront`
@@ -519,7 +526,7 @@ hyperviscoelasticity, etc...
 
 [^mfront_gallery]: <https://thelfer.github.io/tfel/web/gallery.html>
 
-### Self-contained behaviours
+### Examples of self-contained behaviours
 
 The project contains several examples of self-contained behaviours
 related to the following materials: bentonite
