@@ -23,15 +23,13 @@
 struct VanadiumAlloy_YoungModulus_SRMA final
   : public tfel::tests::TestCase
 {
-  //! constructor
+  //! \brief constructor
   VanadiumAlloy_YoungModulus_SRMA()
     : tfel::tests::TestCase("MFM/VanadiumAlloy",
 			    "YoungModulus_SRMA")
   {} // end of VanadiumAlloy_YoungModulus_SRMA
   //! test execution
-  virtual tfel::tests::TestResult
-  execute(void) override
-  {
+  tfel::tests::TestResult execute() override  {
     const auto eps = 100e9*std::numeric_limits<double>::epsilon();
     const auto y   = mfront::VanadiumAlloy_YoungModulus_SRMA{};
     for(const auto T : {300.,400.,500.,600.,700.,800.}){
@@ -40,8 +38,8 @@ struct VanadiumAlloy_YoungModulus_SRMA final
     }
     return this->result;
   } // end of execute
-  // destructor
-  virtual ~VanadiumAlloy_YoungModulus_SRMA() = default;
+  // \brief destructor
+  ~VanadiumAlloy_YoungModulus_SRMA() override = default;
 };
 
 TFEL_TESTS_GENERATE_PROXY(VanadiumAlloy_YoungModulus_SRMA,

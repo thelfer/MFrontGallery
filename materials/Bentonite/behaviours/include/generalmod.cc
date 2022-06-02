@@ -1390,11 +1390,11 @@ double General_model::gscalar_dabs(double k) {
 	return tmp;
 }
 void General_model::garray_add( double a[], double b[], double c[], long int n ) {
-  register long int i=0;
+  long int i=0;
   for ( i=0; i<n; i++ ) c[i] = a[i] + b[i];
 }
 double General_model::garray_inproduct( double a[], double b[], long int n ) {
-  register long int i=0;
+  long int i=0;
   double result=0.;
   for ( i=0; i<n; i++ ) result += a[i]*b[i];
   return result;
@@ -1405,7 +1405,7 @@ void General_model::garray_move( double from[], double to[], long int n ) {
   memcpy(to, from, sizeof(*from)*n);
 }
 void General_model::garray_multiply( double a[], double b[], double c, long int n ) {
-  register long int i=0;
+  long int i=0;
   for ( i=0; i<n; i++ ) b[i] = c * a[i];
 }
 void General_model::garray_set( double *ptr, double value, long int n ) {				//@GS initialises the array to "value" (e.g. to zero)
@@ -1445,7 +1445,7 @@ double General_model::gmatrix_determinant( double a[], long int n ) {
   return result;
 }
 void General_model::gmatrix_ab( double *a, double *b, double *c, long int n, long int m, long int k ) { // c[n][k] = a[n][m] * b[m][k]
-    register long int i=0, j=0, l=0;
+  long int i=0, j=0, l=0;
 
   for ( i=0; i<n; i++ ) {
     for ( j=0; j<k; j++ ) {
@@ -1458,7 +1458,7 @@ void General_model::gmatrix_ab( double *a, double *b, double *c, long int n, lon
   }
 }
 void General_model::gmatrix_a4b( double a[3][3][3][3], double b[], double c[] ) {
-  register long int i=0, j=0, k=0, l=0;
+  long int i=0, j=0, k=0, l=0;
 
   for ( i=0; i<3; i++ ) {
     for ( j=0; j<3; j++ ) {
@@ -3086,8 +3086,7 @@ int General_model::garray_rcopy (double source[], int source_index, double desti
 }
 
 void General_model::garray_subtract (double a[], double b[], double c[], long int n) {
-  register long int i=0;
-  for (i=0; i<n; i++) c[i] = a[i] - b[i];
+  for (long int i=0; i<n; i++) c[i] = a[i] - b[i];
 }
 
 int General_model::garray_addmult (double source1[], double source2[], double multiplier, double destination[], int length) {
