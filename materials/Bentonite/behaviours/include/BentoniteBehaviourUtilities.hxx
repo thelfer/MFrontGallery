@@ -93,10 +93,11 @@ namespace bentonite_behaviour_utilities {
   tfel::math::tvector<8u, real> convert_gradients_from_mfront(const tfel::math::stensor<N, real>& e,
                                                               const real s,
                                                               const real T) {
+    constexpr auto size = tfel::math::StensorDimeToSize<N>::value;
     constexpr const auto cste = tfel::math::Cste<real>::sqrt2;
     auto r = tfel::math::tvector<8u, real>{};
-    tfel::fsalgo::copy<e.size()>::exe(e.begin(), r.begin());
-    tfel::fsalgo::fill<6u - e.size()>::exe(r.begin() + e.size(), real(0));
+    tfel::fsalgo::copy<size>::exe(e.begin(), r.begin());
+    tfel::fsalgo::fill<6u - size>::exe(r.begin() + e.size(), real(0));
     for (size_type i = 3; i != e.size(); ++i) {
       r[i] *= cste;
     }
@@ -119,10 +120,11 @@ namespace bentonite_behaviour_utilities {
   template <size_type N>
   tfel::math::tvector<7u, real> convert_thermodynamic_forces_from_mfront(
       const tfel::math::stensor<N, real>& sig, const real Sr) {
+    constexpr auto size = tfel::math::StensorDimeToSize<N>::value;
     constexpr const auto icste = tfel::math::Cste<real>::isqrt2;
     auto r = tfel::math::tvector<7u, real>{};
-    tfel::fsalgo::copy<sig.size()>::exe(sig.begin(), r.begin());
-    tfel::fsalgo::fill<6u - sig.size()>::exe(r.begin() + sig.size(), real(0));
+    tfel::fsalgo::copy<size>::exe(sig.begin(), r.begin());
+    tfel::fsalgo::fill<6u - size>::exe(r.begin() + sig.size(), real(0));
     for (size_type i = 3; i != sig.size(); ++i) {
       r[i] *= icste;
     }
@@ -140,8 +142,9 @@ namespace bentonite_behaviour_utilities {
   void convert_thermodynamic_forces_to_mfront(tfel::math::stensor<N, real>& sig,
                                               real& Sr,
                                               const tfel::math::tvector<7u, real>& tf) {
+    constexpr auto size = tfel::math::StensorDimeToSize<N>::value;
     constexpr const auto cste = tfel::math::Cste<real>::sqrt2;
-    tfel::fsalgo::copy<sig.size()>::exe(tf.begin(), sig.begin());
+    tfel::fsalgo::copy<size>::exe(tf.begin(), sig.begin());
     for (size_type i = 3; i != sig.size(); ++i) {
       sig[i] *= cste;
     }
