@@ -11,7 +11,9 @@ tfel_enable_cxx_compiler_flag(COMPILER_WARNINGS  "Winfinite-recursion")
 tfel_enable_cxx_compiler_flag(COMPILER_WARNINGS  "Wcomma")
 tfel_enable_cxx_compiler_flag(COMPILER_WARNINGS  "Wmicrosoft")
 tfel_enable_cxx_compiler_flag(COMPILER_WARNINGS  "Wno-inconsistent-missing-destructor-override")
-tfel_enable_cxx_compiler_flag2(COMPILER_WARNINGS "Wno-c++98-compat" "Wno_c__98_compat_AVAILABLE")
+tfel_enable_cxx_compiler_flag2(COMPILER_WARNINGS  "Wno-c++98-compat-pedantic"
+  "Wno_cxx_98_compat_pedantic_AVAILABLE")
+tfel_enable_cxx_compiler_flag2(COMPILER_WARNINGS "Wno-c++98-compat" "Wno_cxx_98_compat_AVAILABLE")
 include(cmake/modules/common-compiler-flags.cmake)
 
 tfel_enable_cxx_compiler_flag(OPTIMISATION_FLAGS_MARCH "march=native")

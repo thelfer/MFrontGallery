@@ -62,7 +62,7 @@ Tmax.setEntryName("MaximalValueOfTheTemperature");
   // positive part
   const auto pp = [](const real x) { return x > 0 ? x : 0; };
   // derivative of the positive part
-  const auto dpp = [&eeps](const real x) { return std::abs(x) < eeps ? 0.5 : ((x < 0) ? 0 : 1); };
+  const auto dpp = [](const real x) { return std::abs(x) < eeps ? 0.5 : ((x < 0) ? 0 : 1); };
   // square of the posititve part
   auto square_ppos = [](const strain& v) { return v > 0 ? v * v : 0; };
   // elastic strain at the midle of the time step

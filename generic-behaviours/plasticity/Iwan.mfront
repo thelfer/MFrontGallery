@@ -85,7 +85,7 @@ X.setEntryName("BackStress");
   for (unsigned short i = 0; i != Ns; ++i) {
     if (!status[i]) {
       continue;
-    };
+    }
     const auto seq = sigmaeq(sig - X[i]);
     const auto iseq = 1 / max(seq, eps * young);
     n[i] = 3 * deviator(sig - X[i]) * (iseq / 2);

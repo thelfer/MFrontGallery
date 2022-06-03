@@ -23,15 +23,13 @@
 struct VanadiumAlloy_ShearModulus_SRMA final
   : public tfel::tests::TestCase
 {
-  //! constructor
+  //! \brief constructor
   VanadiumAlloy_ShearModulus_SRMA()
     : tfel::tests::TestCase("MFM/VanadiumAlloy",
 			    "ShearModulus_SRMA")
   {} // end of VanadiumAlloy_ShearModulus_SRMA
-  //! test execution
-  virtual tfel::tests::TestResult
-  execute(void) override
-  {
+  //! \brief test execution
+  tfel::tests::TestResult execute() override {
     const auto eps = 100e9*std::numeric_limits<double>::epsilon();
     const auto mu  = mfront::VanadiumAlloy_ShearModulus_SRMA{};
     for(const auto T : {300.,400.,500.,600.,700.,800.}){
@@ -42,15 +40,14 @@ struct VanadiumAlloy_ShearModulus_SRMA final
     }
     return this->result;
   } // end of execute
-  // destructor
-  virtual ~VanadiumAlloy_ShearModulus_SRMA() = default;
+  // \brief destructor
+   ~VanadiumAlloy_ShearModulus_SRMA() override = default;
 };
 
 TFEL_TESTS_GENERATE_PROXY(VanadiumAlloy_ShearModulus_SRMA,
 			  "VanadiumAlloy_ShearModulus_SRMA");
 
-int main(void)
-{
+int main(void) {
   using namespace std;
   using namespace tfel::tests;
   auto& manager = TestManager::getTestManager();

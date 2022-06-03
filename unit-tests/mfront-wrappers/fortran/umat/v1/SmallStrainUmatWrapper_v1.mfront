@@ -107,7 +107,7 @@ void umat_(
   AbaqusRealType ddsddt[6];
   AbaqusRealType drplde[6];
   AbaqusRealType drpldt;
-  AbaqusRealType time[2];
+  AbaqusRealType abaqus_time[2];
   AbaqusRealType pred[1];
   AbaqusRealType dpred[1];
   AbaqusRealType isvs[1];
@@ -129,7 +129,7 @@ void umat_(
         &sse, &spd, &scd, &rpl, ddsddt, drplde, &drpldt,
         e,                         /* strain tensor    */
         de,                        /* strain increment */
-        time,                      //
+        abaqus_time,                      //
         &dt,                       /* time increment   */
         &T,                        /* temperature      */
         &dT,                       /* temperature increment    */
