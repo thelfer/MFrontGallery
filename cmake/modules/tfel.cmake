@@ -250,7 +250,7 @@ function(_get_boolean_dsl_options mkt interface option cmake_option_name)
     if(MFM_${uppercase_interface}_${cmake_option_name})
       list(APPEND mfront_dsl_options
            "--dsl-option=${option}:true")
-    elseif(MFM_${uppercase_interface}_${cmake_option_name})
+    else(MFM_${uppercase_interface}_${cmake_option_name})
       if(MFM_${cmake_option_name})
         list(APPEND mfront_dsl_options
              "--dsl-option=${option}:true")
@@ -273,7 +273,7 @@ function(_get_string_dsl_options mkt interface option cmake_option_name)
     if(MFM_${uppercase_interface}_${cmake_option_name})
       list(APPEND mfront_dsl_options
            "--dsl-option=${option}:${MFM_${uppercase_interface}_${cmake_option_name}}")
-    elseif(MFM_${uppercase_interface}_${cmake_option_name})
+    else(MFM_${uppercase_interface}_${cmake_option_name})
       if(MFM_${cmake_option_name})
         list(APPEND mfront_dsl_options
              "--dsl-option=${option}:${MFM_${cmake_option_name}}")
