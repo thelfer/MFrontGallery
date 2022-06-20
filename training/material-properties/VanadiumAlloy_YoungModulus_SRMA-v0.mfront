@@ -1,0 +1,7 @@
+@DSL MaterialLaw;
+@Law YoungModulus;
+@Input TK;
+@Function {
+  const auto TC = TK - 273.15;
+  res = 127.8e9 - 7.825e-5 * (TC - 20);
+}
