@@ -1,0 +1,10 @@
+@DSL MaterialLaw;
+@Law YoungModulus_SRMA;
+
+@Output E;
+@Input TK;
+
+@Function {
+  const real TC = TK - 273.15 ;
+  E = 127.8e9 * (1 - 7.825e-5 * (TC - 20.));
+}
