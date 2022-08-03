@@ -78,9 +78,7 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 
 However, the question of the management of `MFront` implementations
 including their compilation, unit testing and deployment has not been
-addressed, yet. Moreover, the project also shows several examples on how
-to use `MFront` as a wrapper around legacy implementations written in
-`C++` and `fortran` [@helfer_using_2020;@Simo2020;@helfer_umat_2022].
+addressed, yet.
 
 The [MFrontGallery project](https://github.com/thelfer/MFrontGallery)
 has two main, almost orthogonal, goals:
@@ -104,9 +102,12 @@ tutorials, but `MFrontGallery` is also meant to store various
 contributions of academic or industrial users of `MFront` willing to
 share their material knowledge and also benefit from the continuous
 integration process to guarantee that no regression would happen as
-`MFront` evolves.
+`MFront` evolves. Moreover, the `MFrontGallery` project also shows
+several examples on how to use `MFront` as a wrapper around legacy
+implementations written in `C++` and `fortran`
+[@helfer_using_2020;@Simo2020;@helfer_umat_2022].
 
-In summary, the project provides:
+In summary, the `MFrontGallery` project provides:
 
 - a [`CMake`](https://cmake.org) infrastructure that can be duplicated
   in (academics- or industry-) derived projects. This infrastructure allows:

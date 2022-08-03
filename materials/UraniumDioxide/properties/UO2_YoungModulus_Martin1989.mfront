@@ -1,0 +1,38 @@
+@DSL MaterialLaw{
+default_out_of_bounds_policy:
+  "Strict"
+};
+@Material UO2;                // material name
+@Law YoungModulus_Martin1989; // name of the material property 
+@Author   T. Helfer;  // author name
+@Date     04/04/2014; // implentation date
+@Description          // detailled description
+{
+  The elastic constants of polycrystalline UO2 and
+  (U, Pu) mixed oxides: a review and recommendations
+  Martin, DG
+  High Temperatures. High Pressures, 1989
+}
+
+@UseQt true;
+
+@Output stress E;
+E.setGlossaryName("YoungModulus");
+
+@Input temperature T;
+T.setGlossaryName("Temperature");
+@Input real f;
+f.setGlossaryName("Porosity");
+
+@PhysicalBounds T in [0:*[;    // Temperature is positive
+@PhysicalBounds f in [0:1.];   // Porosity is positive and lower than one
+@Bounds T in [273.15:2610.15]; // Validity range
+
+@Parameter stress E0 = 2.2693e11;
+@Parameter derivative_type<stress, temperature> ∂E∕∂T =  -1.53994698e7;
+@Parameter derivative_type<stress, temperature, temperature> ∂²E∕∂T² = -1.9198278e4;
+@Parameter real f₀ = 0.4;
+
+@Function {
+  E = (1 - f / f₀) * (E0 + ∂E∕∂T * T + (∂²E∕∂T² / 2) * T * T);
+}
