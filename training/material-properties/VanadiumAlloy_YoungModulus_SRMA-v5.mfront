@@ -1,0 +1,32 @@
+@DSL MaterialLaw;
+@Material VanadiumAlloy;
+@Law YoungModulus_SRMA2008;
+@Author T.Helfer;
+@Date 2008 - 11 - 17;
+
+@Description {
+  Propriétés et comportement mécanique d alliages
+    de Vanadium avant, après et sous irradiation
+
+  Marion Le Flem, Jean-Luc Bechade, Annick Bougault,
+  Aurore Michaux, Lionel Gosmain, Jean-Louis Seran
+  DMN/SRMA/LA2M/NT/2008-2967/A
+}
+
+@UseQt true;
+
+@Output stress E;
+E.setGlossaryName("YoungModulus");
+
+@Input temperature TK;
+TK.setGlossaryName("Temperature");
+
+@PhysicalBounds TK in [0:*[;
+@Bounds TK in [293.13:973.15];
+
+@Function {
+  constexpr auto Tref = temperature{293.15};
+  constexpr auto E0 = stress{127.8e9};
+  constexpr auto alpha = tfel::math::invert_type<temperature>{7.825e-5};
+  E = E0 * (1 - alpha * (TK - Tref));
+}
