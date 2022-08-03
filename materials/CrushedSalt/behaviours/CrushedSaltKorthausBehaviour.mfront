@@ -6,6 +6,37 @@
 @Epsilon 1.e-14;
 @Theta 1.;
 
+@Parameter real nu = 0.25;
+nu.setEntryName("RockSaltPoissonRatio");
+@Parameter stress E = 25e9;
+E.setEntryName("RockSaltYoungModulus");
+@Parameter real ck = 9;
+//! reference porosity
+@Parameter real eta0 = 0.38;
+eta0.setEntryName("ReferencePorosity");
+
+// Qc: 54e3
+@Parameter temperature Ta = 6495.068559057012;  // 54e3/8.314
+Ta.setEntryName("GrainDeformationActivationTemperature");
+@Parameter stress s0 = 10e6;
+s0.setEntryName("GrainDeformationReferenceEquivalentStress");
+@Parameter real nvp = 5;
+nvp.setEntryName("GrainDeformationStressExponent");
+// A0: 0.00674 MPA^{-nvp}/jour
+// de_jour = A0 * seq_MPA ** nvp
+// de_second = A0/(3600*24) * (seq_Pa / s0) ** nvp avec s0 = 1e6
+// de_second = A0/(3600*24)  * (seq_Pa / s0) ** nvp  
+// de_second = de0 * (seq_Pa / s0) ** nvp  
+// de0 = A0/(3600*24) 
+@Parameter strainrate de0 = 7.800925925925927e-08;
+de0.setEntryName("GrainDeformationReferenceStrainRate");
+
+@Parameter real a = 0.0001;
+@Parameter real c = 0.06344;
+@Parameter real m = 3.8918;
+@Parameter real b1 = 1.;
+@Parameter real b2 = 0.1995;
+
 @AuxiliaryStateVariable real eta;
 eta.setGlossaryName("Porosity");
 
@@ -56,32 +87,13 @@ eta.setGlossaryName("Porosity");
 //! normal to the equivalent stress
 @LocalVariable Stensor n;
 
-@Parameter real nu = 0.25;
-nu.setEntryName("RockSaltPoissonRatio");
-@Parameter stress E = 25e9;
-E.setEntryName("RockSaltYoungModulus");
-@Parameter real ck = 9;
-//! reference porosity
-@Parameter real eta0 = 0.35;
-eta0.setEntryName("ReferencePorosity");
-
-@Parameter temperature Ta = 6495.068559057012;  // 54e3/8.314
-Ta.setEntryName("GrainDeformationActivationTemperature");
-@Parameter stress s0 = 10e6;
-s0.setEntryName("GrainDeformationReferenceEquivalentStress");
-@Parameter real nvp = 5;
-nvp.setEntryName("GrainDeformationStressExponent");
-@Parameter strainrate de0 = 0.2083;  // A *  s0 ** nvp with A = 2.083e-36
-de0.setEntryName("GrainDeformationReferenceStrainRate");
-
-@Parameter real a = 0.01648;
-@Parameter real c = 0.1;
-@Parameter real m = 2.25;
-@Parameter real b1 = 0.9;
-@Parameter real b2 = 1;
+//! value of the stress at the beginning of the time step
+@LocalVariable StressStensor sig0;
 
 @InitLocalVariables {
   constexpr auto id = Stensor::Id();
+  //
+  sig0 = sig;
   // Porosity at the middle of the time step
   const auto exp_mts = exp(-theta * trace(deto));
   const auto eta_mts_tr = 1 - (1 - eta) * exp_mts;
@@ -123,21 +135,19 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   dh2_mts_deta_mts = b2 * dh1_mts_deta_mts;
 }
 
-@ComputeStress {
-  constexpr auto id = Stensor::Id();
-  sig = Kv_mts * trace(eel) * id + 2 * mu_mts * deviator(eel);
-}
-
 @Integrator {
   constexpr auto id = Stensor::Id();
   constexpr auto eeps = 1.e-12;
   const auto seps = eeps * E;
+  // computation of the stress
+  const auto dsig = Kv_mts * trace(deel) * id + 2 * mu_mts * deviator(deel);
+  sig = sig0 + theta * dsig;
   // elastic part
   feel = deel - deto;
   // viscoplastic part
   s = deviator(sig);
   p = trace(sig) / 3;
-  const auto q2 = s | s;
+  const auto q2 = std::max(s | s, stress{0} * stress{0});
   const auto seq = power<1, 2>(h1_mts * p * p + h2_mts * q2);
   const auto iseq = 1 / max(seq, seps);
   n = ((h1_mts / 3) * p * id + h2_mts * s) * iseq;
@@ -156,7 +166,7 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
 
 @ComputeFinalStress {
   constexpr auto id = Stensor::Id();
-  sig = Kv_ets * trace(eel) * id + 2 * mu_ets * deviator(eel);
+  sig = sig0 + Kv_ets * trace(deel) * id + 2 * mu_ets * deviator(deel);
 }
 
 @UpdateAuxiliaryStateVariables {
@@ -168,8 +178,8 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   // elastic stiffness
   const auto De = eval(Kv_ets * Stensor4::IxI() + 2 * mu_ets * Stensor4::K());
   if (smt == ELASTIC) {
-    dsig_ddeto = De + ((dKv_ets_deta_ets * trace(eel) * id +
-                        2 * dmu_ets_deta_ets * deviator(eel)) ^
+    dsig_ddeto = De + ((dKv_ets_deta_ets * trace(deel) * id +
+                        2 * dmu_ets_deta_ets * deviator(deel)) ^
                        deta_ets_ddeto);
   } else {
     // Note: at this stage, sig has been updated to its value at the end of the
@@ -178,7 +188,7 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
     constexpr auto eeps = 1.e-12;
     const auto seps = eeps * E;
     //
-    const auto q2 = s | s;
+    const auto q2 = std::max(s | s, stress{0} * stress{0});
     const auto seq = power<1, 2>(h1_mts * p * p + h2_mts * q2);
     const auto iseq = 1 / max(seq, seps);
     auto dseq_deta_mts =
@@ -194,8 +204,8 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
     getIntegrationVariablesDerivatives_eto(ddeel_ddeto);
     //
     dsig_ddeto = De * ddeel_ddeto +  //
-                 ((dKv_ets_deta_ets * trace(eel) * id +
-                   2 * dmu_ets_deta_ets * deviator(eel)) ^
+                 ((dKv_ets_deta_ets * trace(deel) * id +
+                   2 * dmu_ets_deta_ets * deviator(deel)) ^
                   deta_ets_ddeto);
   }
 }
