@@ -1,0 +1,30 @@
+@DSL Model;
+@Model ChemicalReaction1;
+@Author Thomas Helfer;
+@Date 09/07/2022;
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+ca.setDepth(1);
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+cb.setDepth(1);
+
+//! rate coefficient of the reaction transforming species A to species B
+@Parameter frequency k1 = 0.016666666666666666;
+k1.setEntryName("ReactionRateCoefficientAB");
+//! rate coefficient of the reaction transforming species B to species A
+@Parameter frequency k2 = 0.008333333333333333;
+k2.setEntryName("ReactionRateCoefficientBA");
+
+@Function ChemicalReaction {
+  const auto B = k2 * (ca_1 + cb_1);
+  const auto K = k1 + k2;
+  const auto e = exp(-K * dt);
+  ca = ca_1 * e + (B / K) * (1 - e);
+  cb = ca_1 + cb_1 - ca;
+}

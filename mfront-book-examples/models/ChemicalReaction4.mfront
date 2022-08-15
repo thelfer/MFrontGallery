@@ -1,0 +1,17 @@
+@DSL Model;
+@Model ChemicalReaction4;
+@Author Thomas Helfer;
+@Date 09/07/2022;
+
+@Import "ChemicalReaction-common.mfront";
+
+@Function ChemicalReaction {
+  const auto T_mts = (T_1 + T) / 2;
+  const auto k1_mts = k01 * exp(-T_mts / Ta1);
+  const auto k2_mts = k02 * exp(-T_mts / Ta2);
+  const auto B = k2_mts * (ca_1 + cb_1);
+  const auto K = k1_mts + k2_mts;
+  const auto e = exp(-K * dt);
+  ca = ca_1 * e + (B / K) * (1 - e);
+  cb = ca_1 + cb_1 - ca;
+}

@@ -9,8 +9,12 @@ function(mfront_properties_java_library mat)
     set(java_class_file "${mat}.class")
   endif(MFM_PACKAGE)
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   get_material_property_dsl_options("java")
   foreach(source ${mfront_sources})
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")

@@ -1,0 +1,17 @@
+@Author Thomas Helfer;
+@Date   09/08/2022;
+@Model 'src/libModel.so' 'ChemicalReaction4';
+
+@Real 'B0' 0.1;
+@Real 'T' 293.15;
+
+@StateVariable 'MolarConcentrationOfSpeciesB' 'B0';
+
+@Real 'T0' 700;
+@Real 'T1' 400;
+@Real 'tau0' 30;
+@ExternalStateVariable<function> 'Temperature' 'T0 + T1 * sin(t/tau0)';
+
+@Times {
+  0, 200 in 100, 720 in 20
+};

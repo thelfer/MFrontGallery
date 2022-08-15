@@ -1,0 +1,25 @@
+@Author Thomas Helfer;
+@Date   09/08/2022;
+@Model @library@ @behaviour@;
+
+@Real 'B0' 0.1;
+@StateVariable 'MolarConcentrationOfSpeciesA' '0';
+@StateVariable 'MolarConcentrationOfSpeciesB' 'B0';
+
+@ExternalStateVariable 'Temperature' 293.15;
+
+@Times {
+  0, 360 in 100
+};
+
+// unit testing
+@Real 'k01' '0.018377505387559667';
+@Real 'k02' '0.01013198112809354';
+@Real 'Ta1' '3000';
+@Real 'Ta2' '1500';
+@Real 'k1' 'k01 * exp(-Temperature / Ta1)';
+@Real 'k2' 'k02 * exp(-Temperature / Ta2)';
+@Real 'K'  'k1 + k2';
+@Real 'B'  'k2 * B0';
+@Test<function> 'MolarConcentrationOfSpeciesA' '(B/K) * (1 - exp(-K * t))'      1e-14;
+@Test<function> 'MolarConcentrationOfSpeciesB' 'B0 - (B/K) * (1 - exp(-K * t))' 1e-14;

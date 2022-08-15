@@ -1,8 +1,12 @@
 function(mfront_properties_octave_library mat)
   set (octave_targets )
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   foreach(source ${mfront_sources})
     set(source_dir "${CMAKE_CURRENT_SOURCE_DIR}")
     set(mfront_file   "${source_dir}/${source}.mfront")

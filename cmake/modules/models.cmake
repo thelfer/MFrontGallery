@@ -31,8 +31,12 @@ endmacro(add_mfront_model_sources)
 
 function(mfront_models_library mat)
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   if(${ARGC} LESS 1)
     message(FATAL_ERROR "mfront_models_library : no source specified")
   endif(${ARGC} LESS 1)

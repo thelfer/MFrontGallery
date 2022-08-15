@@ -1,0 +1,27 @@
+@DSL DefaultModel;
+@Model ChemicalReaction5;
+@Author Thomas Helfer;
+@Date 09/07/2022;
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@Import "ChemicalReaction-parameters.mfront";
+
+@Integrator{
+  const auto T_mts = T + dT / 2;
+  const auto k1_mts = k01 * exp(-T_mts / Ta1);
+  const auto k2_mts = k02 * exp(-T_mts / Ta2);
+  const auto B = k2_mts * (ca + cb);
+  const auto K = k1_mts + k2_mts;
+  const auto e = exp(-K * dt);
+  const auto sum = ca + cb;
+  ca = ca * e + (B / K) * (1 - e);
+  cb = sum - ca;
+}

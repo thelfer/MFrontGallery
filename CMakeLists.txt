@@ -19,6 +19,7 @@ endif(CMAKE_CONFIGURATION_TYPES)
 
 add_subdirectory(generic-behaviours)
 add_subdirectory(materials)
+add_subdirectory(mfront-book-examples)
 add_subdirectory(unit-tests/mfront-wrappers)
 # add_subdirectory(unit-tests/behaviours-without-temperature)
 add_subdirectory(unit-tests/madnex/behaviours)

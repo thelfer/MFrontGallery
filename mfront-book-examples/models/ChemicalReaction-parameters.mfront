@@ -1,0 +1,12 @@
+//! reference rate coefficient of the reaction transforming species A to species B
+@Parameter frequency k01 = 0.018377505387559667;
+k01.setEntryName("ReferenceReactionRateCoefficientAB");
+//! reference rate coefficient of the reaction transforming species B to species A
+@Parameter frequency k02 = 0.01013198112809354;
+k02.setEntryName("ReferenceReactionRateCoefficientBA");
+//! activation temperature reaction transforming species B to species A
+@Parameter temperature Ta1 = 3000;
+Ta1.setEntryName("ActivationTemperatureAB");
+//! activation temperature reaction transforming species B to species A
+@Parameter temperature Ta2 = 1500;
+Ta2.setEntryName("ActivationTemperatureBA");

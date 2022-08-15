@@ -1,0 +1,67 @@
+@DSL DefaultModel;
+@Model ChemicalReaction5d;
+@Author Thomas Helfer;
+@Date 09 / 07 / 2022;
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@TangentOperatorBlocks{dca_ddT, dcb_ddT};
+
+@Import "ChemicalReaction-parameters.mfront";
+
+/*!
+ * rate coefficient of the reaction transforming species A to species B at the
+ * middle of the time step
+ */
+@LocalVariable frequency k1_mts;
+/*!
+ * rate coefficient of the reaction transforming species B to species B at the
+ * middle of the time step
+ */
+@LocalVariable frequency k2_mts;
+//! molar concentration of species A at the beginning of the time step
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca_bts;
+//! molar concentration of species B at the beginning of the time step
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb_bts;
+//! exponential decay
+@LocalVariable real e;
+
+@InitLocalVariables {
+  const auto T_mts = T + dT / 2;
+  k1_mts = k01 * exp(-T_mts / Ta1);
+  k2_mts = k02 * exp(-T_mts / Ta2);
+  ca_bts = ca;
+  cb_bts = cb;
+}
+
+@Integrator {
+  const auto sum = ca_bts + cb_bts;
+  const auto B = k2_mts * sum;
+  const auto K = k1_mts + k2_mts;
+  e = exp(-K * dt);
+  ca = ca * e + (B / K) * (1 - e);
+  cb = sum - ca;
+}
+
+@TangentOperator {
+  // avoid warning
+  static_cast<void>(smt);
+  const auto sum = ca_bts + cb_bts;
+  const auto B = k2_mts * sum;
+  const auto K = k1_mts + k2_mts;
+  const auto dk1_mts_ddT = -k1_mts / (2 * Ta1);
+  const auto dk2_mts_ddT = -k2_mts / (2 * Ta2);
+  const auto dB_ddT = sum * dk2_mts_ddT;
+  const auto dK_ddT = dk1_mts_ddT + dk2_mts_ddT;
+  const auto de_ddT = -dt * e * dK_ddT;
+  dca_ddT = ca_bts * de_ddT - (B / K) * de_ddT +  //
+            ((1 - e) / K) * (dB_ddT - B * dK_ddT / K);
+  dcb_ddT = -dca_ddT;
+}

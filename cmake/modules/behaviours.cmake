@@ -193,12 +193,15 @@ function(mfront_behaviours_library mat)
       "${TFELException};${TFELMath};${TFELMaterial};${TFELUtilities};${TFELPhysicalConstants}")
   endif((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
-      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
-  list(APPEND mfront_search_paths 
-      "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours")
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
+        "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+    list(APPEND mfront_search_paths 
+        "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours")
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   foreach(source ${mfront_sources})
     set(mfront_file)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront.in")

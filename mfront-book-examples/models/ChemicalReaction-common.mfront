@@ -1,0 +1,17 @@
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+ca.setDepth(1);
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+cb.setDepth(1);
+
+@ExternalStateVariable temperature T;
+T.setGlossaryName("Temperature");
+T.setDepth(1);
+
+@Import "ChemicalReaction-parameters.mfront";

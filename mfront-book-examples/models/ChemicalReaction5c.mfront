@@ -1,0 +1,59 @@
+@DSL DefaultModel;
+@Model ChemicalReaction5c;
+@Author Thomas Helfer;
+@Date 09 / 07 / 2022;
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@TangentOperatorBlocks{dca_ddT, dcb_ddT};
+
+@Import "ChemicalReaction-parameters.mfront";
+
+//! molar concentration of species A at the beginning of the time step
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca_bts;
+//! molar concentration of species B at the beginning of the time step
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb_bts;
+
+@InitLocalVariables {
+  ca_bts = ca;
+  cb_bts = cb;
+}
+
+@Integrator {
+  const auto T_mts = T + dT / 2;
+  const auto k1_mts = k01 * exp(-T_mts / Ta1);
+  const auto k2_mts = k02 * exp(-T_mts / Ta2);
+  const auto sum = ca_bts + cb_bts;
+  const auto B = k2_mts * sum;
+  const auto K = k1_mts + k2_mts;
+  const auto e = exp(-K * dt);
+  ca = ca_bts * e + (B / K) * (1 - e);
+  cb = sum - ca;
+}
+
+@TangentOperator {
+  // avoid warning
+  static_cast<void>(smt);
+  const auto T_mts = T + dT / 2;
+  const auto k1_mts = k01 * exp(-T_mts / Ta1);
+  const auto dk1_mts_ddT = -k1_mts / (2 * Ta1);
+  const auto k2_mts = k02 * exp(-T_mts / Ta2);
+  const auto dk2_mts_ddT = -k2_mts / (2 * Ta2);
+  const auto sum = ca_bts + cb_bts;
+  const auto B = k2_mts * sum;
+  const auto dB_ddT = sum * dk2_mts_ddT;
+  const auto K = k1_mts + k2_mts;
+  const auto dK_ddT = dk1_mts_ddT + dk2_mts_ddT;
+  const auto e = exp(-K * dt);
+  const auto de_ddT = -dt * e * dK_ddT;
+  dca_ddT = ca_bts * de_ddT - (B / K) * de_ddT +
+            ((1 - e) / K) * (dB_ddT - B * dK_ddT / K);
+  //   dcb_ddT = -dca_ddT;
+}

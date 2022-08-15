@@ -1,0 +1,35 @@
+@DSL RungeKuttaModel;
+@Model ChemicalReaction6;
+@Author Thomas Helfer;
+@Date 09/07/2022;
+@UseQt true;
+@UnitSystem SI;
+
+@Algorithm rk54;
+@Epsilon 1e-14;
+
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@Import "ChemicalReaction-parameters.mfront";
+
+//! sum of the molar concentrations of species A and B
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> sum;
+
+@InitLocalVariables {
+  sum = ca + cb;
+}
+
+@Derivative{
+  const auto k1 = k01 * exp(-T / Ta1);
+  const auto k2 = k02 * exp(-T / Ta2);
+  dca = k2 * sum - (k1 + k2) * ca;
+}
+
+@UpdateAuxiliaryStateVariables {
+  cb = sum - ca;
+}

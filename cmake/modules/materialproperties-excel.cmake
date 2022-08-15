@@ -4,8 +4,12 @@ endfunction(mfront_properties_excel_internal_library)
 
 function(mfront_properties_excel_library mat)
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   list(TRANSFORM mfront_sources PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
   list(TRANSFORM mfront_sources APPEND ".mfront")
   set(mfront_args)

@@ -1,0 +1,48 @@
+@DSL ImplicitModel;
+@Model ChemicalReaction7;
+@Author Thomas Helfer;
+@Date 09 / 07 / 2022;
+@UseQt true;
+@UnitSystem SI;
+
+@Epsilon 1e-14;
+@Theta 0.5;
+
+//! molar concentration of species B
+@StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@Import "ChemicalReaction-parameters.mfront";
+
+//! sum of the molar concentrations of species A and B
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> sum;
+/*!
+ * reaction rate coefficient of the reaction transforming species A to species
+ * B at the middle of the time step
+ */
+@LocalVariable frequency k1_mts;
+/*!
+ * reaction rate coefficient of the reaction transforming species B to species
+ * A at the middle of the time step
+ */
+@LocalVariable frequency k2_mts;
+
+@InitLocalVariables {
+  const auto T_mts = T + dT / 2;
+  k1_mts = k01 * exp(-T_mts / Ta1);
+  k2_mts = k02 * exp(-T_mts / Ta2);
+  sum = ca + cb;
+}
+
+@Integrator {
+  const auto vca = k2_mts * sum - (k1_mts + k2_mts) * (ca + theta * dca);
+  fca -= dt * vca;
+  dfca_ddca += theta * dt * (k1_mts + k2_mts);
+}
+
+@UpdateAuxiliaryStateVariables {
+  cb = sum - ca;
+}

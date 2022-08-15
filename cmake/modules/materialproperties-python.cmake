@@ -2,8 +2,12 @@ macro(mfront_properties_python_library mat)
   string(TOLOWER ${mat} lib)
   set(mfront_files)
   parse_mfront_library_sources(${ARGN})
-  list(APPEND mfront_search_paths 
+  if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+    list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
+  endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
+  list(APPEND mfront_search_paths 
+      "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
   set(wrapper_source "${CMAKE_CURRENT_BINARY_DIR}/python/src/${mat}lawwrapper.cxx")
   get_material_property_dsl_options("python")
   foreach(source ${mfront_sources})
