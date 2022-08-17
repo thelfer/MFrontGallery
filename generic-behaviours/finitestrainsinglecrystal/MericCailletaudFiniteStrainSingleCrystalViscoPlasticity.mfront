@@ -47,7 +47,7 @@ a.setEntryName("BackStrain");
 @Integrator {
   using size_type = unsigned short;
   const auto& m = ss.him;
-  constexpr const auto eeps = 1.e-12;
+  constexpr const auto eeps = strain{1.e-12};
   const auto seps = eeps * D(0, 0);
   real exp_bp[Nss];
   for (size_type i = 0; i != Nss; ++i) {

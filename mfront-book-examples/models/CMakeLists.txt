@@ -1,3 +1,9 @@
+mfront_models_library(ChemicalReaction
+  ChemicalReaction1
+  ChemicalReaction2
+  ChemicalReaction3
+  ChemicalReaction4)
+
 mfront_behaviours_library(ChemicalReaction
   ChemicalReaction5
   ChemicalReaction5b
@@ -6,6 +12,25 @@ mfront_behaviours_library(ChemicalReaction
   ChemicalReaction5e
   ChemicalReaction6
   ChemicalReaction7)
+
+genericmtest(ChemicalReaction ChemicalReaction1
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+genericmtest(ChemicalReaction ChemicalReaction2
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+genericmtest(ChemicalReaction ChemicalReaction3
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+genericmtest(ChemicalReaction ChemicalReaction4
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+
+genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature2
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature3
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature4
+  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
 
 genericmtest(ChemicalReaction ChemicalReaction5
   MTEST_FILE ChemicalReaction5

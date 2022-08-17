@@ -231,7 +231,7 @@ function(check_if_behaviour_interface_is_supported interface)
 endfunction(check_if_behaviour_interface_is_supported interface)
 
 function(check_if_model_interface_is_supported interface)
-  list (FIND MFRONT_model_INTERFACES ${interface} interface_index)
+  list (FIND MFRONT_MODEL_INTERFACES ${interface} interface_index)
   if (NOT ${interface_index} GREATER -1)
 	message(FATAL_ERROR "interface ${interface} is not supported by this version of TFEL")
   endif()

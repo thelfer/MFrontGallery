@@ -8,7 +8,7 @@ macro(add_mfront_model_sources lib interface search_paths file)
   else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront")
   endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
-  set(mfront_output "${CMAKE_CURRENT_BINARY_DIR}/src/${file}-${interface}.cxx")
+  set(mfront_output "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}-${interface}.cxx")
   set(mfront_args)
   list(APPEND mfront_args ${search_paths})
   get_model_dsl_options(${interface})
@@ -22,11 +22,14 @@ macro(add_mfront_model_sources lib interface search_paths file)
     COMMAND "${MFRONT}"
     ARGS    ${mfront_args}
     DEPENDS "${mfront_file}"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
     COMMENT "mfront source ${mfront_file}")
   set(${lib}_SOURCES ${mfront_output} ${${lib}_SOURCES})
-  set_source_files_properties(${mfront_output}
-    PROPERTIES COMPILE_FLAGS
-    ${${interface}_SPECIFIC_DEFINITIONS})
+  if(${${interface}_SPECIFIC_DEFINITIONS})
+    set_source_files_properties(${mfront_output}
+      PROPERTIES COMPILE_FLAGS
+      ${${interface}_SPECIFIC_DEFINITIONS})
+  endif(${${interface}_SPECIFIC_DEFINITIONS})
 endmacro(add_mfront_model_sources)
 
 function(mfront_models_library mat)
@@ -42,14 +45,30 @@ function(mfront_models_library mat)
   endif(${ARGC} LESS 1)
   foreach(interface ${mfront-models-interfaces})
     if(${interface} STREQUAL "licos")
-      set(lib "${mat}MaterialModels")
+      set(mfront_model_library_name "${mat}Models")
     else(${interface} STREQUAL "licos")
-      set(lib "${mat}MaterialModels-${interface}")
+      set(mfront_model_library_name "${mat}Models-${interface}")
     endif(${interface} STREQUAL "licos")
     foreach(source ${mfront_sources})
-      add_mfront_model_sources(${lib} ${interface} "${mfront_search_paths}" ${source})
+      add_mfront_model_sources(${mfront_model_library_name} ${interface} "${mfront_search_paths}" ${source})
     endforeach(source)
-    add_library(${lib} SHARED ${${lib}_SOURCES})
+    add_library(${mfront_model_library_name} SHARED
+      ${${mfront_model_library_name}_SOURCES})
+    target_include_directories(${mfront_model_library_name}
+        PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${interface}/include"
+        PRIVATE "${TFEL_INCLUDE_PATH}")
+    if(EXISTS "${CMAKE_SOURCE_DIR}/include")
+      target_include_directories(${mfront_model_library_name}
+          PRIVATE "${CMAKE_SOURCE_DIR}/include")
+    endif(EXISTS "${CMAKE_SOURCE_DIR}/include")
+    if(mfront_include_directories)
+        target_include_directories(${mfront_model_library_name}
+          PRIVATE ${mfront_include_directories})
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        target_include_directories(${mfront_model_library_name}
+          PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include")
     if(WIN32)
       if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	set_target_properties(${lib}

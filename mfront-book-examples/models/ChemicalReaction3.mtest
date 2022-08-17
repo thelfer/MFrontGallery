@@ -1,6 +1,6 @@
 @Author Thomas Helfer;
 @Date   09/08/2022;
-@Model 'src/libModel.so' 'ChemicalReaction3';
+@Model @library@ 'ChemicalReaction3';
 
 @Real 'B0' 0.1;
 @Real 'T' 293.15;

@@ -1,6 +1,6 @@
 @Author Thomas Helfer;
 @Date   09/08/2022;
-@Model 'src/libModel.so' 'ChemicalReaction1';
+@Model @library@ 'ChemicalReaction1';
 
 @Real 'B0' 0.1;
 @StateVariable 'MolarConcentrationOfSpeciesA' '0';

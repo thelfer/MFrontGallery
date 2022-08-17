@@ -103,7 +103,7 @@ The definition of all those variables is optional.
 
 ### Interface selection
 
-#### Interface to material properties
+#### Interfaces to material properties
 
 - `enable-c`: enable compilation of material properties using the `c`
   interface.
@@ -121,11 +121,13 @@ The definition of all those variables is optional.
   `java` interface.
 - `enable-octave`: enable compilation of material properties using the
   `octave` interface.
+- `enable-generic-material-properties`: enable compilation of material
+  properties using the `generic` interface.
 
 See also the `enable-castem-material-properties` and
 `enable-cyrano-material-properties` options below.
 
-#### Interface to behaviours
+#### Interfaces to behaviours
 
 - `enable-generic-behaviours`: enable compilation of behaviours using
   the `generic` interface.
@@ -148,6 +150,11 @@ See also the `enable-castem-material-properties` and
 
 See also the `enable-castem-behaviours` and `enable-cyrano-behaviours`
 below.
+
+#### Interfaces to models
+
+- `enable-generic-models`: enable compilation of models
+  using the `generic` interface.
 
 #### Options related to the `Cast3M` solver
 

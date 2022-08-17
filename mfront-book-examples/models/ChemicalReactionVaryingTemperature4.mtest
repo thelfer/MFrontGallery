@@ -1,6 +1,6 @@
 @Author Thomas Helfer;
 @Date   09/08/2022;
-@Model 'src/libModel.so' 'ChemicalReaction4';
+@Model @library@ 'ChemicalReaction4';
 
 @Real 'B0' 0.1;
 @Real 'T' 293.15;
@@ -15,3 +15,4 @@
 @Times {
   0, 200 in 100, 720 in 20
 };
+
