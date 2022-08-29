@@ -1,4 +1,4 @@
-macro(add_mfront_model_sources lib interface search_paths file)
+function(add_mfront_model_sources lib interface search_paths file)
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
     set(mfront_file   "${CMAKE_CURRENT_BINARY_DIR}/${file}.mfront")
     configure_file(
@@ -8,29 +8,34 @@ macro(add_mfront_model_sources lib interface search_paths file)
   else(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
     set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront")
   endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.mfront.in")
-  set(mfront_output "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/${file}-${interface}.cxx")
+  get_model_dsl_options(${interface})
+  get_mfront_generated_sources(${lib} ${interface} "${search_paths}"
+                                 "${mfront_dsl_options}" ${mfront_file})
+  list(TRANSFORM mfront_generated_sources
+       PREPEND "${CMAKE_CURRENT_BINARY_DIR}/${interface}/src/")
   set(mfront_args)
   list(APPEND mfront_args ${search_paths})
-  get_model_dsl_options(${interface})
   if(mfront_dsl_options)
     list(APPEND mfront_args ${mfront_dsl_options})
   endif(mfront_dsl_options)
   list(APPEND mfront_args "--interface=${interface}")
   list(APPEND mfront_args "${mfront_file}")
   add_custom_command(
-    OUTPUT  "${mfront_output}"
+    OUTPUT  "${mfront_generated_sources}"
     COMMAND "${MFRONT}"
     ARGS    ${mfront_args}
     DEPENDS "${mfront_file}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
     COMMENT "mfront source ${mfront_file}")
-  set(${lib}_SOURCES ${mfront_output} ${${lib}_SOURCES})
+  list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
+  list(REMOVE_DUPLICATES ${lib}_SOURCES)
+  set(${lib}_SOURCES ${${lib}_SOURCES} PARENT_SCOPE)
   if(${${interface}_SPECIFIC_DEFINITIONS})
     set_source_files_properties(${mfront_output}
       PROPERTIES COMPILE_FLAGS
       ${${interface}_SPECIFIC_DEFINITIONS})
   endif(${${interface}_SPECIFIC_DEFINITIONS})
-endmacro(add_mfront_model_sources)
+endfunction(add_mfront_model_sources)
 
 function(mfront_models_library mat)
   parse_mfront_library_sources(${ARGN})

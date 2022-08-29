@@ -5,6 +5,7 @@ mfront_models_library(ChemicalReaction
   ChemicalReaction4)
 
 mfront_behaviours_library(ChemicalReaction
+  ChemicalReaction3b
   ChemicalReaction5
   ChemicalReaction5b
   ChemicalReaction5c
@@ -32,6 +33,8 @@ genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature4
   LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
   REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
 
+genericmtest(ChemicalReaction ChemicalReaction3b
+  LIBRARY $<TARGET_FILE:ChemicalReactionBehaviours-generic>)
 genericmtest(ChemicalReaction ChemicalReaction5
   MTEST_FILE ChemicalReaction5
   LIBRARY $<TARGET_FILE:ChemicalReactionBehaviours-generic>

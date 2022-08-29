@@ -346,14 +346,12 @@ function(get_mfront_source_location source)
   set(mfront_path ${_mfront_path} PARENT_SCOPE)
 endfunction(get_mfront_source_location file)
 
-function(get_mfront_all_specific_targets_generated_sources interface mat file)
+function(get_mfront_all_specific_targets_generated_sources interface mat file search_paths)
   execute_process(COMMAND ${MFRONT_QUERY}
     "--verbose=quiet"
     "--interface=${interface}" "${file}"
     "--all-specific-targets-generated-sources"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/behaviours"
-    "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/models"
+    ${search_paths}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
     OUTPUT_VARIABLE MFRONT_SOURCES
     OUTPUT_STRIP_TRAILING_WHITESPACE)

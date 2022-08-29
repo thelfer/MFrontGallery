@@ -10,6 +10,7 @@
 theta.setEntryName("Theta");
 
 @Function ChemicalReaction {
+  constexpr auto zero = quantity<real, 0, 0, 0, 0, 0, 0, 1>{};
   const auto T_mts = T_1 * (1 - theta) + theta * T;
   const auto k1_mts = k01 * exp(-T_mts / Ta1);
   const auto k2_mts = k02 * exp(-T_mts / Ta2);
@@ -17,4 +18,13 @@ theta.setEntryName("Theta");
   const auto K = dt * (k1_mts + k2_mts);
   ca = ca_1 + B / (1 + K * theta);
   cb = ca_1 + cb_1 - ca;
+  // imposing positivity of the molar concentrations
+  if(cb < zero){
+    cb = zero;
+    ca = ca_1 + cb_1;
+  }
+  if(ca < zero){
+    ca = zero;
+    cb = ca_1 + cb_1;
+  }
 }

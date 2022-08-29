@@ -6,6 +6,7 @@
 @Import "ChemicalReaction-common.mfront";
 
 @Function ChemicalReaction {
+  constexpr auto zero = quantity<real, 0, 0, 0, 0, 0, 0, 1>{};
   const auto k1_bts = k01 * exp(-T_1 / Ta1);
   const auto k1_ets = k01 * exp(-T / Ta1);
   const auto k2_bts = k02 * exp(-T_1 / Ta2);
@@ -16,4 +17,13 @@
   const auto K = dt * (k1_ets + k2_ets) / 2;
   ca = ca_1 + B / (1 + K);
   cb = ca_1 + cb_1 - ca;
+  // imposing positivity of the molar concentrations
+  if(cb < zero){
+    cb = zero;
+    ca = ca_1 + cb_1;
+  }
+  if(ca < zero){
+    ca = zero;
+    cb = ca_1 + cb_1;
+  }
 }
