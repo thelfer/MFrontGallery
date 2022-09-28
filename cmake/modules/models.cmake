@@ -21,7 +21,7 @@ function(add_mfront_model_sources lib interface search_paths file)
   list(APPEND mfront_args "--interface=${interface}")
   list(APPEND mfront_args "${mfront_file}")
   add_custom_command(
-    OUTPUT  "${mfront_generated_sources}"
+    OUTPUT  ${mfront_generated_sources}
     COMMAND "${MFRONT}"
     ARGS    ${mfront_args}
     DEPENDS "${mfront_file}"
