@@ -1,0 +1,59 @@
+@DSL DefaultModel;
+@Model ChemicalReaction3b;
+@Author Thomas Helfer;
+@Date 09/07/2022;
+@UseQt true;
+@UnitSystem SI;
+
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
+ca.setEntryName("MolarConcentrationOfSpeciesA");
+//! molar concentration of species B
+@AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> cb;
+cb.setEntryName("MolarConcentrationOfSpeciesB");
+
+@Import "ChemicalReaction-parameters.mfront";
+
+//! numerical parameter of the generalized mid-point rule
+@Parameter real theta = 0.5;
+theta.setEntryName("Theta");
+
+@LocalVariable frequency k1_mts;
+@LocalVariable frequency k2_mts;
+@LocalVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> B;
+
+@InitLocalVariables {
+  const auto T_mts = T + dT / 2;
+  k1_mts = k01 * exp(-T_mts / Ta1);
+  k2_mts = k02 * exp(-T_mts / Ta2);
+  B = dt * (k2_mts * cb - k1_mts * ca);
+}
+
+@Integrator {
+  constexpr auto zero = quantity<real, 0, 0, 0, 0, 0, 0, 1>{};
+  const auto K = dt * (k1_mts + k2_mts);
+  const auto sum = ca + cb;
+  ca += B / (1 + K * theta);
+  cb = sum - ca;
+  // imposing positivity of the molar concentrations
+  if(cb < zero){
+    cb = zero;
+    ca = sum;
+  }
+  if(ca < zero){
+    ca = zero;
+    cb = sum;
+  }
+}
+
+@APosterioriTimeStepScalingFactor{
+  constexpr auto eps = quantity<real, 0, 0, 0, 0, 0, 0, 1>{1e-10};
+  const auto K = dt * (k1_mts + k2_mts);
+  // increment for theta = 1/2
+  const auto dca_1 = 2 * B / (2 + K);
+  // increment for theta = 1
+  const auto dca_2 = B / (1 + K);
+  if (abs(dca_1 - dca_2) > eps) {
+    return {false, 0.1};
+  }
+}

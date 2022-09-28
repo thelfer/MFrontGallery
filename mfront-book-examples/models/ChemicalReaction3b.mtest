@@ -1,0 +1,30 @@
+@Author Thomas Helfer;
+@Date   09/08/2022;
+@Model @library@ 'ChemicalReaction3b';
+
+@MaximumNumberOfSubSteps 100;
+@DynamicTimeStepScaling true;
+@MinimalTimeStepScalingFactor 0.1;
+@MaximalTimeStepScalingFactor 1.4;
+
+@Real 'B0' 0.1;
+@Real 'T' 293.15;
+
+@StateVariable 'MolarConcentrationOfSpeciesB' 'B0';
+@ExternalStateVariable 'Temperature' 'T';
+
+@Times {
+  0, 360 in 10
+};
+
+// unit testing
+@Real 'k01' 'ChemicalReaction3b::ReferenceReactionRateCoefficientAB';
+@Real 'k02' 'ChemicalReaction3b::ReferenceReactionRateCoefficientBA';
+@Real 'Ta1' 'ChemicalReaction3b::ActivationTemperatureAB';
+@Real 'Ta2' 'ChemicalReaction3b::ActivationTemperatureBA';
+@Real 'k1' 'k01 * exp(-T / Ta1)';
+@Real 'k2' 'k02 * exp(-T / Ta2)';
+@Real 'K'  'k1 + k2';
+@Real 'B'  'k2 * B0';
+@Test<function> 'MolarConcentrationOfSpeciesA' '(B/K) * (1 - exp(-K * t))'      1e-6;
+@Test<function> 'MolarConcentrationOfSpeciesB' 'B0 - (B/K) * (1 - exp(-K * t))' 1e-6;

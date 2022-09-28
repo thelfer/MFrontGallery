@@ -55,6 +55,8 @@ eta.setGlossaryName("Porosity");
 
 //! normal to the equivalent stress
 @LocalVariable Stensor n;
+//! stress at the beginning of the time step
+@LocalVariable StressStensor sig_bts;
 
 @Parameter real nu = 0.25;
 nu.setEntryName("RockSaltPoissonRatio");
@@ -121,11 +123,13 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   h2_mts = b1 + b2 * h1_mts;
   dh1_mts_deta_mts = c * m * (h1_mts / D_eta_mts_mc) * eta_mts_mc / eta_mts;
   dh2_mts_deta_mts = b2 * dh1_mts_deta_mts;
+  //
+  sig_bts = sig;
 }
 
 @ComputeStress {
   constexpr auto id = Stensor::Id();
-  sig = Kv_mts * trace(eel) * id + 2 * mu_mts * deviator(eel);
+  sig = sig_bts + Kv_mts * trace(deel) * id + 2 * mu_mts * deviator(deel);
 }
 
 @Integrator {
@@ -154,10 +158,10 @@ de0.setEntryName("GrainDeformationReferenceStrainRate");
   dfeel_ddeel += (n ^ dp_ddeel) + dp * dn_ddeel;
 }
 
-@ComputeFinalStress {
-  constexpr auto id = Stensor::Id();
-  sig = Kv_ets * trace(eel) * id + 2 * mu_ets * deviator(eel);
-}
+// @ComputeFinalStress {
+//   constexpr auto id = Stensor::Id();
+//   sig = Kv_ets * trace(eel) * id + 2 * mu_ets * deviator(eel);
+// }
 
 @UpdateAuxiliaryStateVariables {
   eta = eta_ets;
