@@ -5,7 +5,7 @@
 @UseQt true;
 @UnitSystem SI;
 
-//! molar concentration of species B
+//! molar concentration of species A
 @AuxiliaryStateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
 ca.setEntryName("MolarConcentrationOfSpeciesA");
 //! molar concentration of species B

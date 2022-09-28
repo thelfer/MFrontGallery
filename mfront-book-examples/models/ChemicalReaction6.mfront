@@ -8,7 +8,7 @@
 @Algorithm rk54;
 @Epsilon 1e-14;
 
-//! molar concentration of species B
+//! molar concentration of species A
 @StateVariable quantity<real, 0, 0, 0, 0, 0, 0, 1> ca;
 ca.setEntryName("MolarConcentrationOfSpeciesA");
 //! molar concentration of species B
