@@ -237,6 +237,26 @@ function(check_if_model_interface_is_supported interface)
   endif()
 endfunction(check_if_model_interface_is_supported interface)
 
+option(enable-mfront-debug-mode "appends --debug to the options passed to MFront" OFF)
+option(enable-mtest-file-generation-on-failure "appends --@GenerateMTestFileOnFailure=true to the options passed to MFront when compiling behaviours" OFF)
+
+function(_get_mfront_command_line_arguments)
+  set(_mfront_command_line_arguments "")
+  if(enable-mfront-debug-mode)
+    list(APPEND _mfront_command_line_arguments "--debug")
+  endif(enable-mfront-debug-mode)
+  set(mfront_command_line_arguments "${_mfront_command_line_arguments}" PARENT_SCOPE)
+endfunction(_get_mfront_command_line_arguments)
+
+function(_get_mfront_behaviour_command_line_arguments)
+  _get_mfront_command_line_arguments()
+  set(_mfront_behaviour_command_line_arguments "${mfront_command_line_arguments}")
+  if(enable-mtest-file-generation-on-failure)
+    list(APPEND _mfront_behaviour_command_line_arguments "--@GenerateMTestFileOnFailure=true")
+  endif(enable-mtest-file-generation-on-failure)
+  set(mfront_behaviour_command_line_arguments "${_mfront_behaviour_command_line_arguments}" PARENT_SCOPE)
+endfunction(_get_mfront_behaviour_command_line_arguments)
+
 # mkt: material knowledge type
 # interface: interface considered 
 # option: dsl option to be treated

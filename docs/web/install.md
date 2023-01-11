@@ -180,6 +180,15 @@ below.
 - `enable-cyrano-behaviours`: enable compilation of behaviours using the
   `cyrano` interface.
 
+### Debug options
+
+- `enable-mfront-debug-mode`: appends --debug to the options passed to
+  `MFront`.
+- `enable-mtest-file-generation-on-failure`: appends
+  `--@GenerateMTestFileOnFailure=true` to the options passed to `MFront`
+  when compiling behaviours.
+
+
 ### Generation of the website
 
 The `enable-website` option selects if the website of the project shall
@@ -225,7 +234,6 @@ used to compile `C` and `C++` sources respectively.
 #### Option specific to `clang`
 
 - `enable-libcxx`:
-
 
 
 ## `TFEL` executables
