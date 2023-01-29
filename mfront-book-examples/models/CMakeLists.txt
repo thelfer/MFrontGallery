@@ -14,6 +14,7 @@ mfront_behaviours_library(ChemicalReaction
   ChemicalReaction6
   ChemicalReaction7)
 
+# tests based on the generic interface
 genericmtest(ChemicalReaction ChemicalReaction1
   LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
 genericmtest(ChemicalReaction ChemicalReaction2

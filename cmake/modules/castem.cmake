@@ -4,7 +4,7 @@ option(enable-castem-pleiades "use a pleiades version of castem" OFF)
 find_path(CASTEM_HEADER castem.h
     HINTS ${TFEL_INCLUDE_PATH})
 
-function(check_castem_compatibility mat search_paths source)
+function(check_castem_behaviour_compatibility mat search_paths source)
   mfront_query(behaviour_type
     ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
@@ -13,10 +13,20 @@ function(check_castem_compatibility mat search_paths source)
     # finite strain behaviour, do nothing
   elseif(behaviour_type STREQUAL "3")
     # cohesive zone model, do nothing
-  else(behaviour_type STREQUAL "1")
-    # unsupported behaviour type
-    set(file_OK OFF PARENT_SCOPE)
-    set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
+  else(behaviour_type STREQUAL "0")
+    mfront_query(gradients
+      ${mat} "${search_paths}" ${source} "--gradients")
+    mfront_query(thermodynamic_forces
+      ${mat} "${search_paths}" ${source} "--thermodynamic-forces")
+    list(LENGTH gradients nb_gradients)
+    list(LENGTH thermodynamic_forces nb_thermodynamic_forces)
+    if ((nb_gradients EQUAL 0) AND (nb_thermodynamic_forces EQUAL 0))
+      # point wise models are supported
+    else()
+      # unsupported behaviour type
+      set(file_OK OFF PARENT_SCOPE)
+      set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
+    endif()
   endif(behaviour_type STREQUAL "1")    
   if(file_OK)
     check_temperature_is_first_external_state_variable(${mat} "${search_paths}" ${source})
@@ -25,7 +35,30 @@ function(check_castem_compatibility mat search_paths source)
       set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
     endif(NOT file_OK)
   endif(file_OK)
-endfunction(check_castem_compatibility)
+endfunction(check_castem_behaviour_compatibility)
+
+function(check_castem_model_compatibility mat search_paths source)
+  mfront_query(model_type
+    ${mat} "${search_paths}" ${source} "--type")
+  if(model_type STREQUAL "1")
+    # strain based model, do nothing
+  elseif(model_type STREQUAL "2")
+    # finite strain model, do nothing
+  elseif(model_type STREQUAL "3")
+    # cohesive zone model, do nothing
+  else(model_type STREQUAL "1")
+    # unsupported model type
+    set(file_OK OFF PARENT_SCOPE)
+    set(compatibility_failure "unsupported model type" PARENT_SCOPE)
+  endif(model_type STREQUAL "1")    
+  if(file_OK)
+    check_temperature_is_first_external_state_variable(${mat} "${search_paths}" ${source})
+    if(NOT file_OK)
+      set(file_OK OFF PARENT_SCOPE)
+      set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
+    endif(NOT file_OK)
+  endif(file_OK)
+endfunction(check_castem_model_compatibility)
 
 if(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
   if(CASTEM_INSTALL_PATH)
@@ -92,3 +125,7 @@ endif(CASTEM_HEADER STREQUAL "CASTEM_HEADER-NOTFOUND")
 function(getCastemBehaviourName name)
   set(lib "${name}Behaviours" PARENT_SCOPE)
 endfunction(getCastemBehaviourName)
+
+function(getCastemModelName name)
+  set(lib "${name}Models" PARENT_SCOPE)
+endfunction(getCastemModelName)
