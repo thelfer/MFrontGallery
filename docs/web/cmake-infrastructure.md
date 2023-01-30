@@ -223,16 +223,146 @@ options:
 
 ## Functions related to tests based on `MTest`
 
+### The `add_mtest` function (defined in `behaviours.cmake`)
+
+The `add_mtest` function allows to declare a test on behaviours based on
+the `MTest` solver. The `add_mtest` function is used by wrappers such as
+`genericmtest` (for tests associated with the `generic` interface) or
+`castemmest` (for tests associated with the `Cast3M` interface) and not
+used directly (see below).
+
+This function takes two mandatory arguments:
+
+- the name of the interface.
+- the name of the library containing the behaviour to be tested.
+
+This function may take optional arguments introduced by the following
+keywords:
+
+- `TEST_NAME` (default): this keyword introduces the base name of one or
+  several tests. The full test name is created by adding:
+  - the configuration (`Release`, `Debug`, etc.) for build systems that
+    support multiple configurations in the same build
+  - the rounding mode (see below for details).
+- `MTEST_FILE`: this keyword introduces one or several base names to
+  declare `MTest` scripts (i.e. the name of a file without extension).
+  For each base name, the `add_mtest` function proceeds as follows:
+  - If a file, with this base name and the extension `.mtest.in` exists,
+    the `configure_file` function is called to generate a script file in
+    the current directory. This file will be called by `MTest`.
+  - Otherwise, a file, with this base name and the extension `.mtest` is
+    expected to exist in the current source directory.
+- `BEHAVIOUR`: this keyword introduces the name of the behaviour. This
+  name used to replace all occurences of `@behaviour@` in the `MTest`
+  scripts.
+- `LIBRARY`: this keyword introduces the path to the library containing
+  the behaviour to be tested. This name used to replace all occurences
+  of `@library@` in the `MTest` scripts. By default, this location is
+  deduced from the name of the second argument of the function.
+- `INTERFACE`: this keyword introduces the name of the interface used to
+  generate the library. This name used to replace all occurences of
+  `@interface@` in the `MTest` scripts.
+- `REFERENCE_FILE`: this keyword introduces the name of the file
+  containing the reference results. This name used to replace all
+  occurences of `@reference_file@` in the `MTest` scripts.
+- `ACCELERATION_ALGORITHM`: this keyword introduces the name of an
+  acceleration algorithm (see the `MTest` documentation for a list of
+  acceleration algorithms).
+- `STIFFNESS_MATRIX_TYPE`: this keyword introduces the type of stiffness
+  matrix type to be used for the test (see the `MTest` documentation for
+  a list of available stiffness matrix types).
+- `MATERIAL_PROPERTIES_LIBRARIES`: this keyword introduces a list of
+  libraries whose locations are requested. This keyword is only
+  meaningful if an `mtest.in` file is to be used.
+
+Several test names and several `MTest` scripts can be declared through
+the `TEST_NAME` and `MTEST_FILE` keywords respectively. The number of
+test names must match the number of scripts.
+
+A script is generally run several times with different rounding modes
+(see the `MTest` documentation for details).
+
+### Wrappers around the `add_mtest` functions
+
+The `add_mtest` function does not check if the interface used by the
+test has been selected and is not able to deduce the name of the library
+associated with an interface from the name of a material (`Bentonite`
+for instance) or the name of the class of behaviours considered
+(`Plasticity` for instance).
+
+`MFrontGallery` thus provides several wrappers, such as: `castemmtest`,
+`astermtest`, `europlexusmtest` `abaqusmtest`, `abaqusexplicitmtest`,
+`ansysmtest`, `calculixmtest` `dianafeamtest`, `cyranomtest` and
+`genericmtest`.
+
+For instance, one can call the `castemmtest` function even if the
+`Cast3M` interface for behaviours has not been selected: in this case,
+the associated test is just not declared.
+
+#### Example of usage
+
+The following code declares a test based on the `asteriwan.mtest` script
+if the `aster` interface has been selected:
+
+~~~~{.cmake}
+mfront_behaviours_library(Plasticity
+  ${MFRONT_BEHAVIOURS_PLASTICITY_SOURCES})
+
+astermtest(Plasticity asteriwan)
+~~~~
+
 ## The `pandoc_html` function
 
+The `pandoc_html` function can be used to generate an `html` page from a
+markdow file using [`pandoc`](https://pandoc.org). This function takes
+the name of a markdown file a argument. All the other options are passed
+verbatim to `pandoc`.
+
+The following options are automatically passed to `pandoc`:
+
+- `--mathjax`: This option forces the use of the `MathJax` library to
+  display embedded `(La)TeX` formulae.
+- `--highlight-style=tango`: This option selects the `tango` style to
+  display code snippets.
+- `--email-obfuscation=javascript`: This option modifies how emails are
+  displayed.
+- `--default-image-extension=svg`: This option chooses `SVG` as the
+  default image extension.
+
+
+### HTML template
+
+If a file named `mfm-template.html` is found in the directory `docs/web`
+(from the root of the sources of the project), this file is used as a
+template for generating the web pages (see pandoc's `--template`
+option).
+
+### Bibliography
+
+If a biblatex file named `bibliography.bib` is found in the directory
+`docs/web` (from the root of the sources of the project), the generation
+of a bibliography is automatically enabled (see pandoc's
+`--bibliography` option).
+
+###  Citation Style Language (CSL) file 
+
+If a file named `iso690-numeric-en.csl` is found in the directory
+`docs/web` (from the root of the sources of the project), this file is
+used to define the reference style used (see pandoc's `--csl` option).
+
+<!--
 # The `cmake/modules` directory {#sec:mfm:cmake:cmake_modules}
 
+The `cmake` infrastructure provided by the `MFrontGallery` project is
+based on a set of files located in the `cmake/modules` directory.
 
 ## Main files
 
 ### The `tfel.cmake` file
 
+The `tfel.cmake` file detects the `MFront` installation and e
+
 ### Files related to `MFront` interfaces
 
 ### Files related to compiler support
-
+-->

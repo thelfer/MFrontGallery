@@ -1,7 +1,7 @@
 pandoc_html(index "--toc" "--number-sections" "--toc-depth=2")
 pandoc_html(install "--toc")
 pandoc_html(faq "--toc")
-pandoc_html(cmake-infrastructure "--toc")
+pandoc_html(cmake-infrastructure "--toc" "--number-sections" "--toc-depth=2")
 pandoc_html(creating-derived-project "--toc")
 pandoc_html(best-practices "--toc")
 pandoc_html(contributing "--toc")
