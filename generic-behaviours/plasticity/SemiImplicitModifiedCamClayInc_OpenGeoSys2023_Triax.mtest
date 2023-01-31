@@ -11,13 +11,14 @@
 @InternalStateVariable 'PreConsolidationPressure' 2.e5;
 @InternalStateVariable 'VolumeRatio' 1.788;
 
+@Stress {-2.e5, -2.e5, -2.e5, 0.0, 0.0, 0.0};
 
-@ImposedStress 'SXX' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
-@ImposedStress 'SYY' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
-@ImposedStress 'SZZ' {0 : 0., 0.02 : -2.0e5, 1: -5.87387e5};
+@ImposedStress 'SXX' {0 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SYY' {0 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SZZ' {0 : -2.0e5, 1: -5.87387e5};
 @Times {0.,1 in 200};
 
-@OutputFile 'SemiImplicitModifiedCamClayInc_OpenGeoSys2023_Triax.ref';
-@OutputFilePrecision 14;
+//@OutputFile 'SemiImplicitModifiedCamClayInc_OpenGeoSys2023_Triax.ref';
+//@OutputFilePrecision 14;
 
 @Test<file> @reference_file@ {'SZZ':10} 1.e-1; 
