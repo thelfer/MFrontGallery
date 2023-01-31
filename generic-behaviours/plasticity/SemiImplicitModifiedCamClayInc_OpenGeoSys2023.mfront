@@ -58,10 +58,6 @@ la.setEntryName("VirginConsolidationLineSlope");
 @PhysicalBounds v0 in [1:*[;
 v0.setEntryName("InitialVolumeRatio");
 
-@MaterialProperty stress pc0;
-pc0.setEntryName("InitialPreConsolidationPressure");
-@PhysicalBounds pc0 in [0:*[;
-
 // state variables (beside eel):
 // A "standard" state variable is a persistent state variable and an integration variable.
 @StateVariable real lp;
@@ -98,19 +94,11 @@ v.setEntryName("VolumeRatio");  // Total volume per solid volume = 1 + pore numb
     tfel::raise_if(la < ka, "Invalid parameters: la<ka");
     M2 = M * M;
 
-    // TODO may fail in restart simulations
-    if (Time == 0)
-    {
-        // initialize state variables
-        pc = pc0;
-        v = v0;
-    }
     // update sig0
     sig0 = sig;
 
     // compute elastic stiffness (constant during time step)
     auto p = -trace(sig) / 3;
-    //if (p <= 0.0) { p = pc0 / 1000;}
     const auto K = v0/ka * p;
     const auto E = 3.0 * K * (1.0 - 2*nu);
 
@@ -160,7 +148,6 @@ v.setEntryName("VolumeRatio");  // Total volume per solid volume = 1 + pore numb
     const auto s = deviator(sig);
     const auto q = std::sqrt(1.5 * s | s);
     auto p = -trace(sig) / 3;
-    //if (p <= 0.0) { p = pc0 / 1000;}
     // update the internal (state) variables (rpc holds the old value!)
     const auto rpcNew = rpc + theta * drpc;
     const auto pcNew = rpcNew * young;
@@ -176,7 +163,7 @@ v.setEntryName("VolumeRatio");  // Total volume per solid volume = 1 + pore numb
     auto depl = eval(dlp * n);
     const auto deplV = trace(depl);
 
-    const auto fchar = pc0 * young;  // OR: young*young
+    const auto fchar = young * young;
 
     // residual
     feel = deel + depl - deto;

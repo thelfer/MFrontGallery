@@ -1,0 +1,23 @@
+@MaximumNumberOfSubSteps 1;
+@Behaviour<@interface@> @library@ @behaviour@;
+@ExternalStateVariable "Temperature" 293.15;
+
+@MaterialProperty<constant> 'PoissonRatio' 0.3;
+@MaterialProperty<constant> 'CriticalStateLineSlope' 1.2;
+@MaterialProperty<constant> 'SwellingLineSlope' 6.6e-3;
+@MaterialProperty<constant> 'VirginConsolidationLineSlope' 7.7e-2;
+@MaterialProperty<constant> 'InitialVolumeRatio' 1.788;
+
+@InternalStateVariable 'PreConsolidationPressure' 2.e5;
+@InternalStateVariable 'VolumeRatio' 1.788;
+
+
+@ImposedStress 'SXX' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SYY' {0 : 0., 0.02 : -2.0e5, 1: -2.0e5};
+@ImposedStress 'SZZ' {0 : 0., 0.02 : -2.0e5, 1: -5.87387e5};
+@Times {0.,1 in 200};
+
+@OutputFile 'SemiImplicitModifiedCamClayInc_OpenGeoSys2023_Triax.ref';
+@OutputFilePrecision 14;
+
+@Test<file> @reference_file@ {'SZZ':10} 1.e-1; 
