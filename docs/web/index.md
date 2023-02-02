@@ -291,9 +291,23 @@ However, an important argument in favor of generic implementation is
 
 # Typical use case of projects derived from `MFrontGallery` {#sec:mfm:introduction:typical_use_case}
 
-## Generic behaviours delivered along with a general purpose solver
+The `cmake` infrastructure derived from `MFrontGallery` is meant to be
+reused in derived projects. The creation of a derived projet is
+described in depth on [this page](creating-derived-project.html).
 
-## Domain-specific tools built-in on top of general purpose solver
+The `cmake` infrastructure is documented on [this
+page](cmake-infrastructure.html).
+
+This sections highlight two typical usage of projects derived from
+`MFrontGallery`:
+
+- It can be used to handle a set of *generic behaviours* delivered along
+  with a general purpose solver.
+- It can be used to built a domain-specific material data base
+  containing only *self-contained behaviours*.
+
+In both cases, we highly recommend reading the [best practices
+page](best-practices.html).
 
 # Files organization {#sec:mfm:introduction:files}
 

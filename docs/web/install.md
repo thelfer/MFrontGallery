@@ -188,7 +188,6 @@ below.
   `--@GenerateMTestFileOnFailure=true` to the options passed to `MFront`
   when compiling behaviours.
 
-
 ### Generation of the website
 
 The `enable-website` option selects if the website of the project shall
@@ -209,14 +208,22 @@ be generated. This requires `pandoc` (mandatory) and `pandoc-crossref`
 
 ### Options related to tests
 
-- `enable-random-tests`:
+- `enable-random-tests`: By defaut, tests made with `MTest` are runned
+  five times, one for each rounding modes defined by the IEEE754
+  standard and one where the rounding mode is changed randomly at
+  various stages of the test. This option removes the latest one.
 
 ### Options related to compilation
 
-- `enable-portable-build`:
-- `enable-fast-math:
-- `enable-sanitize-options`:
-- `enable-developer-warnings`:
+- `enable-portable-build`: This option disables machine specific
+  instructions (i.e. removes the `--march=native` flag when using
+  `gcc`).
+- `enable-fast-math`: This option enables flags that allow the compiler
+  to discard IEEE754 rules. When using `gcc`, this option appends
+  `--fast-math` to the compiler flag.
+- `enable-sanitize-options`: This option adds some sanitizers.
+- `enable-developer-warnings`: This option appends additional warnings,
+  mostly meaningful for the developpers.
 
 ### Compilers and compile flag selections
 
@@ -229,12 +236,13 @@ used to compile `C` and `C++` sources respectively.
 
 #### Option specific to `gcc`
 
-- `enable-glibcxx-debug`:
+- `enable-glibcxx-debug`: This option appends compiler flags to enable
+  debug feature.
 
 #### Option specific to `clang`
 
-- `enable-libcxx`:
-
+- `enable-libcxx`: This option forces the use of `libcxx` on `linux`
+  when using `clang`.
 
 ## `TFEL` executables
 
