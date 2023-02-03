@@ -1,0 +1,8 @@
+@Requires {"mfm::castem::executable", "mfm::behaviour_interface::castem"};
+@Environment {"library": "@library@"};
+@Command "@castem@" "@current_src_dir@/test.dgibi";
+
+@TestType Absolute;
+@Precision 1.e3;
+@Test "@current_src_dir@/references/implicitnorton-castem.ref"
+      "@current_binary_dir@/implicitnorton-castem.res" 2;

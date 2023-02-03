@@ -309,6 +309,41 @@ mfront_behaviours_library(Plasticity
 astermtest(Plasticity asteriwan)
 ~~~~
 
+## Tests based on `tfel-check`
+
+The `tfel_check` function declares a test based on
+[`tfel-check`]](https://thelfer.github.io/tfel/web/tfel-check.html).
+This function takes one mandatory argument named `file`, which must
+contain the base name for the input file passed to `tfel-check`. A file
+named `${file}.check` or `${file}.check.in` must exist in the current
+source directory. If the `${file}.check.in` exists, the `configure_file`
+function is called to generate a file named `${file}.check` in the
+current directory.
+
+The configuration file `mfm-tfel-check.config` is automatically used.
+This configuration file is generated at the top level directory of the
+build tree by the `create_tfel_check_config_file`. This configuration
+file declares a component for each interface selected. For an interface
+`${interface}` associated with a material property, the component
+`mfm::material_property_interface::${interface}` is declared. A similar
+declaration is performed for interfaces associated with behaviours and
+models.
+
+If a python interpreter is detected, the substitution variable `python`
+is automatically defined and contains the path to the python interpreter.
+
+If the castem tests are enabled (see the `enable-castem-tests` option),
+the substitution variable `castem` is automatically defined and contains
+the path to the `Cast3M` executable.
+
+Additional configuration files may be added by derived projects to
+the `mfm-tfel-check-configuration-files` list.
+
+The following substitution variables are automatically defined:
+
+- `current_src_dir`: points to the current source directory
+- `current_binary_dir`: points to the current directory in the build tree 
+
 ## The `pandoc_html` function
 
 The `pandoc_html` function can be used to generate an `html` page from a

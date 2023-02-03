@@ -168,13 +168,15 @@ below.
   `castem` interface.
 - `enable-castem-pleiades`: option specifying if the `PLEIADES` version
   of the `Cast3M` finite element solver is used.
+- `enable-castem-tests`: option requiring the execution of tests using
+  the `Cast3M` finite element solver.
 
 #### Options related to the `Cyrano` solver
 
 - `enable-cyrano`: enable the compilation of material properties and
   behaviours using the `cyrano` interface. This option is equivalent to
-  using enabling both options `enable-castem-material-properties` and
-  `enable-castem-behaviours`.
+  using enabling both options `enable-cyrano-material-properties` and
+  `enable-cyrano-behaviours`.
 - `enable-cyrano-material-properties`: enable compilation of material
   properties using the `cyrano` interface.
 - `enable-cyrano-behaviours`: enable compilation of behaviours using the

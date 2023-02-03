@@ -1,7 +1,7 @@
 #! create_tfel_check_config_file : this function create a configuration file
 #  for tfel-check.
 #
-# This configuration file declares a component for each interfaces
+# This configuration file declares a component for each interface
 # selected. For an interface `${interface}` associated with a material property,
 # the component `mfm::material_property_interface::${interface}` is declared.
 # A similar declaration is performed for interfaces associated with behaviours
@@ -9,6 +9,10 @@
 #
 # If a python interpreter is detected, the substitution variable `python`
 # is automatically defined and contains the path to the python interpreter.
+#
+# If the castem tests are enabled, the substitution variable `castem`
+# is automatically defined and contains the path to the Cast3M executable.
+#
 function(create_tfel_check_config_file)
   set(tfel_check_config_file ${CMAKE_BINARY_DIR}/mfm-tfel-check.config)
   if(EXISTS ${tfel_check_config_file})
@@ -38,15 +42,19 @@ function(create_tfel_check_config_file)
     file(APPEND ${tfel_check_config_file}
          "substitutions: {\"python\" : \"${PYTHON_EXECUTABLE}\"};\n")
   endif(PYTHON_EXECUTABLE)
+  if(enable-castem-tests)
+    file(APPEND ${tfel_check_config_file}
+         "components : {\"mfm::castem::executable\"};\n")
+    file(APPEND ${tfel_check_config_file}
+         "substitutions: {\"castem\" : \"${castem_executable}\"};\n")
+    file(APPEND ${tfel_check_config_file}
+         "substitutions: {\"castem_version\" : \"${castem_version}\"};\n")
+  endif(enable-castem-tests)
 endfunction(create_tfel_check_config_file)
 
 create_tfel_check_config_file()
 
 #! tfel-check : this function declares a test based on `tfel-check`
-#
-# \arg file: base name for the input file passed to `tfel-check`
-# A file named ${file}.check or ${file}.check.in must exists in the
-# current source directory.
 #
 # The configuration file `mfm-tfel-check.config`, which is generated
 # at the top level directory of the build tree, is automatically
@@ -55,6 +63,16 @@ create_tfel_check_config_file()
 #
 # Additional configuration files may be added to
 # `mfm-tfel-check-configuration-files` list.
+#
+# The following substitution variables are automatically defined:
+#
+# - `current_src_dir`: points to the current source directory
+# - `current_binary_dir`: points to the current directory in the build tree 
+#
+# \arg file: base name for the input file passed to `tfel-check`
+# A file named ${file}.check or ${file}.check.in must exist in the
+# current source directory.
+# 
 function(tfel_check file)
   set(tfel_check_config_file ${CMAKE_BINARY_DIR}/mfm-tfel-check.config)
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${file}.check.in")
@@ -80,6 +98,33 @@ function(tfel_check file)
   foreach(cfile ${mfm-tfel-check-configuration-files})
     list(APPEND tfel_check_args "--config=${cfile}")
   endforeach()
+  set (_CMD)
+  set (_substitution_key)
+  set (_substitution_value)
+  foreach(arg ${ARGN})
+    if(NOT _CMD)
+      if(NOT arg STREQUAL "SUBSTITUTION")
+        message(FATAL_ERROR "expected the 'SUBSTITUTION' keyword, read ${arg}")
+      endif()
+      set(_CMD "SUBSTITUTION")
+    else(NOT _CMD)
+      if(_CMD STREQUAL "SUBSTITUTION")
+        set (_substitution_key ${arg})
+        set (_CMD "SUBSTITUTION2")
+      elseif(_CMD STREQUAL "SUBSTITUTION2")
+        set (_substitution_value ${arg})
+        list(APPEND tfel_check_args "--@${_substitution_key}@=${_substitution_value}")
+        unset (_CMD)
+      else(_CMD STREQUAL "SUBSTITUTION")
+        message(FATAL_ERROR "internal error unsupported command ('${_CMD}')")
+      endif(_CMD STREQUAL "SUBSTITUTION")
+    endif(NOT _CMD)
+  endforeach()
+  if(_CMD)
+    message(FATAL_ERROR "at least one argument is missing")    
+  endif()
+  list(APPEND tfel_check_args "--@current_src_dir@=${CMAKE_CURRENT_SOURCE_DIR}")
+  list(APPEND tfel_check_args "--@current_binary_dir@=${CMAKE_CURRENT_BINARY_DIR}")
   add_test(NAME ${file}_tfel_check
            COMMAND ${TFEL_CHECK} ${tfel_check_args} ${check_file})
   #  set(tfel_check_clean_files)

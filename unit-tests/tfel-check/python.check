@@ -1,0 +1,4 @@
+@Requires {"mfm::python"};
+@Command "@python@ -c print('hello')" {
+  expected_output : "hello"
+};

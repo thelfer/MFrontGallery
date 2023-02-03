@@ -1,0 +1,160 @@
+* fichier :  implicitnorton.dgibi
+*=======================================================================
+*
+* CAS TEST DE VALIDATION DE LA PROCEDURE PASAPAS
+* POUR UN ESSAI DE TRACTION UNIAXIALE A VITESSE DE DEFORMATION IMPOSEE
+* SUR UNE LOI DE NORTON
+*
+*=======================================================================
+
+'OPTION' 'ERREUR' 'FATAL';
+
+*=======================================================================
+*
+*                       PROCEDURES DEPENDANTES
+*
+*=======================================================================
+
+
+DEBPROC EVO2FICH EV1*EVOLUTION FICOUT*MOT;
+  PROG1=EXTR EV1 ABSC;
+  PROG2=EXTR EV1 ORDO;
+  NB=DIME PROG1;
+  I=0;
+  ii=vale impr;
+  OPTI IMPR 10 IMPR FICOUT;
+  REPETER BOU1 NB;
+    I=I+1;
+    X1=EXTR PROG1 I;
+    Y1=EXTR PROG2 I;
+    MESSAGE X1 Y1 ;
+    FIN BOU1;
+  OPTI IMPR II;
+FINPROC;
+
+*=======================================================================
+*
+*                      JEU DE DONNEES PRINCIPAL
+*
+*=======================================================================
+
+*-----------------------------------------------------------------------
+* 0 - Maillage
+*     PLAQUE CARREE    COTE : 1 m    EPAISSEUR : 1 cm
+
+'OPTION'  'DIMENSION'  3 'ELEM' CUB8 'MODELISER' TRIDIM ;
+
+*-----------------------------------------------------------------------
+* Maillage
+*-----------------------------------------------------------------------
+
+lx= 1.0 ;
+ly= 1.0 ;
+lz= 1.0 ;
+nx = 1;
+ny = 1;
+nz = 1;
+
+pO  = 0. 0. 0.;
+l1 = 'DROIT' pO (lx 0. 0.) nx ;
+l3 = l1 'PLUS' (0. ly 0.);
+
+s1 = 'TRANSLATION' l1 (0. ly 0.) ny ;
+v1 = s1 'VOLUME' nz 'TRANSLATION'(0. 0. lz) ;
+l2 = s1 'FACE' 4;
+l4 = l2 'PLUS' (lx 0. 0.);
+s2 = v1 'FACE' 2;
+
+s4 = 'TRANSLATION' l1 (0. 0. lz) nz ;
+s5 = 'TRANSLATION' l2 (0. 0. lz) nz ;
+s6 = 'TRANSLATION' l3 (0. 0. lz) nz ;
+s7 = 'TRANSLATION' l4 (0. 0. lz) nz ;
+
+sy1 = s4;
+sy2 = s6;
+sx1 = s5;
+sx2 = s7;
+sz1 = s1;
+sz2 = s2;
+
+'ELIM' (v1 'ET'  sx1 'ET' sx2 'ET' sy1 'ET' sy2 'ET' sz1 'ET' sz2 'ET'
+        pO 'ET'  l1 'ET'  l2 'ET'  l3 'ET'  l4) 1.e-10; 
+
+*-----------------------------------------------------------------------
+* Comportement loi de norton
+*-----------------------------------------------------------------------
+
+* 1 Definition du modele
+
+lib = ('VENV' 'library');
+coel    = 'MOTS' 'YOUN' 'NU' 'RHO' 'ALPH' 'TALP' 'TREF' 'A' 'E';
+statev  = 'MOTS' 'EEXX' 'EEYY' 'EEZZ' 'EEXY' 'EEXZ' 'EEYZ' 'P';
+params  = 'MOTS' 'T';
+mo_meca = 'MODELISER' v1 'MECANIQUE' 'ELASTIQUE'
+                    'NON_LINEAIRE' 'UTILISATEUR'
+                    'LIB_LOI' lib
+                    'FCT_LOI' 'umatimplicitnorton'
+                    'C_MATERIAU' coel 'C_VARINTER' statev
+                    'PARA_LOI'  params 'CONS' M;
+
+* 2 Affectation des constantes de materiau
+
+ma_meca = 'MATERIAU' mo_meca 'YOUN' 150.e9 'NU' 0.333
+                    'RHO' 0. 'ALPH' 0. 'TALP' 0 'TREF' 0
+                    'A' 8e-67 'E' 8.2;
+
+* 3 Definition des conditions aux limites et chargements
+
+* 1.4.0 Creation de progressions pour la ponderation des chargements,
+*       definissant autant d'etats a calculer
+
+tmax    = 2500.;
+NPAS    = 20.;
+L_temps = PROG 0.0 'PAS' (tmax/NPAS)  tmax;
+L_t     = PROG 0.0 tmax;
+L_d     = PROG 0.0 1.0;
+
+* 1.4.1 Blocages mecaniques et deplacement axial impose
+
+uz3 =  2.5e-2;
+clim1 = (BLOQ sz1 'UZ' ) et (BLOQ sx1 'UX') et ('BLOQUE' sy1 'UY') ;
+clim2 = BLOQ pO 'DEPL';
+clim3 = BLOQ sz2 'UZ' ;
+depi3 = DEPI clim3 uz3 ;
+charmeca = CHAR 'DIMP' ('EVOL' 'MANUEL' L_t L_d) depi3 ;
+
+* 1.4.2 Chargement en température
+
+TEK = 293.15;
+THE1 = MANU 'CHPO' V1 1 'T' TEK ;
+EV2 = EVOL MANU (prog 0 tmax) (prog 1. 1.) ;
+CHARTHER = CHAR 'T' THE1 EV2 ;
+
+* 1.5 Resolution par PASAPAS
+
+*
+TAB1                         = 'TABL' ;
+TAB1 . 'GRANDS_DEPLACEMENTS' = FAUX ;
+TAB1 . 'MODELE'              = mo_meca ;
+TAB1 . 'CARACTERISTIQUES'    = ma_meca ;
+TAB1 . 'EPSILON'             = 'LINEAIRE';
+TAB1 . 'BLOCAGES_MECANIQUES' = clim1 ET clim2 ET clim3 ;
+TAB1 . 'CHARGEMENT'          = charmeca 'ET' charther;
+TAB1 . 'TEMPS_CALCULES'      = L_temps;
+TAB1 . 'TEMPERATURES'        = 'TABLE';
+TAB1 . 'TEMPERATURES'. 0     = 'MANU' 'CHPO' v1 'T' 293.15;
+
+PASAPAS TAB1;
+
+pt = 'PROG';
+ps = 'PROG';
+'REPETER' i ('DIMENSION' (tab1. 'CONTRAINTES' ));
+  t  = tab1. 'TEMPS'. (&i-1);
+  pt = pt 'ET' ('PROG' tab1. 'TEMPS'. (&i-1));
+  s  = tab1. 'CONTRAINTES'. (&i - 1);
+  ps = ps 'ET' ('MAXIMUM' ('EXCO' s 'SMZZ'));
+'FIN'  i;
+
+EVO2FICH ('EVOL' 'MANUEL' pt ps) 'implicitnorton-castem.res';
+
+'FIN' ;
