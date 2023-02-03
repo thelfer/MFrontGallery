@@ -420,7 +420,7 @@ endmacro(install_mfront)
 #  EXECUTE_PROCESS(COMMAND ${MFMTG} "--plugins=${}" "--target=${target}" "${input}")
 # endfunction(mfmtg_generate)
 
-# Parse sources and options used to generate MFront libraries:
+#! parse_mfront_library_sources: parse sources and options used to generate MFront libraries!
 #
 # The following options can be specificed by the user:
 #

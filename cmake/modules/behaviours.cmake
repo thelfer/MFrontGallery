@@ -142,6 +142,11 @@ function(add_mfront_behaviour_sources lib mat interface search_paths file)
   endif()
 endfunction(add_mfront_behaviour_sources)
 
+#! get_mfront_behaviour_library_name: this function returns the name of the
+# library generated for the given material or phenomenon for the given interface
+#
+# \param: mat name of a material or the name of phenomenon
+# \param: interface interface used
 function(get_mfront_behaviour_library_name mat interface)
   if(${interface} STREQUAL "castem")
     getCastemBehaviourName(${mat})
@@ -184,6 +189,95 @@ function(generate_mfront_doc search_paths mfront_file)
   endif(enable-mfront-documentation-generation)
 endfunction(generate_mfront_doc)
 
+#! mfront_behaviours_library : this adds shared libraries related to behaviours!
+# 
+# The `mfront_behaviours_library` function adds shared libraries to the
+# project related to `MFront`' behaviours. The number of added shared
+# libraries depends on the number of (behaviour) interfaces selected when
+# the project is configured .
+# 
+# # Usage
+# 
+# A typical usage of the `mfront_behaviours_library` is the following:
+# 
+# ~~~{.cmake}
+# mfront_behaviours_library(Concrete
+#   ConcreteBurger_EDF_CIWAP_2021
+#   ConcreteBurger_EDF_CIWAP_2021_v2)
+# ~~~
+# 
+# which declares a set of shared libraries associated with the `Concrete`
+# material. Those shared libraries are generated using two `MFront` files
+# named respectively `ConcreteBurger_EDF_CIWAP_2021.mfront` and
+# `ConcreteBurger_EDF_CIWAP_2021_v2.mfront`.
+# 
+# Note that the `.mfront` suffix has been omitted in this declaration.
+# 
+# ~~~~{.bash}
+# -- ConcreteBurger_EDF_CIWAP_2021 has been discarded for interface calculix (behaviours with external state variable other  than the temperature are not supported)
+# -- ConcreteBurger_EDF_CIWAP_2021_v2 has been discarded for interface calculix (behaviours with external state variable other  than the temperature are not supported)
+# -- No sources selected for library CONCRETECALCULIXBEHAVIOURS for interface calculix
+# -- ConcreteBurger_EDF_CIWAP_2021 has been discarded for interface ansys (behaviours with external state variable other  than the temperature are not supported)
+# -- ConcreteBurger_EDF_CIWAP_2021_v2 has been discarded for interface ansys (behaviours with external state variable other  than the temperature are not supported)
+# -- No sources selected for library CONCRETEANSYSBEHAVIOURS for interface ansys
+# -- Adding library : CONCRETEABAQUSBEHAVIOURS (/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/abaqus/src/abaqusConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/abaqus/src/ConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/abaqus/src/abaqusConcreteBurger_EDF_CIWAP_2021_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/abaqus/src/ConcreteBurger_EDF_CIWAP_2021_v2.cxx)
+# -- Adding library : ConcreteBehaviours-cyrano (/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/cyrano/src/cyranoConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/cyrano/src/ConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/cyrano/src/cyranoConcreteBurger_EDF_CIWAP_2021_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/cyrano/src/ConcreteBurger_EDF_CIWAP_2021_v2.cxx)
+# -- ConcreteBurger_EDF_CIWAP_2021 has been discarded for interface epx (small strain behaviours are not supported)
+# -- ConcreteBurger_EDF_CIWAP_2021_v2 has been discarded for interface epx (small strain behaviours are not supported)
+# -- No sources selected for library ConcreteBehaviours-epx for interface epx
+# -- ConcreteBurger_EDF_CIWAP_2021 has been discarded for interface dianafea (behaviours with external state variable other  than the temperature are not supported)
+# -- ConcreteBurger_EDF_CIWAP_2021_v2 has been discarded for interface dianafea (behaviours with external state variable other  than the temperature are not supported)
+# -- No sources selected for library ConcreteDianaFEABehaviours for interface dianafea
+# -- Adding library : ConcreteBehaviours-aster (/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/aster/src/asterConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/aster/src/ConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/aster/src/asterConcreteBurger_EDF_CIWAP_2021_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/aster/src/ConcreteBurger_EDF_CIWAP_2021_v2.cxx)
+# -- Adding library : ConcreteBehaviours (/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/castem/src/umatConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/castem/src/ConcreteBurger_EDF_CIWAP_2021.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/castem/src/umatConcreteBurger_EDF_CIWAP_2021_v2.cxx;/home/th202608/codes/MFrontGallery/master/src/build/materials/Concrete/behaviours/castem/src/ConcreteBurger_EDF_CIWAP_2021_v2.cxx)
+# ....
+# ~~~~
+# 
+# which lists the shared libraries that will be compiled and the sources
+# that will be generated by `MFront`. One may notice that each shared
+# library is compiled in its own directory.
+# 
+# One may also notice that the behaviours considered are not compatible
+# with some of the selected behaviour interfaces and are thus discarded:
+# 
+# - Those behaviours are not compatible with the `dianafea`, `calculix`
+#   and `ansys` interfaces because it declares an external state variable
+#   which is not the temperature and this is not supported by those
+#   interfaces.
+# - Those behaviours are not compatible with the `epx` (Europlexus)
+#   interface because this solver only supports finite strain behaviours.
+# 
+# In this example, no shared libraries for the `Concrete` material will
+# be generated for the interfaces `dianafea`, `calculix`, `ansys` and
+# `epx` interfaces since no `MFront` are compatible with them.
+# 
+# Internally, the `mfront_behaviours_library` function forward is
+# arguments to the `parse_mfront_library_sources` function and use its
+# results to add the shared libraries properly.
+# 
+# # Treatment of the sources
+# 
+# For each shared library to be added, each source returned in the
+# `mfront_sources` variable by the `parse_mfront_library_sources` is
+# treated as follows:
+# 
+# - If the file `@source@.mfront` (where `@source@` is the name of the
+#   considered source) exists in the current source directory, then it is
+#   treated as an `MFront` source file.
+# - If the file `@source@.mfront.in` (where `@source@` is the name of the
+#   considered source) exists in the current source directory, then it is
+#   automatically configured using `̀CMake`' `configure_file` command and
+#   the resulting file is treated as an `MFront` source file.
+# - If neither the `@source@.mfront` nor `@source@.mfront.in` exist in the
+#   current directory, the file `@source@` is added in the list of sources
+#   for the treated shared library. This file can be given by its full
+#   path, and is searched in the current source directory or the the
+#   current binary directory.
+# 
+# `MFront` source files are treated by the `generate_mfront_doc` function
+# which will generate a web page for this source file using the
+# `mfront-doc` utility if the `enable-website` option has been choosen at
+# the `CMake` configuration stage.
 function(mfront_behaviours_library mat)
   if((TFEL_CXX_STANDARD GREATER 17) OR (TFEL_CXX_STANDARD EQUAL 17))
     set(TFEL_MFRONT_LIBRARIES
@@ -387,6 +481,68 @@ function(mfront_behaviours_library mat)
   endforeach(interface)
 endfunction(mfront_behaviours_library)
 
+#! add_mtest : add a test using the `MTest` solver!
+#
+# The `add_mtest` function allows to declare a test on behaviours based on
+# the `MTest` solver. The `add_mtest` function is used by wrappers such as
+# `genericmtest` (for tests associated with the `generic` interface) or
+# `castemmest` (for tests associated with the `Cast3M` interface) and not
+# used directly (see below).
+# 
+# This function takes two mandatory arguments:
+# 
+# - the name of the interface.
+# - the name of the library containing the behaviour to be tested.
+# 
+# This function may take optional arguments introduced by the following
+# keywords:
+# 
+# - `TEST_NAME` (default): this keyword introduces the base name of one or
+#   several tests. The full test name is created by adding:
+#   - the configuration (`Release`, `Debug`, etc.) for build systems that
+#     support multiple configurations in the same build
+#   - the rounding mode (see below for details).
+# - `MTEST_FILE`: this keyword introduces one or several base names to
+#   declare `MTest` scripts (i.e. the name of a file without extension).
+#   For each base name, the `add_mtest` function proceeds as follows:
+#   - If a file, with this base name and the extension `.mtest.in` exists,
+#     the `configure_file` function is called to generate a script file in
+#     the current directory. This file will be called by `MTest`.
+#   - Otherwise, a file, with this base name and the extension `.mtest` is
+#     expected to exist in the current source directory.
+# - `BEHAVIOUR`: this keyword introduces the name of the behaviour. This
+#   name used to replace all occurences of `@behaviour@` in the `MTest`
+#   scripts.
+# - `LIBRARY`: this keyword introduces the path to the library containing
+#   the behaviour to be tested. This name used to replace all occurences
+#   of `@library@` in the `MTest` scripts. By default, this location is
+#   deduced from the name of the second argument of the function.
+# - `INTERFACE`: this keyword introduces the name of the interface used to
+#   generate the library. This name used to replace all occurences of
+#   `@interface@` in the `MTest` scripts.
+# - `REFERENCE_FILE`: this keyword introduces the name of the file
+#   containing the reference results. This name used to replace all
+#   occurences of `@reference_file@` in the `MTest` scripts.
+# - `ACCELERATION_ALGORITHM`: this keyword introduces the name of an
+#   acceleration algorithm (see the `MTest` documentation for a list of
+#   acceleration algorithms).
+# - `STIFFNESS_MATRIX_TYPE`: this keyword introduces the type of stiffness
+#   matrix type to be used for the test (see the `MTest` documentation for
+#   a list of available stiffness matrix types).
+# - `MATERIAL_PROPERTIES_LIBRARIES`: this keyword introduces a list of
+#   libraries whose locations are requested. This keyword is only
+#   meaningful if an `mtest.in` file is to be used.
+# 
+# Several test names and several `MTest` scripts can be declared through
+# the `TEST_NAME` and `MTEST_FILE` keywords respectively. The number of
+# test names must match the number of scripts.
+# 
+# A script is generally run several times with different rounding modes
+# (see the `MTest` documentation for details).
+#
+# \arg:interface interface used to generate the library
+# \arg:lib library name
+#
 function(add_mtest interface lib)
   set ( _CMD TEST_NAME )
   set ( _TESTS )
@@ -483,8 +639,8 @@ function(add_mtest interface lib)
     if(CMAKE_CONFIGURATION_TYPES)
       foreach(conf ${CMAKE_CONFIGURATION_TYPES})
 	set(file "${_TEST_NAME}-${conf}.mtest")
-	get_property(${lib}BuildPath TARGET ${lib} PROPERTY LOCATION_${conf})
     if(NOT _LIBRARY)
+       get_property(${lib}BuildPath TARGET ${lib} PROPERTY LOCATION_${conf})
        set ( _LIBRARY "--@library@='${${lib}BuildPath}'" )
     endif(NOT _LIBRARY)
 	foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
@@ -539,7 +695,17 @@ function(add_mtest interface lib)
     endif(CMAKE_CONFIGURATION_TYPES)
   endforeach()
 endfunction(add_mtest interface lib file)
-    
+
+#! castemmtest : this function adds an `MTest` test for a behaviour generated thanks to the `Cast3M` interface!
+#
+# This function does nothing if the `Cast3M` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `Cast3M` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(castemmtest mat)
   if(MFM_CASTEM_BEHAVIOUR_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "castem")
@@ -547,6 +713,16 @@ function(castemmtest mat)
   endif(MFM_CASTEM_BEHAVIOUR_INTERFACE)
 endfunction(castemmtest)
 
+#! astermtest : this function adds an `MTest` test for a behaviour generated thanks to the `aster` interface!
+#
+# This function does nothing if the `aster` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `aster` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(astermtest mat)
   if(MFM_ASTER_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "aster")
@@ -554,6 +730,16 @@ function(astermtest mat)
   endif(MFM_ASTER_INTERFACE)
 endfunction(astermtest)
 
+#! europlexusmtest : this function adds an `MTest` test for a behaviour generated thanks to the `epx` interface!
+#
+# This function does nothing if the `epx` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `epx` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(europlexusmtest mat)
   if(MFM_EUROPLEXUS_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "europlexus")
@@ -561,6 +747,16 @@ function(europlexusmtest mat)
   endif(MFM_EUROPLEXUS_INTERFACE)
 endfunction(europlexusmtest)
 
+#! abaqusmtest : this function adds an `MTest` test for a behaviour generated thanks to the `abaqus` interface!
+#
+# This function does nothing if the `abaqus` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `abaqus` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(abaqusmtest mat)
   if(MFM_ABAQUS_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "abaqus")
@@ -568,6 +764,16 @@ function(abaqusmtest mat)
   endif(MFM_ABAQUS_INTERFACE)
 endfunction(abaqusmtest)
 
+#! abaqusexplicitmtest : this function adds an `MTest` test for a behaviour generated thanks to the `abaqusexplicit` interface!
+#
+# This function does nothing if the `abaqusexplicit` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `abaqusexplicit` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(abaqusexplicitmtest mat)
   if(MFM_ABAQUS_EXPLICIT_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "abaqusexplicit")
@@ -576,6 +782,16 @@ function(abaqusexplicitmtest mat)
   endif(MFM_ABAQUS_EXPLICIT_INTERFACE)
 endfunction(abaqusexplicitmtest)
 
+#! ansysmtest : this function adds an `MTest` test for a behaviour generated thanks to the `ansys` interface!
+#
+# This function does nothing if the `ansys` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `ansys` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(ansysmtest mat)
   if(MFM_ANSYS_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "ansys")
@@ -584,6 +800,16 @@ function(ansysmtest mat)
   endif(MFM_ANSYS_INTERFACE)
 endfunction(ansysmtest)
 
+#! calculixmtest : this function adds an `MTest` test for a behaviour generated thanks to the `calculix` interface!
+#
+# This function does nothing if the `calculix` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `calculix` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(calculixmtest mat)
   if(MFM_CALCULIX_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "calculix")
@@ -592,6 +818,16 @@ function(calculixmtest mat)
   endif(MFM_CALCULIX_INTERFACE)
 endfunction(calculixmtest)
 
+#! dianafeamtest : this function adds an `MTest` test for a behaviour generated thanks to the `dianafea` interface!
+#
+# This function does nothing if the `dianafea` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `dianafea` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(dianafeamtest mat)
   if(MFM_DIANA_FEA_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "dianafea")
@@ -600,6 +836,16 @@ function(dianafeamtest mat)
   endif(MFM_DIANA_FEA_INTERFACE)
 endfunction(dianafeamtest)
 
+#! cyranomtest : this function adds an `MTest` test for a behaviour generated thanks to the `cyrano` interface!
+#
+# This function does nothing if the `cyrano` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `cyrano` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(cyranomtest mat)
   if(MFM_CYRANO_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "cyrano")
@@ -607,6 +853,16 @@ function(cyranomtest mat)
   endif(MFM_CYRANO_INTERFACE)
 endfunction(cyranomtest)
 
+#! genericmtest : this function adds an `MTest` test for a behaviour generated thanks to the `generic` interface!
+#
+# This function does nothing if the `generic` behaviour interface has not been selected.
+#
+# \arg:mat this parameter is used to determine the name of the library generated
+# for the `generic` interface. In pratice this parameter may designate the name of a
+# material (Concrete for example) or the name of a phenomenon (plasticity, damage, etc..).
+#
+# The other optional arguments are automatically forwarded to the `add_mtest` function. The
+# name of the interface is forwarded to the `add_mtest` function using the `INTERFACE` keyword.
 function(genericmtest mat)
   if(MFM_GENERIC_BEHAVIOUR_INTERFACE)
     get_mfront_behaviour_library_name(${mat} "generic")
@@ -614,6 +870,17 @@ function(genericmtest mat)
   endif(MFM_GENERIC_BEHAVIOUR_INTERFACE)
 endfunction(genericmtest)
 
+#! mtest : this function adds a test based on an `MTest` script!
+#
+# This function expects that a list of interfaces are defined using
+# either the `INTERFACES` keyword or the `INTERFACE` keyword. The
+# following interfaces are supported:  `castem`, `aster`, `ansys`,
+# `dianafea`, `epx`, `abaqus`, `abaqusexplicit`, `calculix`, `cyrano`
+# and `generic`.
+#
+# The other optional arguments are automatically forwarded to the functions
+# associated with the interfaces selected. For example, if the `ansys`
+# interface is selected, the `ansysmtest` function is called.
 function(mtest mat)
   set ( _ARGS)
   set ( _INTERFACES)

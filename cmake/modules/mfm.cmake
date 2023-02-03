@@ -331,6 +331,8 @@ endif(mfront-models-interfaces)
 #compiler options
 include(cmake/modules/compiler.cmake)
 
+include(cmake/modules/tfel-check.cmake)
+
 add_custom_target(doc)
 
 # Documentation

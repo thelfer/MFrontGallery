@@ -23,6 +23,7 @@ add_subdirectory(mfront-book-examples)
 add_subdirectory(unit-tests/mfront-wrappers)
 # add_subdirectory(unit-tests/behaviours-without-temperature)
 add_subdirectory(unit-tests/madnex/behaviours)
+add_subdirectory(unit-tests/tfel-check)
 
 if(enable-website)
   add_subdirectory(docs/web)

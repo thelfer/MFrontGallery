@@ -84,7 +84,7 @@ to the `MFront` search paths, where:
 - `${mat}` is the name of the material passed as first argument to the
   `mfront_properties_library`.
 
-Other search paths can be added by using any of the options
+Other search paths can be added by using any of the keywords
 `SEARCH_PATH` or `SEARCH_PATHS`, as described in Section
 @sec:mfm:cmake:parse_mfront_library_sources.
 
@@ -176,13 +176,11 @@ treated as follows:
   path, and is searched in the current source directory or the the
   current binary directory.
 
-`MFront` source files are treated by:
-
-- the `generate_mfront_doc` function which will generate a web page for
-  this source file using the `mfront-doc` utility if the
-  `enable-website` option has been choosen at the `CMake` configuration
-  stage (see the [`install` page for details](install.html`)).
-- 
+`MFront` source files are treated by the `generate_mfront_doc` function
+which will generate a web page for this source file using the
+`mfront-doc` utility if the `enable-website` option has been choosen at
+the `CMake` configuration stage (see the [`install` page for
+details](install.html`)).
 
 ## The `parse_mfront_library_sources` function {#sec:mfm:cmake:parse_mfront_library_sources}
 

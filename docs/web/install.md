@@ -250,6 +250,11 @@ By default, the configuration step assumes that the various binaries
 provided by the `TFEL` project (including `mfront`) can be found in
 the current environment.
 
+A `cmake` variable named `TFEL_FLAVOUR` can be use to specify a suffix
+to programs and libraries associated with `TFEL`. For example, if
+`TFEL_FLAVOUR` is set to `debug`, an executable named `mfront-debug` is
+searched.
+
 # Compilation
 
 The selected libraries can be built as follows:
