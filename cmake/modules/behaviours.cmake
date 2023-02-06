@@ -2,7 +2,7 @@
 # <https://thelfer.github.io/MFrontGallery/web/index.html> github repository:
 # <https://github.com/thelfer/MFrontGallery>
 
-function(check_temperature_is_first_external_state_variable mat search_paths
+function(mfront_behaviour_check_temperature_is_first_external_state_variable mat search_paths
          source)
   mfront_query(modelling_hypotheses ${mat} "${search_paths}" ${source}
                "--supported-modelling-hypotheses")
@@ -39,9 +39,9 @@ function(check_temperature_is_first_external_state_variable mat search_paths
           PARENT_SCOPE)
     endif()
   endforeach(h ${modelling_hypotheses})
-endfunction(check_temperature_is_first_external_state_variable)
+endfunction(mfront_behaviour_check_temperature_is_first_external_state_variable)
 
-function(check_behaviour_compatibility mat interface search_paths mfront_file)
+function(mfront_behaviour_check_compatibility mat interface search_paths mfront_file)
   set(file_OK ON)
   set(compatibility_failure)
   if((${interface} STREQUAL "castem") OR (${interface} STREQUAL "castem21"))
@@ -77,11 +77,11 @@ function(check_behaviour_compatibility mat interface search_paths mfront_file)
   set(compatibility_failure
       ${compatibility_failure}
       PARENT_SCOPE)
-endfunction(check_behaviour_compatibility)
+endfunction(mfront_behaviour_check_compatibility)
 
 function(add_mfront_behaviour_source lib mat interface search_paths mfront_path)
-  check_behaviour_compatibility(${mat} ${interface} "${search_paths}"
-                                ${mfront_path})
+  mfront_behaviour_check_compatibility(${mat} ${interface} "${search_paths}"
+                                       ${mfront_path})
   if(file_OK)
     get_behaviour_dsl_options(${interface})
     get_mfront_generated_sources(${mat} ${interface} "${search_paths}"
@@ -109,10 +109,11 @@ function(add_mfront_behaviour_source lib mat interface search_paths mfront_path)
       PARENT_SCOPE)
 endfunction(add_mfront_behaviour_source)
 
+#! add_mfront_behaviour_sources : 
 function(add_mfront_behaviour_sources lib mat interface search_paths file)
   get_mfront_source_location(${file})
   if(NOT mfront_path)
-    list(APPEND ${lib}_OTHER_SOURCES "${source}")
+    list(APPEND ${lib}_OTHER_SOURCES "${file}")
     set(${lib}_OTHER_SOURCES
         ${${lib}_OTHER_SOURCES}
         PARENT_SCOPE)

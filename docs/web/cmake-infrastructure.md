@@ -26,9 +26,6 @@ mostly convers:
   properties, behaviours and models.
 - functions related to documentation and website generation.
 
-Section @sec:mfm:cmake:cmake_modules describes the contents of the
-`cmake/modules` directory.
-
 # Main functions {#sec:mfm:cmake:main_functions}
 
 ## The `mfront_properties_library` function
@@ -157,38 +154,14 @@ arguments to the `parse_mfront_library_sources` function and use its
 results to add the shared libraries properly. See Section
 @sec:mfm:cmake:parse_mfront_library_sources for the available options.
 
-### Treatment of the sources {#sec:mfm:cmake:mfront_behaviours_library:sources}
-
-For each shared library to be added, each source returned in the
-`mfront_sources` variable by the `parse_mfront_library_sources` is
-treated as follows:
-
-- If the file `@source@.mfront` (where `@source@` is the name of the
-  considered source) exists in the current source directory, then it is
-  treated as an `MFront` source file.
-- If the file `@source@.mfront.in` (where `@source@` is the name of the
-  considered source) exists in the current source directory, then it is
-  automatically configured using `̀CMake`' `configure_file` command and
-  the resulting file is treated as an `MFront` source file.
-- If neither the `@source@.mfront` nor `@source@.mfront.in` exist in the
-  current directory, the file `@source@` is added in the list of sources
-  for the treated shared library. This file can be given by its full
-  path, and is searched in the current source directory or the the
-  current binary directory.
-
-`MFront` source files are treated by the `generate_mfront_doc` function
-which will generate a web page for this source file using the
-`mfront-doc` utility if the `enable-website` option has been choosen at
-the `CMake` configuration stage (see the [`install` page for
-details](install.html`)).
-
 ## The `parse_mfront_library_sources` function {#sec:mfm:cmake:parse_mfront_library_sources}
 
 The `parse_mfront_library_sources` function set the following variables
 on output:
 
-- `mfront_sources`: list of sources to be processed. In practice, this
-  is the list of arguments which are not specifically treated.
+- `mfront_sources`: list of sources to be processed (see below). In
+  practice, this is the list of arguments which are not specifically
+  introduced by a keyword (see below).
 - `mfront_search_paths`: list of search paths, i.e. list of directories
   where `MFront` shall search for auxiliary files (imported files,
   external material properties, external models.).
@@ -198,7 +171,7 @@ on output:
   libraries are meant to be linked to the generated shared libraries.
 
 The `parse_mfront_library_sources` function allows the following
-options:
+keywords:
 
 - `SOURCES` (the default): this option introduces new sources for the
   generated libraries. All subsequent arguments are treated as sources,
@@ -218,6 +191,36 @@ options:
 - `INCLUDE_DIRECTORIES`: the next argument passed to the
   `parse_mfront_library_sources` function is added to the list of
   include directories.
+
+### Treatment of the sources {#sec:mfm:cmake:mfront_behaviours_library:sources}
+
+For each shared library to be added, each source returned in the
+`mfront_sources` variable by the `parse_mfront_library_sources` is
+treated as follows:
+
+- If the considered source, denoted `@source@` in the following, starts
+  with the `mdnx:` prefix, it is considered as a path in a madnex file.
+- If a file `@source@.mdnx` (or `@source@.madnex`) exists in the current
+  source directory, then it is treated as an `madnex` source file. All
+  the material knowledge of the considered kind (material property,
+  behaviour, model) contained in this file is added to the library.
+- If a file `@source@.mfront` exists in the current source directory or
+  in the current source directory, this file is treated as an `MFront`
+  source file.
+- If a file `@source@.mfront.in` (where `@source@` is the name of the
+  considered source) exists in the current source directory, then it is
+  automatically configured using `̀CMake`' `configure_file` command and
+  the resulting file is treated as an `MFront` source file.
+- If none of the previous cases applied, the file `@source@` is added in
+  the list of sources for the treated shared library. This file can be
+  given by its full path, and is searched in the current source
+  directory or the the current binary directory.
+
+`MFront` source files are treated by the `generate_mfront_doc` function
+which will generate a web page for this source file using the
+`mfront-doc` utility if the `enable-website` option has been choosen at
+the `CMake` configuration stage (see the [`install` page for
+details](install.html`)).
 
 ## Functions related to tests based on `MTest`
 

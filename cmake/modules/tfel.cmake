@@ -258,6 +258,12 @@ function(_get_mfront_behaviour_command_line_arguments)
   set(mfront_behaviour_command_line_arguments "${_mfront_behaviour_command_line_arguments}" PARENT_SCOPE)
 endfunction(_get_mfront_behaviour_command_line_arguments)
 
+function(_get_mfront_model_command_line_arguments)
+  _get_mfront_command_line_arguments()
+  set(_mfront_model_command_line_arguments "${mfront_command_line_arguments}")
+  set(mfront_model_command_line_arguments "${_mfront_model_command_line_arguments}" PARENT_SCOPE)
+endfunction(_get_mfront_model_command_line_arguments)
+
 # mkt: material knowledge type
 # interface: interface considered 
 # option: dsl option to be treated
@@ -340,6 +346,10 @@ endfunction(get_model_dsl_options interface)
 function(get_mfront_source_location source)
   set(_madnex_file OFF)
   set(_mfront_path)
+  string(FIND "${source}" "mdnx:" mdnx_prefix)
+  if("${mdnx_prefix}" EQUAL 0)
+    set(_mfront_path "${source}")
+  endif()
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mdnx")
     set(_madnex_file ON)
     set(_mfront_path "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mdnx")
@@ -361,6 +371,16 @@ function(get_mfront_source_location source)
     if(_mfront_path)
       message(FATAL_ERROR "source specification '${source}' is ambiguous")
     endif(_mfront_path)
+    set(_mfront_path "${CMAKE_CURRENT_BINARY_DIR}/${source}.mfront")
+  endif()
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront.in")
+    if(_mfront_path)
+      message(FATAL_ERROR "source specification '${source}' is ambiguous")
+    endif(_mfront_path)
+      configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${source}.mfront"
+        @ONLY)
     set(_mfront_path "${CMAKE_CURRENT_BINARY_DIR}/${source}.mfront")
   endif()
   set(madnex_file ${_madnex_file} PARENT_SCOPE)

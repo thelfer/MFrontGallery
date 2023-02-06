@@ -1,4 +1,5 @@
 function(check_castem_behaviour_compatibility mat search_paths source)
+  set(file_OK ON)
   mfront_query(behaviour_type ${mat} "${search_paths}" ${source} "--type")
   if(behaviour_type STREQUAL "1")
     # strain based behaviour, do nothing
@@ -25,7 +26,7 @@ function(check_castem_behaviour_compatibility mat search_paths source)
     endif()
   endif(behaviour_type STREQUAL "1")
   if(file_OK)
-    check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
+    mfront_behaviour_check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
                                                        ${source})
     if(NOT file_OK)
       set(file_OK
@@ -39,34 +40,12 @@ function(check_castem_behaviour_compatibility mat search_paths source)
 endfunction(check_castem_behaviour_compatibility)
 
 function(check_castem_model_compatibility mat search_paths source)
-  mfront_query(model_type ${mat} "${search_paths}" ${source} "--type")
-  if(model_type STREQUAL "1")
-    # strain based model, do nothing
-  elseif(model_type STREQUAL "2")
-    # finite strain model, do nothing
-  elseif(model_type STREQUAL "3")
-    # cohesive zone model, do nothing
-  else(model_type STREQUAL "1")
-    # unsupported model type
-    set(file_OK
-        OFF
-        PARENT_SCOPE)
-    set(compatibility_failure
-        "unsupported model type"
-        PARENT_SCOPE)
-  endif(model_type STREQUAL "1")
-  if(file_OK)
-    check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
-                                                       ${source})
-    if(NOT file_OK)
-      set(file_OK
-          OFF
-          PARENT_SCOPE)
-      set(compatibility_failure
-          "${compatibility_failure}"
-          PARENT_SCOPE)
-    endif(NOT file_OK)
-  endif(file_OK)
+  mfront_model_check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
+                                                                        ${source})
+  if(NOT file_OK)
+    set(file_OK OFF PARENT_SCOPE)
+    set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
+  endif(NOT file_OK)
 endfunction(check_castem_model_compatibility)
 
 function(getCastemBehaviourName name)
