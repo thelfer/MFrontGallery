@@ -345,6 +345,21 @@ if(enable-website)
   include(cmake/modules/pandoc.cmake)
 endif(enable-website)
 
+# Function for installing documentation
+function(mfm_install_doc file directory component)
+  if(MFM_APPEND_SUFFIX)
+    install(FILES ${file}
+      DESTINATION share/doc/mfm-${MFM_SUFFIX}/${directory}
+      COMPONENT ${component}
+      ${ARGN})
+  else(MFM_APPEND_SUFFIX)
+    install(FILES ${file}
+      DESTINATION share/doc/mfm/${directory}
+      COMPONENT ${component}
+      ${ARGN})
+  endif(MFM_APPEND_SUFFIX)
+endfunction(mfm_install_doc)
+
 # Looking for LaTeX
 option(enable-reference-doc "enable generation of the reference documentation" OFF)
 if(enable-reference-doc)
