@@ -3,15 +3,18 @@ function(mfront_properties_excel_internal_library mat)
 endfunction(mfront_properties_excel_internal_library)
 
 function(mfront_properties_excel_library mat)
+  set(lib lib${mat}MaterialProperties.bas)
   parse_mfront_library_sources(${ARGN})
+  set(mfront_search_paths)
   if(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
     list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_SOURCE_DIR}/materials/${mat}/properties")
   endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
-  list(TRANSFORM mfront_sources PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
-  list(TRANSFORM mfront_sources APPEND ".mfront")
+  foreach(source ${mfront_sources})
+    add_mfront_property_sources(${lib} ${mat} "excel" ${mfront_search_paths} ${source})
+  endforeach(source ${mfront_sources})
   _get_mfront_command_line_arguments()
   set(mfront_args )
   list(APPEND mfront_args ${mfront_command_line_arguments})
@@ -21,17 +24,17 @@ function(mfront_properties_excel_library mat)
     list(APPEND mfront_args ${mfront_dsl_options})
   endif(mfront_dsl_options)
   list(APPEND mfront_args "--interface=excel")
-  list(APPEND mfront_args ${mfront_sources})
+  list(APPEND mfront_args ${${lib}_MFRONT_IMPLEMENTATION_PATHS})
   # install vba file
   set(vba_file "${CMAKE_CURRENT_BINARY_DIR}/excel/src/Excel${mat}.bas")
   add_custom_command(
     OUTPUT  "${vba_file}"
     COMMAND "${MFRONT}"
     ARGS    ${mfront_args}
-    DEPENDS ${mfront_sources}
+    DEPENDS ${${lib}_MFRONT_SOURCES}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/excel"
     COMMENT "mfront source ${mfront_file}")
-  add_custom_target(lib${mat}MaterialProperties.bas ALL
+  add_custom_target(${lib}
     DEPENDS "${vba_file}")
   install(FILES ${vba_file} DESTINATION "share/mfm/excel")
 endfunction(mfront_properties_excel_library mat)

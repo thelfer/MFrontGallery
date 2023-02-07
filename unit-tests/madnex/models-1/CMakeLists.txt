@@ -1,0 +1,2 @@
+mfront_models_library(TestMadnexModels1
+  ChemicalReaction)

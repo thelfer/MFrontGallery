@@ -8,6 +8,7 @@ function(add_mfront_material_property_source lib mat interface search_paths mfro
   list(APPEND mfront_generated_sources ${${lib}_SOURCES})
   list(REMOVE_DUPLICATES mfront_generated_sources)
   set(${lib}_SOURCES ${mfront_generated_sources} PARENT_SCOPE)
+  set(file_OK ON PARENT_SCOPE)
 endfunction(add_mfront_material_property_source)
 
 function(add_mfront_property_sources lib mat interface search_paths file)
@@ -42,11 +43,32 @@ function(add_mfront_property_sources lib mat interface search_paths file)
     else()
       add_mfront_material_property_source(${lib} ${mat} ${interface}
                                           "${search_paths}" ${mfront_path})
-	  list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
-      set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
-	  list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${mfront_path})
-      set(${lib}_MFRONT_IMPLEMENTATION_PATHS
-          ${${lib}_MFRONT_IMPLEMENTATION_PATHS} PARENT_SCOPE)
+      if(file_OK)
+        list(APPEND ${lib}_MFRONT_IMPLEMENTATION_PATHS ${mfront_path})
+        set(${lib}_MFRONT_IMPLEMENTATION_PATHS
+            ${${lib}_MFRONT_IMPLEMENTATION_PATHS}
+            PARENT_SCOPE)
+        string(FIND "${source}" "mdnx:" mdnx_prefix)
+        if("${mdnx_prefix}" EQUAL 0)
+          string(REPLACE ":" ";" _path_tokens ${source})
+          list(LENGTH _path_tokens _n_path_tokens)
+          if(NOT _n_path_tokens EQUAL 5)
+            message(FATAL_ERROR "invalid mdnx path '${source}'")
+          endif()
+         list(GET _path_tokens 1 _madnex_source_file)
+         if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")
+           message(FATAL_ERROR "invalide madnex file: "
+                   "no file named '${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}'")
+         endif()
+          list(APPEND ${lib}_MFRONT_SOURCES
+              "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")
+        else("${mdnx_prefix}" EQUAL 0)
+          list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
+        endif("${mdnx_prefix}" EQUAL 0)
+        set(${lib}_MFRONT_SOURCES
+            ${${lib}_MFRONT_SOURCES}
+            PARENT_SCOPE)
+      endif(file_OK)
     endif()
     set(${lib}_SOURCES ${${lib}_SOURCES} PARENT_SCOPE)
   endif()

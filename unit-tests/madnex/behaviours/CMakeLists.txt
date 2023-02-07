@@ -1,2 +1,0 @@
-mfront_behaviours_library(TestMadnexBehaviours
-  Plasticity)

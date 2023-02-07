@@ -11,12 +11,7 @@ macro(mfront_properties_python_library mat)
   set(wrapper_source "${CMAKE_CURRENT_BINARY_DIR}/python/src/${mat}lawwrapper.cxx")
   get_material_property_dsl_options("python")
   foreach(source ${mfront_sources})
-    set(mfront_file   "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mfront")
-    list(APPEND mfront_files "${mfront_file}")
-    get_mfront_generated_sources(${mat} "python" "${mfront_search_paths}"
-                                 "${mfront_dsl_options}" ${mfront_file})
-    list(TRANSFORM mfront_generated_sources PREPEND "${CMAKE_CURRENT_BINARY_DIR}/python/src/")
-    list(APPEND ${lib}_SOURCES ${mfront_generated_sources})
+    add_mfront_property_sources(${lib} ${mat} "python" "${mfront_search_paths}" ${source})
   endforeach(source)
   list(APPEND ${lib}_SOURCES ${wrapper_source})
   list(REMOVE_DUPLICATES ${lib}_SOURCES)
@@ -28,12 +23,12 @@ macro(mfront_properties_python_library mat)
     list(APPEND mfront_args ${mfront_dsl_options})
   endif(mfront_dsl_options)
   list(APPEND mfront_args "--interface=python")
-  list(APPEND mfront_args "${mfront_files}")
+  list(APPEND mfront_args ${${lib}_MFRONT_IMPLEMENTATION_PATHS})
   add_custom_command(
       OUTPUT  ${${lib}_SOURCES}
       COMMAND "${MFRONT}"
       ARGS    ${mfront_args}
-      DEPENDS ${mfront_files}
+      DEPENDS ${${lib}_MFRONT_SOURCES}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python"
       COMMENT "mfront sources ${mfront_files} for interface python")
   message(STATUS "Adding library : ${lib} (${${lib}_SOURCES})")

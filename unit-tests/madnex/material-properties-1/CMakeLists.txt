@@ -1,0 +1,2 @@
+mfront_properties_library(TestMadnexMaterialProperties1
+   MaterialProperty)
