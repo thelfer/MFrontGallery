@@ -11,7 +11,7 @@ secPrefixTemplate: "$$i$$"
 eqnPrefixTemplate: "($$i$$)"
 ---
 
-# General advices
+# General advice
 
 When creating a material database based on `MFrontGallery` (see [this
 page](creating-derived-project.html) for details), do not mix generic
@@ -30,13 +30,13 @@ When creating a material database of self-contained implementations, we
 highly recommend providing a consistent unit system to make all
 implementations consistent.
 
-We also highly recommend using the international system of unit. Since
+We also highly recommend using the international system of units. Since
 Version 4.1, `MFront` provides the `@UnitSystem` keyword to specify the
 unit system used.
 
 ## External names (glossary and entry names)
 
-The `setGlossaryName` and `setEntryName` methods allows to affect
+The `setGlossaryName` and `setEntryName` methods allows to set
 so-called external names to `MFront`'s variables. Those external names
 are the one seen from the calling solver.
 
