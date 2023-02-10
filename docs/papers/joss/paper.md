@@ -44,10 +44,10 @@ pandoc -f markdown  --bibliography=bibliography.bib --citeproc -V geometry:a4pap
 # Introduction
 
 `MFront` is an open-source code generator dedicated to material
-knowledge [@Helfer2015;@cea_edf_mfront_2022] developped by the French
+knowledge [@Helfer2015;@cea_edf_mfront_2022] developed by the French
 Alternative Energies and Atomic Energy Commission (CEA) and Électricité
 de France (EDF). `MFront` is part of the `PLEIADES` numerical platform, which
-is devoted to multi-physics nuclear fuel simulations and is developped
+is devoted to multi-physics nuclear fuel simulations and is developed
 by CEA and its industrial partners EDF and Framatome. Since it was released
 as an open-source project, `MFront` has been used in numerous
 applications covering a wide range of materials (ceramics, metals,
@@ -71,8 +71,7 @@ interface, those mechanical behaviours are also available in all solvers
 using the [`MFrontGenericInterfaceSupport`
 projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [@helfer_mfrontgenericinterfacesupport_2020], including:
-[`OpenGeoSys`](https://www.opengeosys.org/) [@kolditz_opengeosys:_2012;
-@Bilke2019],
+[`OpenGeoSys`](https://www.opengeosys.org/) [@Bilke2019],
 [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
 `MANTA`,
 [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
@@ -101,7 +100,7 @@ which is discussed in depth in Section
 In summary, the project provides:
 
 - a [`CMake`](https://cmake.org) infrastructure that can be duplicated
-  in (academics- or industry-) derived projects. This infrastructure allows:
+  in (academic or industrial) derived projects. This infrastructure allows:
   - to compile `MFront` sources using all interfaces supported by
     `MFront`.
   - to execute unit tests based on `MTest`. Those unit tests generate
@@ -110,7 +109,9 @@ In summary, the project provides:
     [jenkins](https://www.jenkins.io/).
   - generate the documentation associated with the stored implementations.
 - a documentation of best practices to handle material knowledge
-  implemented using `MFront` implementations
+  implemented using `MFront` implementations, such as use of consistent 
+  unit systems, bound-aware physical quantities, consistent tangent
+  operators, and others.
 - a set of high-quality `MFront` implementations.
 
 This paper aims to describe the project and is organized as follows:
@@ -124,7 +125,8 @@ overview of the `CMake` infrastructure of the project, and describes how
 to create a derived project based on the same `CMake` infrastructure as
 the `MFrontGallery`.
 
-# Statement of need: material knowledge management for safety-criticial studies {#sec:mfm:introduction:statement_of_need}
+# Statement of need : material knowledge management for safety - criticial studies
+\label{sec:mfm:introduction:statement_of_need}
 
 ## Role of material knowledge in numerical simulations of solids
 
@@ -143,10 +145,10 @@ in different forms. In `MFront`, the following categorization is employed:
 - **Behaviours** describe how a material evolves and reacts locally due
   to gradients inside the material. Here, the material reaction is
   associated with fluxes (or forces) thermodynamically conjugated to
-  gradients. For instance, the Fourier law relates the heat flux to the
+  gradients. For instance, Fourier's law relates the heat flux to the
   temperature gradient. Mechanical behaviour in infinitesimal strain
-  theory relates the stress and the strain and may describe plasticity,
-  viscoplaticity or damage.
+  theory relates the stress and the strain and may describe (visco)elasticity,
+  (visco)plasticity, or damage.
 - **Point-wise models** describe the evolution of some internal state
   variables with the evolution of other state variables. Point-wise
   models may be seen as behaviours without gradients. Phase transition,
@@ -160,9 +162,9 @@ The `MFrontGallery` project has been developed to address various
 issues related to material knowledge management for safety-critical
 studies:
 
-- **Intellectual property**: Material knowledge reflects the know-how of
-  industrials and shall be kept private for various reasons. For
-  example, some mechanical behaviours result from years of experimental
+- **Intellectual property**: Frequently, material knowledge reflects 
+  the know-how of industrials and shall be kept private for various reasons. 
+  For example, some mechanical behaviours result from years of experimental
   testing in dedicated facilities and are thus highly valuable. In some
   cases, material knowledge can be a competitive advantage. To solve
   this issue, the `MFrontGallery` allows to create private derived
@@ -176,12 +178,12 @@ studies:
   guidelines](https://thelfer.github.io/MFrontGallery/web/best-practices.html)[^mfm:best_practices]
   to ensure that a given `MFront` implementation can be shared among
   several teams while assuring quality.
-- **Maintainability over decades**: Some safety-critical studies can be
-  used to design buildings, plants, or technological systems for
+- **Maintainability over decades**: Some safety-critical studies involve
+  the design of buildings, plants, or technological systems for
   operation periods of decades or more. Over such periods of time, both
   the solvers and the material knowledge will evolve. The
   safety-critical studies, however, on which design choices or decisions
-  were based, need to remain accessible or reproducible. In the authors'
+  were based, need to remain accessible and reproducible. In the authors'
   experience, maintainability is more easily achieved by having a
   dedicated material knowledge project based on *self-contained*
   implementations, as discussed in Section
@@ -196,6 +198,8 @@ studies:
   development of `MFront`.
 - **Documentation**: the project can generate the documentation
   associated with the various implementations in an automated manner.
+  Implementations of material knowledge can be associated to essential
+  meta data.
 
 [^mfm:best_practices]: <https://thelfer.github.io/MFrontGallery/web/best-practices.html>
 
@@ -204,9 +208,9 @@ studies:
 
 `MFront` implementations can be classified in two main categories:
 
-- **self-contained**, which denotes implementations that contain all the
+- **self-contained implementations** that contain all the
   physical information (e.g., model equations and parameters).
-- **generic**, which denotes implementations for which the solver is 
+- **generic implementations** for which the solver is 
   required to provide additional physical information to the material 
   treated, e.g. the values of certain parameters. Those "generic"
   implementations are usually shipped with solvers as ready-to-use
@@ -231,7 +235,7 @@ equations and parametrized to retrieve a certain degree of generality. In our
 experience, such a hybrid approach is fragile, less readable and
 cumbersome. Moreover, it does not address the main issue of generic
 behaviours which is the management of the physical information in a
-reliable and robust way.
+reliable and robust manner.
 
 In the authors' experience, self-contained behaviours allows to
 **decouple the material knowledge management from the development
@@ -250,7 +254,7 @@ This infrastructure is fully contained in the `cmake/modules` directory,
 the file `cmake/modules/mfm.cmake` being the main entry point.
 
 Section \ref{sec:mfm:cmake:main_functions} describes the main `CMake`
-functions provided by tthe project.
+functions provided by the project.
 
 Section \ref{sec:mfm:creating_derived_project} shows how to create a
 derived project.
@@ -287,7 +291,7 @@ repository from it as follows:
 ~~~~{.bash}
 $ git remote add MFrontGallery https://github.com/thelfer/MFrontGallery
 $ git fetch MFrontGallery master
-$ git checkout MFrontGallery/master -- cmake 
+$ git checkout MFrontGallery/master --cmake 
 ~~~~
 
 Of course, the user may also want to follow another branch rather than
@@ -320,14 +324,13 @@ Now you are ready to create the subdirectory `materials` containing your
 # Conclusions
 
 The `MFrontGallery` project is dedicated to material knowledge management
-in safety-critical studies and is built on long-standing experience gathered
+in safety-critical studies and is the result of long-standing experience gathered
 in the `PLEIADES` project. Key concepts built upon are portability,
 maintainability and reproducability over long time periods, continuous integration
 and unit testing, documentation and the safeguarding of intellectual property as 
 well as attribution. Based on the technical infrastructure
 described in this article, it becomes possible to set up derived projects 
 in similar contexts where these concepts are considered relevant.
-
 
 # Acknowledgements
 
@@ -337,4 +340,3 @@ Atomic Energy Commission (CEA), Électricité de France (EDF) and
 Framatome.
 
 # References
-

@@ -138,35 +138,45 @@ The `MFrontGallery` project has been developed to address various
 issues related to material knowledge management for safety-critical
 studies:
 
-- **Intellectual property**: Material knowledge reflects the know-how of
-  industrials and shall be kept private for various reasons. For
-  example, some mechanical behaviours result from years of experimental
+- **Intellectual property**: Frequently, material knowledge reflects 
+  the know-how of industrials and shall be kept private for various reasons. 
+  For example, some mechanical behaviours result from years of experimental
   testing in dedicated facilities and are thus highly valuable. In some
   cases, material knowledge can be a competitive advantage.
 - **Portability**: safety-critical studies may involve several partners
-  which use different solvers for independent assessment and review. 
-  From the same `MFront` source file, the
-  `MFrontGallery` can generate shared libraries for all the solvers of
-  interest.
+  which use different solvers for independent assessment and review.
+  From the same `MFront` source file, the `MFrontGallery` can generate
+  shared libraries for all the solvers of interest. Moreover, the
+  project employs [best practices
+  guidelines](https://thelfer.github.io/MFrontGallery/web/best-practices.html)[^mfm:best_practices]
+  to ensure that a given `MFront` implementation can be shared among
+  several teams while assuring quality.
 - **Maintainability over decades**: Some safety-critical studies can be
   used to design buildings, plants, or technological systems for 
   operation periods of decades or more. Over such
   periods of time, both the solvers and the material knowledge will
   evolve. The safety-critical studies, however, on which design choices
   or decisions were based, need to remain accessible or reproducible.
+- **Progression of the state of the art**: Safety-critical studies need
+  to reflect the state of the art. As such, the material knowledge per se,
+  numerical methods and software engineering need to evolve while at the same
+  time ensuring the other principles listed here are not violated in order
+  to maintain quality assurance of past, present and future analyses.
 - **Continuous integration and unit testing**: Each implementation has
   associated unit tests with can check no-regression during the
   development of `MFront`.
 - **Documentation**: the project can generate the documentation
   associated with the various implementations in an automated manner.
+  Implementations of material knowledge can be associated to essential
+  meta data.
 
 ## Implementations and classification {#sec:mfm:introduction:implementations}
 
 `MFront` implementations can be classified in two main categories:
 
-- **self-contained**, which denotes implementations that contain all the
+- **self-contained implementations** that contain all the
   physical information (e.g., model equations and parameters).
-- **generic**, which denotes implementations for which the solver is 
+- **generic implementations** for which the solver is 
   required to provide additional physical information to the material 
   treated, e.g. the values of certain parameters. Those "generic"
   implementations are usually shipped with solvers as ready-to-use
@@ -236,7 +246,7 @@ materials evolves over time.
 
 ### A more elaborate solution
 
-A more elaborate solution consists in splitting the input file in
+A more elaborate solution consists in splitting the input file into
 multiple ones and separating the material declarations from the rest.
 One can thus maintain a database of ready-to-use material definitions.
 
