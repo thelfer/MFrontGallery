@@ -9,7 +9,8 @@ set(MFRONT_BEHAVIOURS_PLASTICITY_SOURCES
   OrthotropicDruckerPerfectPlasticity2090T3_Cazacu2001
   OrthotropicDruckerPerfectPlasticityYdLin6016T4_Cazacu2001
   DruckerPragerCap
-  SemiImplicitModifiedCamClay_OpenGeoSys2020)
+  SemiImplicitModifiedCamClay_OpenGeoSys2020
+  SemiImplicitModifiedCamClayInc_OpenGeoSys2023)
 
 if(NOT MSVC)
   list(APPEND MFRONT_BEHAVIOURS_PLASTICITY_SOURCES JohnsonCook_s)
@@ -47,3 +48,6 @@ dianafeamtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
 genericmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
   BEHAVIOUR SemiImplicitModifiedCamClay_OpenGeoSys2020
   REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax.ref)
+genericmtest(Plasticity SemiImplicitModifiedCamClayInc_OpenGeoSys2023_Triax
+  BEHAVIOUR SemiImplicitModifiedCamClayInc_OpenGeoSys2023
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/SemiImplicitModifiedCamClayInc_OpenGeoSys2023_Triax.ref)
