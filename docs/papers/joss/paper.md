@@ -140,8 +140,14 @@ The knowledge that one may have about a given material can be represented
 in different forms. In `MFront`, the following categorization is employed:
 
 - **Material properties** are defined here as functions of the current
-  state of the material. A typical example is the Young modulus of a
+  state of the material. They predefine the material behaviour under
+  specific boundary conditions. A typical example is the Young modulus of a
   material.
+<!---
+Eric: a better clarification what differentiate a model parameter 
+to a material properties can be also emphasized
+--->
+
 - **Behaviours** describe how a material evolves and reacts locally due
   to gradients inside the material. Here, the material reaction is
   associated with fluxes (or forces) thermodynamically conjugated to
@@ -223,6 +229,11 @@ implementations describes a set of constitutive equations
   identified on a well-defined set of experiments for a particular
   material while generic implementations
 only describe a set of constitutive equations.
+<!---
+Eric: is the material coefficients identic to material properties. 
+We need to clarify or at least explain how they differ. If (in your
+conception) they are the same we should use only one terminology
+--->
 
 [^mfm:about_material_coefficients]: In practice, the physical
 information described by self-contained implementations may be more
