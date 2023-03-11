@@ -1,0 +1,298 @@
+@DSL DefaultGenericBehaviour;
+@Behaviour BentoniteBehaviour;
+@Author Éric Simo, Thomas Nagel, Thomas Helfer;
+@Date 17 / 04 / 2020;
+@Description {
+  Hypoplasticity for unsaturated soils, expansive soils with
+  double-porosity structure, thermal effects.
+};
+
+@ModellingHypotheses{PlaneStrain, Axisymmetrical, Tridimensional};
+
+@Gradient StrainStensor eto;
+eto.setGlossaryName("Strain");
+@Gradient real s;
+//s.setEntryName("Suction");
+s.setEntryName("LiquidPressure");
+
+@Flux StressStensor sig;
+sig.setGlossaryName("Stress");
+@Flux real Sr;
+Sr.setEntryName("Saturation");
+
+@TangentOperatorBlocks{dsig_ddeto, dsig_dds, dSr_dds};
+
+//! number of real state variables
+@IntegerConstant isvs_size = 9;
+
+@StateVariable real e;
+@StateVariable real em;
+@StateVariable real eM;
+@StateVariable real SrM;
+@StateVariable real a_scan;
+@StateVariable real re;
+
+
+//! Material properties 
+@MaterialProperty real e0; 
+e0.setEntryName("e0"); 
+@MaterialProperty real em0; 
+em0.setEntryName("em0");
+@MaterialProperty real eM0; 
+eM0.setEntryName("eM0");
+@MaterialProperty real SrM0; 
+SrM0.setEntryName("SrM0");
+@MaterialProperty real a_scan0; 
+a_scan0.setEntryName("a_scan0");
+@MaterialProperty real re0; 
+re0.setEntryName("re0");
+
+
+/*!
+ * number of real state variables associated with the Runge-Kutta
+ * algorithm.
+ */
+@IntegerConstant rk_isvs_size = 4;
+@StateVariable real rk_isvs[rk_isvs_size];
+rk_isvs.setEntryName("RungeKutta_InternalStateVariables");
+
+@ExternalStateVariable stress pr;
+pr.setEntryName("AirPressure");
+
+//! number of material parameters
+@IntegerConstant params_size = 23;
+
+/*!
+ * Critical state friction angle of macrostructure in a
+ * standard soil-mechanics context (note: variable phic in
+ * the code converted to Radians, but input \(\phi_c\)
+ * specified in degrees)
+ */
+@Parameter real phi = 25.0;
+/*!
+ * Slope of isotropic normal compression line in
+ * \(ln(p^M/p_r )\) versus \(ln(1+e)\) space
+ */
+@Parameter real lam_star = 0.081;
+//! Macrostructural volume strain in \(p^M\) unloading
+@Parameter real kap_star = 0.01;
+//! Position of isotropic normal compression line in 
+@Parameter real n_star = 1.48;
+//! Stiffness in shear
+@Parameter real nu = 0.25;
+/*!
+ * Dependency of position of isotropic normal
+ * compression line on suction
+ */
+@Parameter real ns = 0.005;
+/*!
+ * Dependency of slope of isotropic normal compression
+ * line on suction
+ */
+@Parameter real ls = 0.0048;
+/*!
+ * Dependency of position of isotropic normal
+ * compression line on temperature
+ */
+@Parameter real nt = -0.07;
+/*!
+ * Dependency of slope of isotropic normal compression
+ * line on temperature
+ */
+@Parameter real lt = 0.0;
+/*!
+ * (1) Control of f_u and thus dependency of
+ * wetting-/heating-induced compaction on
+ * distance from state boundary surface Mašín (2017);
+ * (2) control of double-structure coupling function
+ * and thus response to wetting-drying and
+ * heating-cooling cycles Mašín (2013)
+ */
+@Parameter real m = 35;
+/*!
+ * Dependency of microstructural volume strains on
+ * temperature
+ */
+@Parameter real alpha_s = 0.00015;
+//! Dependency of microstructural volume strains on pˆm
+@Parameter real kappa_m = 0.18;
+//! Reference suction for \(e^m\)
+@Parameter real sm_star = -140000.0;
+/*!
+ * Reference microstructural void ratio for reference
+ * temperature T r , reference suction s r , and zero total
+ * stress
+ */
+@Parameter real em_star = 0.12;
+//! Value of fm for compression
+@Parameter real csh = 0.002;
+/*!
+ * Air-entry value of suction for reference
+ * macrostructural void ratio e0M
+ */
+@Parameter real se_ref = -200.0;
+/*!
+ * Reference macrostructural void ratio for air-entry
+ * value of suction of macrostructure
+ */
+@Parameter real em_ref = 0.50;
+//! Reference temperature
+@Parameter real Tref = 294.0;
+/*!
+ * Dependency of macrostructural air-entry
+ * value of suction on temperature
+ */
+@Parameter real at = 0.118;
+/*!
+ * Dependency of macrostructural air-entry value of
+ * suction on temperature
+ */
+@Parameter real bt = -0.000154;
+/*!
+ * Ratio of air entry and air expulsion values of suction
+ * for macrostructure water retention model
+ */
+@Parameter real aer = 0.75;
+/*!
+ * Slope of macrostructural water retention curve (note:
+ * variable \(\gamma\) in the paper with fixed value
+ * \(\gamma = 0.55\))
+ */
+@Parameter real lambdap0 = 0.55;
+/*!
+ * Artificial cohesion (note: only numerical, not
+ * mentioned in the paper, implied p t = 0)
+ */
+@Parameter real p_t = 0;
+
+//! number of parameters relative to the Runge-Kutta algorithm
+@IntegerConstant rk_params_size = 5;
+
+@Parameter real err_sig = 1e-5;
+err_sig.setEntryName("RungeKuttaStressCriterion");
+@Parameter real h_min = 1e-17;
+@Parameter real ni = 10000;
+@Parameter real sv_rkf_zero = 1e-3;
+@Parameter real rkt = 3;
+
+
+//! the consistent matrix
+@LocalVariable tfel::math::tmatrix<7, 8, real> Dtg;
+
+@Includes {
+#include "generalmod.h"
+#include "BentoniteBehaviourUtilities.hxx"
+#include <cfenv>
+
+#ifndef LIB_BETONITEBEHAVIOUR_PRINT_VALUES
+#define LIB_BETONITEBEHAVIOUR_PRINT_VALUES
+  template <typename ArrayType>
+  inline void print_values(const char* const n, const ArrayType& a) {
+    std::cout << n << " : ";
+    std::copy(a.begin(), a.end(), std::ostream_iterator<double>(std::cout, " "));
+    std::cout << "\n";
+  } // end of print_values
+#endif /* LIB_BETONITEBEHAVIOUR_PRINT_VALUES */
+}
+
+@Sources {
+#include "generalmod.cc"
+}
+
+@InitLocalVariables{
+  //! Material properties  
+
+  e+= e0;
+  em+= em0;
+  eM+= eM0;
+  SrM+= SrM0;
+  a_scan+= a_scan0;
+  re+= re0;
+  //std::cout << *this << std::endl;
+  //std::exit(-1);
+}
+
+@Integrator {
+  using size_type = unsigned short;
+  // consistency checks
+  static_assert(isvs_size == Hypoplasti_unsat_expansive_thermal::c_nstatev);
+  static_assert(rk_isvs_size == Hypoplasti_unsat_expansive_thermal::nrkf_statev);
+  static_assert(params_size == Hypoplasti_unsat_expansive_thermal::c_nparms);
+  static_assert(rk_params_size == Hypoplasti_unsat_expansive_thermal::nrkf_parms);
+  //
+//  feenableexcept(FE_DIVBYZERO);  //	division by zero
+//  feenableexcept(FE_INVALID);    //	invalid operation
+  // material coefficients
+  std::array<real, params_size> params = {
+      phi,     lam_star, kap_star, n_star, nu,     ns,   ls, nt, lt,  m,        alpha_s, kappa_m,
+      sm_star, em_star,  csh,      se_ref, em_ref, Tref, at, bt, aer, lambdap0, p_t};
+  // parameters of the Runge-Kutta algorithm
+  std::array<real, rk_params_size> rk_params = {err_sig, h_min, ni, sv_rkf_zero, rkt};
+  // gradients
+  auto g = bentonite_behaviour_utilities::convert_gradients_from_mfront(eto, s, T);
+  auto dg = bentonite_behaviour_utilities::convert_gradients_from_mfront(deto, ds, dT);
+  // thermodynamic forces
+  auto tf = bentonite_behaviour_utilities::convert_thermodynamic_forces_from_mfront(sig, Sr);
+  for (size_type i = 0; i != 3; ++i) {
+    tf[i] += pr;
+  }
+  // state variables
+  std::array<real, isvs_size> isvs = {e, s, Sr, T, em, eM, SrM, a_scan, re};
+  // integration
+  int kinc = 0;  // global iteration number.
+  // D. Mašín' implementation
+  Hypoplasti_unsat_expansive_thermal wb;
+  wb.initialise_parameters(params.data());
+  if (tfel::math::ieee754::fpclassify(rk_isvs[3]) == FP_ZERO) {
+    // call the initialisation step
+    // here we expect that dtsub can be exactly zero only at the very first time step
+    rk_isvs = {0, 0, 1, 0};
+    if (wb.soil_model(g.data(), tf.data(), isvs.data(), dg.data(), dt, Dtg.data(), params.data(),
+                      rk_isvs.data(), rk_params.data(), 0, kinc) != 0) {
+      return FAILURE;
+    }
+  }
+  //   print_values("strain_gen: ", g);
+  //   print_values("stress_gen: ", tf);
+  //   print_values("qstatev: ", isvs);
+  //   print_values("dstrain_gen: ", dg);
+  //   std::cout << "dtime: " << dt << '\n';
+  //   print_values("params: ", params);
+  //   print_values("rkf_statev: ", rk_isvs);
+  //   print_values("rkf_params: ", rk_params);
+  //   std::exit(-1);
+  if (wb.soil_model(g.data(), tf.data(), isvs.data(), dg.data(), dt, Dtg.data(), params.data(),
+                    rk_isvs.data(), rk_params.data(), 1, kinc) != 0) {
+    return FAILURE;
+  }
+  // export thermodynamic forces
+  bentonite_behaviour_utilities::convert_thermodynamic_forces_to_mfront(sig, Sr, tf);
+  for (size_type i = 0; i != 3; ++i) {
+    sig[i] -= pr + dpr;
+  }
+  // export internal state variables
+  e = isvs[0];
+  em = isvs[4];
+  eM = isvs[5];
+  SrM = isvs[6];
+  a_scan = isvs[7];
+  re = isvs[8];
+}  // end of @Integrator
+
+
+@UpdateAuxiliaryStateVariables{
+  e-= e0;
+  em-= em0;
+  eM-= eM0;
+  SrM-= SrM0;
+  a_scan-= a_scan0;
+  re-= re0;
+}
+
+
+@TangentOperator {
+  if (smt != CONSISTENTTANGENTOPERATOR) {
+    return false;
+  }
+  bentonite_behaviour_utilities::convert_tangent_operator(dsig_ddeto, dsig_dds, dSr_dds, Dtg);
+}  // end of @TangentOperator
