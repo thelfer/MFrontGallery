@@ -28,14 +28,14 @@ namespace bentonite_behaviour_utilities {
     struct NormalizeTangentOperator<2u> {
       template <typename Stensor4>
       static void exe(Stensor4& Dt) {
-        constexpr const auto icste = tfel::math::Cste<real>::isqrt2;
-        Dt(0, 3) *= icste;
-        Dt(1, 3) *= icste;
-        Dt(2, 3) *= icste;
-        Dt(3, 0) *= icste;
-        Dt(3, 1) *= icste;
-        Dt(3, 2) *= icste;
-        Dt(3, 3) *= 0.5;
+        constexpr const auto cste = tfel::math::Cste<real>::sqrt2;
+        Dt(0, 3) *= cste;
+        Dt(1, 3) *= cste;
+        Dt(2, 3) *= cste;
+        Dt(3, 0) *= cste;
+        Dt(3, 1) *= cste;
+        Dt(3, 2) *= cste;
+        Dt(3, 3) *= 2;
       }  // end of exe
     };   // end of struct NormalizeTangentOperator<2u>
 
@@ -43,34 +43,34 @@ namespace bentonite_behaviour_utilities {
     struct NormalizeTangentOperator<3u> {
       template <typename Stensor4>
       static void exe(Stensor4& Dt) {
-        constexpr const auto icste = tfel::math::Cste<real>::isqrt2;
-        Dt(0, 3) *= icste;
-        Dt(1, 3) *= icste;
-        Dt(2, 3) *= icste;
-        Dt(0, 4) *= icste;
-        Dt(1, 4) *= icste;
-        Dt(2, 4) *= icste;
-        Dt(0, 5) *= icste;
-        Dt(1, 5) *= icste;
-        Dt(2, 5) *= icste;
-        Dt(3, 0) *= icste;
-        Dt(3, 1) *= icste;
-        Dt(3, 2) *= icste;
-        Dt(4, 0) *= icste;
-        Dt(4, 1) *= icste;
-        Dt(4, 2) *= icste;
-        Dt(5, 0) *= icste;
-        Dt(5, 1) *= icste;
-        Dt(5, 2) *= icste;
-        Dt(3, 3) *= 0.5;
-        Dt(3, 4) *= 0.5;
-        Dt(3, 5) *= 0.5;
-        Dt(4, 3) *= 0.5;
-        Dt(4, 4) *= 0.5;
-        Dt(4, 5) *= 0.5;
-        Dt(5, 3) *= 0.5;
-        Dt(5, 4) *= 0.5;
-        Dt(5, 5) *= 0.5;
+        constexpr const auto cste = tfel::math::Cste<real>::sqrt2;
+        Dt(0, 3) *= cste;
+        Dt(1, 3) *= cste;
+        Dt(2, 3) *= cste;
+        Dt(0, 4) *= cste;
+        Dt(1, 4) *= cste;
+        Dt(2, 4) *= cste;
+        Dt(0, 5) *= cste;
+        Dt(1, 5) *= cste;
+        Dt(2, 5) *= cste;
+        Dt(3, 0) *= cste;
+        Dt(3, 1) *= cste;
+        Dt(3, 2) *= cste;
+        Dt(4, 0) *= cste;
+        Dt(4, 1) *= cste;
+        Dt(4, 2) *= cste;
+        Dt(5, 0) *= cste;
+        Dt(5, 1) *= cste;
+        Dt(5, 2) *= cste;
+        Dt(3, 3) *= 2;
+        Dt(3, 4) *= 2;
+        Dt(3, 5) *= 2;
+        Dt(4, 3) *= 2;
+        Dt(4, 4) *= 2;
+        Dt(4, 5) *= 2;
+        Dt(5, 3) *= 2;
+        Dt(5, 4) *= 2;
+        Dt(5, 5) *= 2;
       }  // end of exe
     };   // end of struct NormalizeTangentOperator<2u>
 
