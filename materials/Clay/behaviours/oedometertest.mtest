@@ -1,0 +1,48 @@
+@Author HELFER Thomas 202608;
+@Date   17/02/2021;
+@Description{
+
+};
+
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<generic> 'src/libBehaviour.so' 'HypoplasticClayModelWrapper';
+
+// material properties
+@MaterialProperty<constant> 'mps[0]' 22.0;//21.9;    // critical state friction angle
+@MaterialProperty<constant> 'mps[1]' 0.01;  	// shift of the mean stress due to cohesion in kPa
+@MaterialProperty<constant> 'mps[2]' 0.128; //0.095;   // parameters of the basic hypoplastic model for clays
+@MaterialProperty<constant> 'mps[3]' 0.015;   // parameters of the basic hypoplastic model for clays
+@MaterialProperty<constant> 'mps[4]' 1.51; //1.19;    // parameters of the basic hypoplastic model for clays
+@MaterialProperty<constant> 'mps[5]' 0.45; //0.1;     // parameters of the basic hypoplastic model for clays
+@MaterialProperty<constant> 'mps[6]' 1.0;     // ratio of horizontal and vertical shear moduli
+@MaterialProperty<constant> 'mps[7]' 0.0;     // parameters of the model for clays with meta-stable structure
+@MaterialProperty<constant> 'mps[8]' 0.0;     // parameters of the model for clays with meta-stable structure
+@MaterialProperty<constant> 'mps[9]' 0.0;     // parameters of the model for clays with meta-stable structure
+@MaterialProperty<constant> 'mps[10]' 5.0e-5; // Intergranular strain concept parameters
+@MaterialProperty<constant> 'mps[11]' 0.08;   // Intergranular strain concept parameters
+@MaterialProperty<constant> 'mps[12]' 0.9;    // Intergranular strain concept parameters
+@MaterialProperty<constant> 'mps[13]' 0.0;    // Very small strain shear stiffness parameters
+@MaterialProperty<constant> 'mps[14]' 1.0;    // Very small strain shear stiffness parameters
+@MaterialProperty<constant> 'mps[15]' 0.5;    // Intergranular strain concept parameter
+@MaterialProperty<constant> 'mps[16]' 0.0;    // bulk modulus of water
+@MaterialProperty<constant> 'mps[17]' 3.0;    // vertical direction: 1,2,3
+@MaterialProperty<constant> 'mps[18]' 0.0;    // ratio of horizontal and vertical Young moduli
+@MaterialProperty<constant> 'mps[19]' 0.0;    // ratio of horizontal and vertical Poisson ratios
+@MaterialProperty<constant> 'mps[20]' 0.0;    // Additional control of non-linearity inside state boundary surface
+@MaterialProperty<constant> 'mps[21]' 0.761;    // initial void ratio or overconsolidation ratio
+
+// external state variable
+@ExternalStateVariable 'Temperature' 293.15;
+
+// initial stresses
+@Stress {-100.0,-100.0,-100.0,0.0,0.0,0.0}; // in kPa
+@ImposedStrain 'EXX' 0.0;
+@ImposedStrain 'EYY' 0.0;
+@ImposedStrain 'EZZ' {0 : 0., 100 : -0.5}; 
+//@Evolution 'p' {0 : -275., 100 : -13000};
+//@NonLinearConstraint<Stress> 'SYY + SXX + SZZ - 3*p';
+//@ImposedStress 'SZZ' {0 : -275., 1000 : -100000};
+//@ImposedStress 'SXX' {0 : -275., 1000 : -13000};
+//@ImposedStress 'SYY' {0 : -275., 1000 : -13000};
+//@Times{0, 10, 20,30,40,50,60,70,80,90,100};
+@Times {0.,100 in 1000};

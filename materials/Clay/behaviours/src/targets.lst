@@ -1,0 +1,37 @@
+{
+library : {
+name   : "Behaviour";
+type   : SHARED_LIBRARY;
+prefix : "lib";
+suffix : "so";
+install_path : "";
+sources : {
+"HypoplasticClayModelWrapper-generic.cxx",
+"HypoplasticClayModelWrapper.cxx"
+};
+cppflags : {
+"$(shell tfel-config --cppflags --compiler-flags)"
+};
+include_directories : {
+"$(shell tfel-config --include-path)"
+};
+ldflags : {
+"-L ../ -lUmat"
+};
+link_directories : {
+"$(shell tfel-config --library-path)"
+};
+link_libraries : {
+"$(shell tfel-config --library-dependency --material --mfront-profiling)"
+};
+epts : {
+"HypoplasticClayModelWrapper_Tridimensional"
+};
+};
+headers : {
+"MFront/GenericBehaviour/HypoplasticClayModelWrapper-generic.hxx",
+"TFEL/Material/HypoplasticClayModelWrapper.hxx",
+"TFEL/Material/HypoplasticClayModelWrapperBehaviourData.hxx",
+"TFEL/Material/HypoplasticClayModelWrapperIntegrationData.hxx"
+};
+};
