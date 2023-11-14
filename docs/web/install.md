@@ -68,6 +68,9 @@ The interfaces are selected by a set of `cmake` options prefixed by
 The following variables can be used to define options passed to domain
 specific languages:
 
+- `MFM_BUILD_VALIDATOR`: string variable specifying a validator.
+  Defining this variable is only supported when using a version of
+  `TFEL` greater than `4.2`.
 - `MFM_BUILD_IDENTIFIER`: string variable specifying a build identifier.
   By default, the build identifier exported by `MFront` will be empty.
   Defining this variable is only supported when using a version of

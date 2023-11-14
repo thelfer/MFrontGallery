@@ -316,6 +316,8 @@ function(_get_dsl_options mkt interface)
   set(mfront_dsl_options)
   _get_string_dsl_options(${mkt} ${interface}
     "build_identifier" "BUILD_IDENTIFIER")
+  _get_string_dsl_options(${mkt} ${interface}
+    "validator" "VALIDATOR")
   _get_boolean_dsl_options(${mkt} ${interface}
     "parameters_as_static_variables" "TREAT_PARAMETERS_AS_STATIC_VARIABLES")
   _get_boolean_dsl_options(${mkt} ${interface}
@@ -338,16 +340,10 @@ function(get_model_dsl_options interface)
   set(mfront_dsl_options "${mfront_dsl_options}" PARENT_SCOPE)
 endfunction(get_model_dsl_options interface)
 
-# try to find the location of an MFront source
+# modify the mdnx path to include the current directory
 #
-# This function sets the following variables on output:
-# - mfront_path: path to the MFront or madnex file if found
-# - madnex_file: boolean stating if the source designates an madnex file 
-function(get_mfront_source_location source)
-  set(_madnex_file OFF)
-  set(_mfront_path)
-  string(FIND "${source}" "mdnx:" mdnx_prefix)
-  if("${mdnx_prefix}" EQUAL 0)
+# the function sets the variable mdnx_path
+function(update_mdnx_path source)
     string(REPLACE ":" ";" _path_tokens ${source})
 	list(LENGTH _path_tokens _n_path_tokens)
     if(NOT _n_path_tokens EQUAL 5)
@@ -360,7 +356,21 @@ function(get_mfront_source_location source)
     endif()
     list(REMOVE_AT _path_tokens 1)
     list(INSERT _path_tokens 1 "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")    
-    string(REPLACE ";" ":" mdnx_path "${_path_tokens}")
+    string(REPLACE ";" ":" _mdnx_path "${_path_tokens}")
+    set(mdnx_path "${_mdnx_path}" PARENT_SCOPE)
+endfunction()
+
+# try to find the location of an MFront source
+#
+# This function sets the following variables on output:
+# - mfront_path: path to the MFront or madnex file if found
+# - madnex_file: boolean stating if the source designates an madnex file 
+function(get_mfront_source_location source)
+  set(_madnex_file OFF)
+  set(_mfront_path)
+  string(FIND "${source}" "mdnx:" mdnx_prefix)
+  if("${mdnx_prefix}" EQUAL 0)
+    update_mdnx_path(${source})
     set(_mfront_path "${mdnx_path}")
   endif()
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${source}.mdnx")
@@ -400,10 +410,19 @@ function(get_mfront_source_location source)
   set(mfront_path ${_mfront_path} PARENT_SCOPE)
 endfunction(get_mfront_source_location file)
 
-function(get_mfront_all_specific_targets_generated_sources interface mat file search_paths)
+function(get_mfront_all_specific_targets_generated_sources interface mat source search_paths)
+  get_mfront_source_location(${source})
+  if(NOT mfront_path)
+    set(mfront_generated_sources "" PARENT_SCOPE)
+    return()
+  endif()
+  if (madnex_file)
+    set(mfront_generated_sources "" PARENT_SCOPE)
+    return()
+  endif()
   execute_process(COMMAND ${MFRONT_QUERY}
     "--verbose=quiet"
-    "--interface=${interface}" "${file}"
+    "--interface=${interface}" "${mfront_path}"
     "--all-specific-targets-generated-sources"
     ${search_paths}
     RESULT_VARIABLE MFRONT_SOURCES_AVAILABLE
@@ -547,4 +566,4 @@ option(enable-mfront-documentation-generation "automatically generate documentat
 include(cmake/modules/materialproperties.cmake)
 include(cmake/modules/behaviours.cmake)
 include(cmake/modules/models.cmake)
-
+include(cmake/modules/mtest.cmake)

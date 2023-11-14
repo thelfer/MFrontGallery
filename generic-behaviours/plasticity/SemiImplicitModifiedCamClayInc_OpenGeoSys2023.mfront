@@ -29,7 +29,7 @@
 @Theta 1.0;                     // time integration scheme
 @Epsilon 1e-14;                 // tolerance of local stress integration algorithm
 @MaximumNumberOfIterations 20;  // for local local stress integration algorithm
-@ModellingHypotheses{".+"};     // supporting all stress and strain states
+// @ModellingHypotheses{".+"};     // supporting all stress and strain states
 @Algorithm NewtonRaphson;       //_NumericalJacobian;_LevenbergMarquardt
 
 @Parameter stress pcMin = 1e-3; //1e+3 Pa
