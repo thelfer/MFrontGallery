@@ -28,5 +28,20 @@ The file `docs/web/install.md` details how to use the project.
 
 # Versions, branches, tags
 
+## Versions
+
+- the tag `MFrontGallery-2.0` is associated with `TFEL-4.2`.
+- the tag `MFrontGallery-1.1` is meant to be build against `TFEL 3.3.0`
+- the tag `MFrontGallery-1.0.1` is meant to be build against `TFEL 3.2.1`
+- the tag `MFrontGallery-1.0` is meant to be build against `TFEL 3.2.0`
+
+## Branches
+
 - the `master` branch follows the evolution of the `master` branch of
   the `TFEL` project
+- the `rliv-2.0` branch is associated with the branch `rliv-4.2` branch
+  of `TFEL`.
+- the `rliv-1.1` follows the evolution of the `3.3.x` series of the
+  `TFEL` project.
+- the `rliv-1.0` follows the evolution of the `3.2.x` series of the
+  `TFEL` project.
