@@ -32,13 +32,13 @@ strain tensor reading $$\label{eq:elasticplastic}
   \underline{\varepsilon }= \underline{\varepsilon}_\text{e}+ \underline{\varepsilon}_\text{p}\ .$$
 The generalized Hooke's law relates elastic strains with stresses as
 $$\label{eq:Hooke}
-  \underline{\sigma }= \underline{\underline{\,\colon\,}}\underline{\varepsilon}_\text{e}\ .$$
+  \underline{\sigma }= \underline{\underline{D}} \colon\underline{\varepsilon}_\text{e}\ .$$
 Splitting the stress tensor[^3] with respect to deviatoric and
 volumetric parts yields $$\label{eq:decomposition}
   \underline{\sigma }= \underline{\sigma }^\text{D}+ \frac{1}{3}I_1(\underline{\sigma})\underline{I} \ .$$
 Therewith, the von-Mises stress and the hydrostatic pressure is defined
 as
-$$q \coloneqq \sqrt{\frac{3}{2}\ \underline{\sigma}^\text{D}\,\colon\,\underline{\sigma}^\text{D}} \quad,\quad p \coloneqq -\frac{1}{3}I_1(\underline{\sigma}) \ .$$
+$$q \coloneqq \sqrt{\frac{3}{2}\ \underline{\sigma}^\text{D}\colon\underline{\sigma}^\text{D}} \quad,\quad p \coloneqq -\frac{1}{3}I_1(\underline{\sigma}) \ .$$
 Consequently, positive values of $p$ represent a pressure whereas
 negative values represent hydrostatic tension, as expected. With this,
 the stress tensor split reads
@@ -52,9 +52,9 @@ $$V = V_{\text{S}} + V_{\text{P}} \ .$$ The porosity is defined as the
 pore volume fraction, i. e. $\phi=V_{\text{P}}/V$. Evaluating the mass
 balance of the porous medium (incompressible solid phase) yields the
 porosity evolution $$\label{eq:porEvolution}
-  \dot{\phi} - \phi\mathrm{div}\,(\dot{\vec u}) = \mathrm{tr}\,(\dot{\underline{\varepsilon}})\ .$$
+  \dot{\phi} - \phi\mathrm{div}(\dot{\vec u}) = \mathrm{tr}(\dot{\underline{\varepsilon}})\ .$$
 Exploiting
-$\mathrm{div}\,(\dot{\vec u})\equiv \mathrm{tr}\,(\dot{\underline{\varepsilon}})=\dot{\varepsilon}^\text{V}$
+$\mathrm{div}(\dot{\vec u})\equiv \mathrm{tr}(\dot{\underline{\varepsilon}})=\dot{\varepsilon}^\text{V}$
 and separating the variables, this differential equation can be solved
 in a straightforward manner (cf. App.).
 
@@ -77,7 +77,7 @@ $$\label{eq:diffRelations}
 The following set of equations fully describes the modified Cam clay
 model. Hooke's law is given in a *hypoelastic* formulation
 $$\label{eq:linearHypoElasticity}
-  \dot{\underline{\sigma}} = \underline{\underline{D}}\,\colon\,\left(\dot{\underline{\varepsilon}} - \dot{\underline{\varepsilon}}_\text{p}\right) \ .$$
+  \dot{\underline{\sigma}} = \underline{\underline{D}}\colon\left(\dot{\underline{\varepsilon}} - \dot{\underline{\varepsilon}}_\text{p}\right) \ .$$
 Then, the *modified* Cam clay yield function with the parameters $M$ and
 $p_\text{c}$ is given by
 $$f \coloneqq q^2 + M p(p-p_\text{c}) \leq 0 \ .$$ Here, $M$ is the
@@ -89,7 +89,7 @@ where $\dot{\varLambda}_\text{p}$ denotes the plastic multiplier such
 that $\text{d}{\varLambda}_\text{p}$ is the plastic increment and
 $\underline{n}$ gives the direction of the plastic flow. The plastic
 volume change rate is obtained from
-$$\dot{\varepsilon}_\text{p}^\text{V} = \mathrm{tr}\,(\dot{\underline{\varepsilon}}_\text{p}) = \dot{\varLambda}_\text{p}\,\mathrm{tr}\,(\underline{n})\ . %\tensor I\ppkt\tensor n$$
+$$\dot{\varepsilon}_\text{p}^\text{V} = \mathrm{tr}(\dot{\underline{\varepsilon}}_\text{p}) = \dot{\varLambda}_\text{p}\,\mathrm{tr}(\underline{n})\ . %\tensor I\ppkt\tensor n$$
 The pre-consolidation pressure -- the yield stress under isotropic
 compression -- evolves: $$\label{eq:evolutionPc}
   \dot{p}_\text{c}= -\dot{\varepsilon}_\text{p}^\text{V} \vartheta(v)\ p_\text{c}\quad\text{with}\quad p_\text{c}\big{|}_{t=0} = p_{\text{c}0} \ .$$
@@ -208,7 +208,7 @@ Hooke's law
 reference="eq:linearHypoElasticity"} over a time increment
 $\varDelta t = {}^{k+1}t - {}^{k}t$ while keeping elastic parameters
 constant: $$\label{eq:elasticityTensorFromPreviousPressure}
-  \underline{\underline{D}}({}^{k}p) = 2G({}^{k}p) \underline{\underline{J}} + K({}^{k}p) \underline{I}\,\otimes\,\underline{I} \ .$$
+  \underline{\underline{D}}({}^{k}p) = 2G({}^{k}p) \underline{\underline{J}} + K({}^{k}p) \underline{I}\otimes\underline{I} \ .$$
 with the fourth-order deviatoric projection tensor
 $\underline{\underline{J}}$. With this, the stress update reads
 $$^{k+1}\underline{\sigma }= {}^{k}\underline{\sigma }+ \underline{\underline{D}}({}^{k}p) : \left({}^{k+1}\underline{\varepsilon}_\text{e}- {}^{k}\underline{\varepsilon}_\text{e}\right) \ .$$
@@ -231,7 +231,7 @@ current values and the increments, i. e. $$\begin{align}
 \end{align}$$ The discretized incremental evolution equation now read
 $$\begin{align}
   \varDelta\underline{\varepsilon}_\text{p}&= \varDelta{\varLambda}_\text{p}\ \underline{n}\ , \\
-  \varDelta{\varepsilon}_\text{p}^\text{V} &= \varDelta{\varLambda}_\text{p}\,\mathrm{tr}\,(\underline{n})\ , \\  
+  \varDelta{\varepsilon}_\text{p}^\text{V} &= \varDelta{\varLambda}_\text{p}\,\mathrm{tr}(\underline{n})\ , \\  
   \varDelta{p}_\text{c}&= -\varDelta{\varepsilon}_\text{p}^\text{V} \vartheta(\phi)\ p_\text{c}\ , \\
   \varDelta\phi &= (1-\phi) \varDelta\varepsilon^\text{V} \ .
 \end{align}$$ With this, the discretized set of equations has the form
@@ -262,7 +262,7 @@ reference="eq:incrementalSystem"} with the Newton-Raphson method the
 partial derivatives with respect to the increments of the unknowns are
 required. They read $$\label{eqset:partialDerivatives}
 \begin{align}
-  \frac{\partial\underline{f}_{\!\varepsilon_\text{e}}}{\partial\varDelta\underline{\varepsilon}_\text{e}} &= \underline{\underline{I}} + \varDelta\varLambda_p\frac{\partial\underline{n}}{\partial\varDelta\underline{\varepsilon}_\text{e}} \quad\text{with}\quad \underline{\underline{I}}=\vec e_a\,\otimes\,\vec e_b\,\otimes\,\vec e_a\,\otimes\,\vec e_b \ ,
+  \frac{\partial\underline{f}_{\!\varepsilon_\text{e}}}{\partial\varDelta\underline{\varepsilon}_\text{e}} &= \underline{\underline{I}} + \varDelta\varLambda_p\frac{\partial\underline{n}}{\partial\varDelta\underline{\varepsilon}_\text{e}} \quad\text{with}\quad \underline{\underline{I}}=\vec e_a\otimes\vec e_b\otimes\vec e_a\otimes\vec e_b \ ,
   \\
   \frac{\partial\underline{f}_{\!\varepsilon_\text{e}}}{\partial\varDelta\varLambda_p} &= \underline{n}\ ,
   \\
@@ -275,7 +275,7 @@ required. They read $$\label{eqset:partialDerivatives}
   \\[2mm]
   \frac{\partial f_{p_\text{c}}}{\partial\varDelta\underline{\varepsilon}_\text{e}} &= \frac{\partial f_{p_\text{c}}}{\partial\underline{n}} : \frac{\partial\underline{n}}{\partial\varDelta\underline{\varepsilon}_\text{e}}\ , 
   \\
-  \frac{\partial f_{p_\text{c}}}{\partial\varDelta\varLambda_p} &= \frac{\partial f_{p_\text{c}}}{\partial\varDelta\varepsilon_\text{p}^\text{V}}\ \frac{\partial\varDelta\varepsilon_\text{p}^\text{V}}{\partial\varLambda_p} = \vartheta p_\text{c}\,\mathrm{tr}\,(\underline{n})\ ,
+  \frac{\partial f_{p_\text{c}}}{\partial\varDelta\varLambda_p} &= \frac{\partial f_{p_\text{c}}}{\partial\varDelta\varepsilon_\text{p}^\text{V}}\ \frac{\partial\varDelta\varepsilon_\text{p}^\text{V}}{\partial\varLambda_p} = \vartheta p_\text{c}\,\mathrm{tr}(\underline{n})\ ,
   \\
   \frac{\partial f_{p_\text{c}}}{\partial\varDelta p_\text{c}} &= 1 + \vartheta\varDelta\varepsilon_\text{p}^\text{V}\theta + \frac{\partial f_{p_\text{c}}}{\partial\underline{n}} : \frac{\partial\underline{n}}{\partial\varDelta p_\text{c}}\ ,
   \\
@@ -290,7 +290,7 @@ required. They read $$\label{eqset:partialDerivatives}
 reference="eq:functionalDependence"}. Using the normalized flow
 direction $\underline{n}$, the derivatives with respect to some variable
 $X$ can be obtained with the following rule: $$\begin{aligned}
-  \frac{\partial\underline{n}}{\partial X} = \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial X} - \frac{1}{2}\,\underline{n}\,\otimes\,\frac{1}{m}\frac{\partial m^2}{\partial X} \right\}\quad\text{with}\quad m=\|\underline{m}\| \ .
+  \frac{\partial\underline{n}}{\partial X} = \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial X} - \frac{1}{2}\,\underline{n}\otimes\frac{1}{m}\frac{\partial m^2}{\partial X} \right\}\quad\text{with}\quad m=\|\underline{m}\| \ .
 \end{aligned}$$ Now, the missing expressions in overview
 [\[eqset:partialDerivatives\]](#eqset:partialDerivatives){reference-type="eqref"
 reference="eqset:partialDerivatives"} can be calculated as
@@ -300,18 +300,18 @@ $$\begin{align}
   \\
   m^2 &= \underline{m} : \underline{m} = 6q^2 + \frac{M^4}{3}(2p-p_\text{c})^2 \qquad , \quad \underline{n} = \underline{m}/m \ , 
   \\
-  \frac{\partial\underline{m}}{\partial\underline{\varepsilon}_\text{e}} &= \left\{ \frac{\partial\underline{m}}{\partial q}\,\otimes\,\frac{\partial q}{\partial \underline{\sigma}} + \frac{\partial\underline{m}}{\partial p}\,\otimes\,\frac{\partial p}{\partial \underline{\sigma}} \right\} : \frac{\partial \underline{\sigma}}{\partial \underline{\varepsilon}_\text{e}}
-  = \left\{ 3\underline{\underline{P}} + \frac{2}{9} M^2 \underline{I}\,\otimes\,\underline{I} \right\} : \underline{\underline{\ }}, 
+  \frac{\partial\underline{m}}{\partial\underline{\varepsilon}_\text{e}} &= \left\{ \frac{\partial\underline{m}}{\partial q}\otimes\frac{\partial q}{\partial \underline{\sigma}} + \frac{\partial\underline{m}}{\partial p}\otimes\frac{\partial p}{\partial \underline{\sigma}} \right\} : \frac{\partial \underline{\sigma}}{\partial \underline{\varepsilon}_\text{e}}
+  = \left\{ 3\underline{\underline{P}} + \frac{2}{9} M^2 \underline{I}\otimes\underline{I} \right\} : \underline{\underline{\ }}, 
   \\
   \frac{\partial m^2}{\partial\underline{\varepsilon}_\text{e}} &= \left\{ \frac{\partial m^2}{\partial q}\,\frac{\partial q}{\partial \underline{\sigma}} +\frac{\partial m^2}{\partial p}\,\frac{\partial p}{\partial \underline{\sigma}} \right\} : \frac{\partial \underline{\sigma}}{\partial \underline{\varepsilon}_\text{e}} 
   = \left\{ 18\underline{\sigma}^\text{D}- \frac{4}{9} M^4 (2p-p_\text{c})\underline{I} \right\} : \underline{\underline{\ }}, 
   \\
   \frac{\partial\underline{n}}{\partial\varDelta\underline{\varepsilon}_\text{e}} &= 
-  \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial\underline{\varepsilon}_\text{e}} - \frac{1}{2}\,\underline{n}\,\otimes\,\frac{1}{m}\frac{\partial m^2}{\partial\underline{\varepsilon}_\text{e}} \right\} :  
+  \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial\underline{\varepsilon}_\text{e}} - \frac{1}{2}\,\underline{n}\otimes\frac{1}{m}\frac{\partial m^2}{\partial\underline{\varepsilon}_\text{e}} \right\} :  
   \frac{\partial\underline{\varepsilon}_\text{e}}{\partial\varDelta\underline{\varepsilon}_\text{e}} \ ,
   \\
   \frac{\partial\underline{n}}{\partial\varDelta p_\text{c}} &= 
-  \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial p_\text{c}} - \frac{1}{2}\,\underline{n}\,\otimes\,\frac{1}{m}\frac{\partial m^2}{\partial p_\text{c}} \right\} 
+  \frac{1}{m}\left\{\frac{\partial\underline{m}}{\partial p_\text{c}} - \frac{1}{2}\,\underline{n}\otimes\frac{1}{m}\frac{\partial m^2}{\partial p_\text{c}} \right\} 
   \frac{\partial p_\text{c}}{\partial\varDelta p_\text{c}} = \frac{M^2}{3m}\left\{\underline{I} + M^2(2p-p_\text{c})\,\underline{n}/m \right\} \theta\ , 
   \\
   \frac{\partial f_{p_\text{c}}}{\partial\underline{n}} &= \frac{f_{p_\text{c}}}{\partial\varDelta\varepsilon_\text{p}^\text{V}}\, \frac{\partial\varDelta\varepsilon_\text{p}^\text{V}}{\partial\underline{n}} 
@@ -1045,7 +1045,7 @@ $(p, q)=(387387, 330129)\ $Pa is considered (cf.
 [\[fig:triaxStressTrajectory\]](#fig:triaxStressTrajectory){reference-type="autoref"
 reference="fig:triaxStressTrajectory"}). Plotting the von-Mises stress
 over the corresponding equivalent strain defined by
-$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \underline{\varepsilon}^\text{D}\,\colon\,\underline{\varepsilon}^\text{D}}$
+$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \underline{\varepsilon}^\text{D}\colon\underline{\varepsilon}^\text{D}}$
 shows the agreement between numerical and analytical solution.
 
 <figure id="fig:triaxStressStrains">
@@ -1204,9 +1204,9 @@ to consider the anisotropy both for the elastic and plastic behavior.
 ## Analytical expressions for porosity and pre-consolidation pressure evolution {#subsec:AppSolutionPorosity}
 
 Given is the evolution equation for the porosity:
-$$\dot{\phi} - \phi\mathrm{div}\,(\dot{\vec u}) = \mathrm{tr}\,(\dot{\underline{\varepsilon}}) \quad\text{with}\quad \varepsilon^\text{V} = \mathrm{tr}\,({\underline{\varepsilon}}) \ .$$
+$$\dot{\phi} - \phi\mathrm{div}(\dot{\vec u}) = \mathrm{tr}(\dot{\underline{\varepsilon}}) \quad\text{with}\quad \varepsilon^\text{V} = \mathrm{tr}({\underline{\varepsilon}}) \ .$$
 Exploiting
-$\mathrm{div}\,(\dot{\vec u})\equiv \mathrm{tr}\,(\dot{\underline{\varepsilon}})$
+$\mathrm{div}(\dot{\vec u})\equiv \mathrm{tr}(\dot{\underline{\varepsilon}})$
 and separating the variables yields the form
 $$\frac{\text{d}\phi}{1-\phi} = \text{d}\varepsilon^\text{V} \ .$$
 Integration over some time increment $\varDelta t$ with
@@ -1261,7 +1261,7 @@ A straight stress path from $(p,q)=(0, p_{\text{c}0})$ until the final
 state $(p,q)=(387387, 330129)\ $Pa is considered:
 $$q = k\,(p-p_{\text{c}0}) \ .$$ The analytical solution [@Peric2006]
 for the corresponding equivalent strain
-$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \underline{\varepsilon}^\text{D}\,\colon\,\underline{\varepsilon}^\text{D}}$
+$\varepsilon_{\text{q}}^2= {\tfrac{2}{3}\ \underline{\varepsilon}^\text{D}\colon\underline{\varepsilon}^\text{D}}$
 reads
 $$\varepsilon_{\text{q}} = \varepsilon^\text{e}_{\text{q}} + \varepsilon^\text{p}_{\text{q}}$$
 and to be precise, using the abbreviations $C = (\lambda-\kappa)$ and
@@ -1294,11 +1294,11 @@ $K(p), G(p)$. This facilitates the following derivation without changing
 the results significantly. Then, the elastic stiffness tensor is not
 equal to the elasticity tensor anymore but has the form
 $$\begin{aligned}
-  \frac{\partial \underline{\sigma}}{\partial \underline{\varepsilon}_\text{e}} &= 2G \underline{\underline{J}} + 2\underline{\varepsilon}_\text{e}^\text{D}\,\otimes\,\frac{\partial G}{\partial p} \frac{\partial p}{\partial \varepsilon_\text{e}^\text{V}} \frac{\varepsilon_\text{e}^\text{V}}{\partial\underline{\varepsilon}_\text{e}} - \underline{I} \,\otimes\,\frac{\partial p}{\partial \varepsilon_\text{e}^\text{V}} \frac{\varepsilon_\text{e}^\text{V}}{\partial\underline{\varepsilon}_\text{e}} \\
+  \frac{\partial \underline{\sigma}}{\partial \underline{\varepsilon}_\text{e}} &= 2G \underline{\underline{J}} + 2\underline{\varepsilon}_\text{e}^\text{D}\otimes\frac{\partial G}{\partial p} \frac{\partial p}{\partial \varepsilon_\text{e}^\text{V}} \frac{\varepsilon_\text{e}^\text{V}}{\partial\underline{\varepsilon}_\text{e}} - \underline{I} \otimes\frac{\partial p}{\partial \varepsilon_\text{e}^\text{V}} \frac{\varepsilon_\text{e}^\text{V}}{\partial\underline{\varepsilon}_\text{e}} \\
   &= 
-  2G \underline{\underline{J}} - 2\,\frac{v_0}{\kappa}\,\alpha(\nu) K\, \underline{\varepsilon}_\text{e}^\text{D}\,\otimes\,\underline{I}  - K \underline{I} \,\otimes\,\underline{I} \notag \\
+  2G \underline{\underline{J}} - 2\,\frac{v_0}{\kappa}\,\alpha(\nu) K\, \underline{\varepsilon}_\text{e}^\text{D}\otimes\underline{I}  - K \underline{I} \otimes\underline{I} \notag \\
   &= 
-  2G \left\{\underline{\underline{J}} - \frac{v_0}{\kappa}\, \underline{\varepsilon}_\text{e}^\text{D}\,\otimes\,\underline{I} \right\}  - K \underline{I} \,\otimes\,\underline{I} \ ,
+  2G \left\{\underline{\underline{J}} - \frac{v_0}{\kappa}\, \underline{\varepsilon}_\text{e}^\text{D}\otimes\underline{I} \right\}  - K \underline{I} \otimes\underline{I} \ ,
 \end{aligned}$$ where it was used that
 ${\partial p}/{\partial \varepsilon_\text{e}^\text{V}}=-K$ and
 $G=\alpha(\nu)\,K$. Obviously, there is a one-sided

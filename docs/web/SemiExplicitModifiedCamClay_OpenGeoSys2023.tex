@@ -17,18 +17,18 @@
 
 \newcommand{\tensor}[1]{\underline{#1}}
 \newcommand{\tensorf}[1]{\underline{\underline{#1}}}
-\newcommand{\ppkt}{\,\colon\,}
+\newcommand{\ppkt}{\colon}
 \newcommand{\D}{\text{D}}
 \renewcommand{\c}{\text{c}}
 \renewcommand{\d}{\text{d}}
 \newcommand{\e}{\text{e}}
 \newcommand{\p}{\text{p}}
 \newcommand{\with}{\text{with}}
-\newcommand{\trace}{\mathrm{tr}\,}
-\newcommand{\divergence}{\mathrm{div}\,}
+\newcommand{\trace}{\mathrm{tr}}
+\newcommand{\divergence}{\mathrm{div}}
 \newcommand{\minus}{-}
 \newcommand{\inv}{{-1}}
-\newcommand{\dyad}{\,\otimes\,}
+\newcommand{\dyad}{\otimes}
 
 
 
@@ -68,7 +68,7 @@ In the small-strain setting, there is an additive split of the linear strain ten
 \end{equation}
 The generalized Hooke's law relates elastic strains with stresses as
 \begin{equation}\label{eq:Hooke}
-  \tensor\sigma = \tensorf\ppkt\tensor\varepsilon_\e \ .
+  \tensor\sigma = \tensorf D \ppkt\tensor\varepsilon_\e \ .
 \end{equation}
 Splitting the stress tensor\footnote{In soil mechanics, this would be the effective stress tensor. As the context is clear here, we refrain from writing $\tensor\sigma'$. Note also that the continuum mechanical sign convention is used in contrast to the soil mechanical concepts.} with respect to deviatoric and volumetric parts yields
 \begin{equation}\label{eq:decomposition}
