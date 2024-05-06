@@ -16,8 +16,8 @@ K.setGlossaryName("BulkModulus");
 @MaterialProperty stress C20;
 @MaterialProperty stress C01;
 
-@MaterialProperty stress tau[Nv];
-@MaterialProperty stress g[Nv];
+@MaterialProperty time tau[Nv];
+@MaterialProperty real g[Nv];
 
 @StateVariable StressStensor Si;
 Si.setEntryName("IsochoricElasticStress");
