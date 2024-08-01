@@ -314,7 +314,6 @@ set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
 enable_testing()
 
 # add subdirectories here
-
 add_subdirectory(materials)
 ~~~~
 
