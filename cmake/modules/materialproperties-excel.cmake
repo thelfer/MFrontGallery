@@ -12,9 +12,9 @@ function(mfront_properties_excel_library mat)
   endif(EXISTS ${CMAKE_SOURCE_DIR}/materials/${mat})
   list(APPEND mfront_search_paths 
       "--search-path=${CMAKE_CURRENT_SOURCE_DIR}")
-  foreach(source ${mfront_sources})
-    add_mfront_property_sources(${lib} ${mat} "excel" ${mfront_search_paths} ${source})
-  endforeach(source ${mfront_sources})
+  foreach(mfront_source ${mfront_sources})
+    add_mfront_property_sources(${lib} ${mat} "excel" "${mfront_search_paths}" ${mfront_source})
+  endforeach(mfront_source ${mfront_sources})
   _get_mfront_command_line_arguments()
   set(mfront_args )
   list(APPEND mfront_args ${mfront_command_line_arguments})
@@ -34,7 +34,7 @@ function(mfront_properties_excel_library mat)
     DEPENDS ${${lib}_MFRONT_SOURCES}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/excel"
     COMMENT "mfront source ${mfront_file}")
-  add_custom_target(${lib}
+  add_custom_target(${lib} ALL
     DEPENDS "${vba_file}")
   install(FILES ${vba_file} DESTINATION "share/mfm/excel")
 endfunction(mfront_properties_excel_library mat)

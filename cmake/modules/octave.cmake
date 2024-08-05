@@ -50,21 +50,28 @@ execute_process ( COMMAND ${MKOCTFILE_EXECUTABLE} -p INCFLAGS
 execute_process ( COMMAND ${MKOCTFILE_EXECUTABLE} -p LIBDIR
   OUTPUT_VARIABLE OCTAVE_LIBRARY_PATH
   OUTPUT_STRIP_TRAILING_WHITESPACE )    
+execute_process ( COMMAND ${MKOCTFILE_EXECUTABLE} -p OCTAVE_VERSION
+  OUTPUT_VARIABLE OCTAVE_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE )    
 
 # octave libraries
 macro(find_octave_library name)
   find_library(${name}
     NAMES ${name}
-    HINTS ${OCTAVE_LIBRARY_PATH})
-  if(NOT ${name})
-    MESSAGE(FATAL_ERROR "${name} library not found")
-  endif(NOT ${name})
+    HINTS ${OCTAVE_LIBRARY_PATH}
+    ${OCTAVE_LIBRARY_PATH}/octave/${OCTAVE_VERSION})
 endmacro(find_octave_library name)
 
 find_octave_library(octave)
 find_octave_library(octinterp)
-
-set(OCTAVE_LIBRARIES ${octave} ${octinterp})
+if(NOT octave)
+   MESSAGE(FATAL_ERROR "octave library not found")
+endif(NOT octave)
+if(octinterp)
+  set(OCTAVE_LIBRARIES ${octave} ${octinterp})
+else(octinterp)
+  set(OCTAVE_LIBRARIES ${octave})
+endif(octinterp)
 
 # summary
 if((NOT OCTAVE_CONFIG_EXECUTABLE) OR

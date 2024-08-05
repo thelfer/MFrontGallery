@@ -43,7 +43,7 @@ function(mfront_properties_octave_library mat)
         DEPENDS "${mfront_file}"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${interface}"
         COMMENT "mfront source ${mfront_file} for interface ${interface}")
-      set(oct_file "octave/${_mfront_law_name}.oct")
+      set(oct_file "octave/${mat}_${_mfront_law_name}.oct")
       set(_lib ${mat}_${_mfront_law_name}-octave)
       list(APPEND octave_targets ${_lib})
       add_library(${_lib} SHARED ${mfront_generated_sources})
