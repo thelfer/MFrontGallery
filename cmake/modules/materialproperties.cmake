@@ -19,7 +19,7 @@ function(add_mfront_property_sources lib mat interface search_paths file)
         ${${lib}_OTHER_SOURCES} PARENT_SCOPE)
   else()
     if (madnex_file)
-	  if(TFEL_MADNEX_SUPPORT)
+      if(TFEL_MADNEX_SUPPORT)
         mfront_query(_impls ${mat} "${search_paths}" ${mfront_path}
                      "--all-material-properties" "--list-implementation-paths=unsorted")
         if(_impls)
