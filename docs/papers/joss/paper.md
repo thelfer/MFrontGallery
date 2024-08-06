@@ -43,14 +43,15 @@ pandoc -f markdown  --bibliography=bibliography.bib --citeproc -V geometry:a4pap
 
 # Introduction
 
-`MFront` is an open-source code generator focused on material
-knowledge [@Helfer2015;@cea_edf_mfront_2022] developed collaboratively
-by the French Alternative Energies and Atomic Energy Commission (CEA) and
-Électricité de France (EDF). The open-source status of `MFront` has led to
-its adoption in a wide range of applications[^mfront:publications] covering
-a variety of materials (ceramics, metals, concrete, woods, etc.) and physical
-phenomena (viscoplasticity, plasticity, damage, etc.). It is also part of the
-`PLEIADES` numerical platform, which is devoted to multi-physics nuclear fuel
+`MFront` is an open-source code generator focused on material knowledge
+[@Helfer2015;@cea_edf_mfront_2022] developed collaboratively by the
+French Alternative Energies and Atomic Energy Commission (CEA) and
+Électricité de France (EDF). The open-source status of `MFront` has led
+to its adoption in a wide range of applications[^mfront:publications]
+covering a variety of materials (ceramics, metals, concrete, woods,
+etc.) and physical phenomena (viscoplasticity, plasticity, damage,
+etc.). It is also part of the `PLEIADES` numerical platform
+[@bernaud_pleiades_2024], which is devoted to multi-physics nuclear fuel
 simulations and is developed by CEA and its industrial partners EDF and
 Framatome.
 
@@ -71,7 +72,16 @@ various commercial and academic solvers such as: [`Cast3M`](http://www-cast3m.ce
 [`ZSet`](http://www.zset-software.com/),
 [`DIANA FEA`](https://dianafea.com/).
 
-Additionally, the `generic` interface extends the availability of these mechanical behaviours to all solvers using the [`MFrontGenericInterfaceSupport` projet](https://thelfer.github.io/mgis/web/index.html) (MGIS) [@helfer_mfrontgenericinterfacesupport_2020], including: [`OpenGeoSys`](https://www.opengeosys.org/) [@Bilke2019], [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html), `MANTA`, [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html), [`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
+Additionally, the `generic` interface extends the availability of these
+mechanical behaviours to all solvers using the
+[`MFrontGenericInterfaceSupport`
+projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
+[@helfer_mfrontgenericinterfacesupport_2020], including:
+[`OpenGeoSys`](https://www.opengeosys.org/) [@Bilke2019],
+[`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
+`MANTA`,
+[`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
+[`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
 
 The `MFrontGallery` project addresses the management of
 `MFront` implementations including their compilation, unit testing and
@@ -95,14 +105,23 @@ which is discussed in Section
 
 In summary, the project provides:
 
-- A [`CMake`](https://cmake.org) infrastructure that can be replicated in (academic or industrial) derived projects, which allows for:
+- A [`CMake`](https://cmake.org) infrastructure that can be replicated
+  in (academic or industrial) derived projects, which allows for:
   - compiling `MFront` sources using all supported interfaces.
-  - executing unit tests based on `MTest` which generate `XML` result files conforming to the `JUnit` standard, compatible with continuous integration platforms such as [jenkins](https://www.jenkins.io/).
+  - executing unit tests based on `MTest` which generate `XML` result
+    files conforming to the `JUnit` standard, compatible with continuous
+    integration platforms such as [jenkins](https://www.jenkins.io/).
   - generating documentation associated with the stored implementations.
-- A documentation of best practices for handling material knowledge implemented with `MFront`, such as use of consistent unit systems, bound-aware physical quantities, consistent tangent operators, and others.
-- A set of high-quality `MFront` implementations.
+- A documentation of best practices for handling material knowledge
+  implemented with `MFront`, such as use of consistent unit systems,
+  bound-aware physical quantities, consistent tangent operators, and
+  others.
+- A set of high-quality `MFront` implementations. Those implementations
+  are not discussed in this paper which is thus focused on the two
+  previous points.
 
-This paper aims to describe the `MFrontGallery` project and is organized as follows:
+This paper aims to describe the `MFrontGallery` project and is organized
+as follows:
 
 Section \ref{sec:mfm:introduction:statement_of_need} discusses the
 necessity for a new approach to material knowledge management, particularly
@@ -127,7 +146,7 @@ that evolve over time due to various physical phenomena.
 In `MFront`, material knowledge can be categorized as follows:
 
 - **Material properties** are defined as functions of the current
-  state of the material such as the Young modulus or Poisson ratio.
+  state of the material such as the Young's modulus or Poisson's ratio.
 - **Behaviours** describe how a material evolves and reacts locally due
   to internal gradients. The material reaction is
   associated with fluxes (or forces) thermodynamically conjugated to
@@ -148,7 +167,12 @@ The `MFrontGallery` project has been developed to address various
 issues related to material knowledge management in safety-critical
 studies:
 
-- **Intellectual property**: Material knowledge often embodies industrial know-how that must be kept confidential. This includes highly valuable mechanical behaviours derived from extensive experimental testing in dedicated facilities. `MFrontGallery` supports creating private derived projects to protect such valuable knowledge, as detailed in Section \ref{sec:mfm:creating_derived_project}.
+- **Intellectual property**: Material knowledge often embodies
+  industrial know-how that must be kept confidential. This includes
+  highly valuable mechanical behaviours derived from extensive
+  experimental testing in dedicated facilities. `MFrontGallery` supports
+  creating private derived projects to protect such valuable knowledge,
+  as detailed in Section \ref{sec:mfm:creating_derived_project}.
 - **Portability**: safety-critical studies may involve several partners
   which use different solvers for independent assessment and review.
   From a single `MFront` source file, `MFrontGallery` can generate
@@ -164,7 +188,11 @@ studies:
   dedicated material knowledge project based on *self-contained*
   implementations, facilitate maintainability as discussed in Section
   \ref{sec:mfm:introduction:implementations}.
-- **Progression of the state of the art**: Safety-critical studies must reflect current scientific and engineering advancements. Thus, material knowledge, numerical methods, and software engineering need to evolve while guaranteeing the quality assurance of past, present and future simulations.
+- **Progression of the state of the art**: Safety-critical studies must
+  reflect current scientific and engineering advancements. Thus,
+  material knowledge, numerical methods, and software engineering need
+  to evolve while guaranteeing the quality assurance of past, present
+  and future simulations.
 - **Continuous integration and unit testing**: Each implementation includes unit tests to prevent regression during during the `MFront` development.
 - **Documentation**: the project can automatically generate the documentation
   associated with the various implementations. Implementations of material knowledge can be associated to essential
@@ -185,11 +213,14 @@ studies:
   implementations are usually provided with solvers as ready-to-use
   behaviours.
 
-Thus, self-contained implementations describe both constitutive equations **and** material coefficients identified on a well-defined set of experiments for a particular material, while generic implementations describe only the constitutive equations.
+Thus, self-contained implementations describe both constitutive
+equations **and** material coefficients identified on a well-defined set
+of experiments for a particular material, while generic implementations
+describe only the constitutive equations.
 
 In practice, the physical
 information described by self-contained implementations may be more
-complex than a set of material coefficients. For example, the Young
+complex than a set of material coefficients. For example, the Young's
 modulus of a material may be defined by an analytical formula and cannot
 thus be reduced to a set of constants. This analytical formula shall be
 part of a self-contained mechanical behaviour implementation. Of course,
@@ -233,6 +264,19 @@ The [`CMake`](https://cmake.org) infrastructure provides:
   described in this paper.
 - functions related to documentation and website generation. Those
   functions will not be described in this paper.
+
+The following snipet shows how the `mfront_properties_library`
+introduces a set of libraries describing the material properties of
+Uranium dioxide:
+
+~~~{.cmake}
+mfront_properties_library(UO2
+  UO2_YoungModulus_Martin1989
+)
+~~~~
+
+The `mfront_behaviours_library` and `mfront_models_library` are
+available for behaviours and point-wise models respectively.
 
 ## Creation of a derived project
 \label{sec:mfm:creating_derived_project}
