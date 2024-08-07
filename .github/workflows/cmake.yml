@@ -23,8 +23,7 @@ jobs:
 
     - name: Install TFEL dependencies
       run: |
-        sudo apt-get install cmake libboost-all-dev
-        sudo apt-get install g++ gfortran python3-numpy
+        sudo apt-get install cmake
         sudo apt-get install octave default-jdk
 
     - name: Install TFEL
@@ -36,25 +35,27 @@ jobs:
       shell: spack-sh {0}    
       run: |
         spack load tfel
-        cmake -B ${{github.workspace}}/build \
-              -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc         \
-              -DCMAKE_CXX_COMPILER=g++                                  \
-              -Denable-c=ON -Denable-c++=ON -Denable-excel=ON           \
-              -Denable-fortran=ON -Denable-python=ON -Denable-java=ON   \
-              -Denable-octave=ON -Denable-generic=ON -Denable-castem=ON \
-              -Denable-castem-behaviours=ON -Denable-aster=ON           \
-              -Denable-cyrano=ON -Denable-ansys=ON                      \
-              -Denable-europlexus=ON -Denable-calculix=ON               \
-              -Denable-abaqus=ON -Denable-diana-fea=ON                  \
-              -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON \
+        cmake -B ${{github.workspace}}/build                             \
+              -DCMAKE_BUILD_TYPE=Release                                 \
+              -DCMAKE_C_COMPILER=gcc                                     \
+              -DCMAKE_CXX_COMPILER=g++                                   \
+              -DCMAKE_FORTRAN_COMPILER=gfortran                          \
+              -Denable-c=ON -Denable-c++=ON -Denable-excel=ON            \
+              -Denable-fortran=ON -Denable-python=ON -Denable-java=OFF   \
+              -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON \
+              -Denable-castem-behaviours=ON -Denable-aster=ON            \
+              -Denable-cyrano=ON -Denable-ansys=ON                       \
+              -Denable-europlexus=ON -Denable-calculix=ON                \
+              -Denable-abaqus=ON -Denable-diana-fea=ON                   \
+              -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON  \
               -Denable-mfront-documentation-generation=OFF
 
-    - name: Build MFrontGallery [coverage]
+    - name: Build MFrontGallery
       run: cmake --build ${{github.workspace}}/build --config Release
 
     - name: Run tests 
       shell: spack-sh {0}    
-      working-directory: ${{github.workspace}}/coverage
+      working-directory: ${{github.workspace}}/build
       run: | 
         spack load tfel
         make check 
