@@ -23,9 +23,9 @@ jobs:
 
     - name: Install TFEL dependencies
       run: |
-      	sudo apt-get install cmake libboost-all-dev
-	sudo apt-get install g++ gfortran python3-numpy
-	sudo apt-get install octave default-jdk
+        sudo apt-get install cmake libboost-all-dev
+        sudo apt-get install g++ gfortran python3-numpy
+        sudo apt-get install octave default-jdk
 
     - name: Install TFEL
       shell: spack-sh {0}
@@ -40,14 +40,14 @@ jobs:
               -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc         \
               -DCMAKE_CXX_COMPILER=g++                                  \
               -Denable-c=ON -Denable-c++=ON -Denable-excel=ON           \
-	      -Denable-fortran=ON -Denable-python=ON -Denable-java=ON   \
-	      -Denable-octave=ON -Denable-generic=ON -Denable-castem=ON \
-	      -Denable-castem-behaviours=ON -Denable-aster=ON           \
-	      -Denable-cyrano=ON -Denable-ansys=ON                      \
-	      -Denable-europlexus=ON -Denable-calculix=ON               \
-	      -Denable-abaqus=ON -Denable-diana-fea=ON                  \
-	      -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON \
-	      -Denable-mfront-documentation-generation=OFF
+              -Denable-fortran=ON -Denable-python=ON -Denable-java=ON   \
+              -Denable-octave=ON -Denable-generic=ON -Denable-castem=ON \
+              -Denable-castem-behaviours=ON -Denable-aster=ON           \
+              -Denable-cyrano=ON -Denable-ansys=ON                      \
+              -Denable-europlexus=ON -Denable-calculix=ON               \
+              -Denable-abaqus=ON -Denable-diana-fea=ON                  \
+              -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON \
+              -Denable-mfront-documentation-generation=OFF
 
     - name: Build MFrontGallery [coverage]
       run: cmake --build ${{github.workspace}}/build --config Release
