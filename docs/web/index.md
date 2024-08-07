@@ -61,7 +61,7 @@ integration process to guarantee that no regression would happen as
 
 In particular, the project provides:
 
-- a [`cmake`](https://cmake.org) infrastructure that can be duplicated
+- A [`cmake`](https://cmake.org) infrastructure that can be duplicated
   in (academic or industrial) derived projects. This infrastructure allows:
   - to compile `MFront` sources using all interfaces supported
     by `MFront`. For example, concerning behaviours, the behaviours can
@@ -90,9 +90,9 @@ In particular, the project provides:
   [This page](creating-derived-project.html) describes how to create a
   derived project based on the same infrastructure as the
   `MFrontGallery`.
-- a documentation of best practices to handle material knowledge
-  implemented using `MFront` implementations
-- a set of high-quality `MFront` implementations.
+- A documentation of [best practices](best-pratices.html) to handle
+  material knowledge implemented using `MFront` implementations.
+- A set of high-quality `MFront` implementations.
 
 Section @sec:mfm:introduction:statement_of_need discusses why a new
 approach to material knowledge management is needed in the context of
