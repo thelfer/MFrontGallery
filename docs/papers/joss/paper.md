@@ -43,32 +43,38 @@ pandoc -f markdown  --bibliography=bibliography.bib --citeproc -V geometry:a4pap
 
 # Introduction
 
-`MFront` is an open-source code generator dedicated to material
-knowledge [@Helfer2015;@cea_edf_mfront_2022] developed by the French
-Alternative Energies and Atomic Energy Commission (CEA) and Électricité
-de France (EDF). `MFront` is part of the `PLEIADES` numerical platform, which
-is devoted to multi-physics nuclear fuel simulations and is developed
-by CEA and its industrial partners EDF and Framatome. Since it was released
-as an open-source project, `MFront` has been used in numerous
-applications covering a wide range of materials (ceramics, metals,
-concrete, woods, etc.) and physical phenomena (viscoplasticity,
-plasticity, damage, etc.) [^mfront:publications].
+`MFront` is an open-source code generator focused on material knowledge
+[@Helfer2015;@cea_edf_mfront_2022] developed collaboratively by the
+French Alternative Energies and Atomic Energy Commission (CEA) and
+Électricité de France (EDF). The open-source status of `MFront` has led
+to its adoption in a wide range of applications[^mfront:publications]
+covering a variety of materials (ceramics, metals, concrete, woods,
+etc.) and physical phenomena (viscoplasticity, plasticity, damage,
+etc.). It is also part of the `PLEIADES` numerical platform
+[@bernaud_pleiades_2024], which is devoted to multi-physics nuclear fuel
+simulations and is developed by CEA and its industrial partners EDF and
+Framatome.
 
-[^mfront:publications]: See this page for a list of publications based
-on `MFront`: <https://thelfer.github.io/tfel/web/publications.html>
+[^mfront:publications]: For a comprehensive list of publications utilizing
+`MFront`, please visit: <https://thelfer.github.io/tfel/web/publications.html>
 
-`MFront` provides so-called interfaces to ensure that a material
-knowledge is portable, i.e. can be used in large number of contexts. For
-example, mechanical behaviours can be compiled for the following
-commercial or academic solvers: [`Cast3M`](http://www-cast3m.cea.fr/),
-[`code_aster`](https://code-aster.org),
-[`Europlexus`](https://europlexus.jrc.ec.europa.eu/), `Abaqus/Standard`,
-`Abaqus/Explicit`, `Ansys`, `AMITEX_FFTP`,
+`MFront` provides so-called interfaces to ensure that material
+knowledge is portable and can be used in a wide range of contexts. For
+instance, `MFront`-based mechanical behaviours can be compiled for use with
+various commercial and academic solvers such as: [`Cast3M`](http://www-cast3m.cea.fr/),
+[`code_aster`](https://code-aster.org/),
+[`Europlexus`](https://europlexus.jrc.ec.europa.eu/),
+[`Abaqus/Standard`](https://www.3ds.com/products/simulia/abaqus/standard),
+[`Abaqus/Explicit`](https://www.3ds.com/products/simulia/abaqus/explicit),
+[`Ansys`](https://www.ansys.com/),
+[`AMITEX_FFTP`](https://amitexfftp.github.io/AMITEX/index.html),
 [`CalculiX`](http://www.calculix.de/),
-[`ZSet`](http://www.zset-software.com/), [`DIANA
-FEA`](https://dianafea.com/). Furthermore, thanks to the `generic`
-interface, those mechanical behaviours are also available in all solvers
-using the [`MFrontGenericInterfaceSupport`
+[`ZSet`](http://www.zset-software.com/),
+[`DIANA FEA`](https://dianafea.com/).
+
+Additionally, the `generic` interface extends the availability of these
+mechanical behaviours to all solvers using the
+[`MFrontGenericInterfaceSupport`
 projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [@helfer_mfrontgenericinterfacesupport_2020], including:
 [`OpenGeoSys`](https://www.opengeosys.org/) [@Bilke2019],
@@ -77,52 +83,53 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
 [`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
 
-The `MFrontGallery` project addresses the question of the management of
+The `MFrontGallery` project addresses the management of
 `MFront` implementations including their compilation, unit testing and
 deployment.
 
 The [MFrontGallery project](https://github.com/thelfer/MFrontGallery)
-has two main, almost orthogonal, goals:
+has two main, almost orthogonal, objectives:
 
-1. The first one is to show how solver developers may provide their
-  users a set of ready-to-use (mechanical) behaviours which can be
-  parametrized by their users to match their needs.
-2. The second one is to describe how to set up a high-quality material
+1. Show how solver developers may provide their
+  users a set of ready-to-use (mechanical) behaviours that can be
+  parametrized to meet specific needs.
+2. Describe how to set up a high-quality material
   knowledge management project based on
-  [`MFront`](https://thelfer.github.io/tfel/web/index.html), able to
-  meet the requirements of safety-critical studies.
+  [`MFront`](https://thelfer.github.io/tfel/web/index.html), capable
+  of meeting the requirements of safety-critical studies.
 
-While the first goal is common to all (mechanical) solvers, one
+While the first objective is common to all (mechanical) solvers, the
 originality of the `MFrontGallery` project is to address the second goal
-which is discussed in depth in Section
+which is discussed in Section
 \ref{sec:mfm:introduction:statement_of_need}.
 
 In summary, the project provides:
 
-- a [`CMake`](https://cmake.org) infrastructure that can be duplicated
-  in (academic or industrial) derived projects. This infrastructure allows:
-  - to compile `MFront` sources using all interfaces supported by
-    `MFront`.
-  - to execute unit tests based on `MTest`. Those unit tests generate
-    `XML` result files conforming to the `JUnit` standard that can
-    readily be used by continuous integration platforms such as
-    [jenkins](https://www.jenkins.io/).
-  - generate the documentation associated with the stored implementations.
-- a documentation of best practices to handle material knowledge
-  implemented using `MFront` implementations, such as use of consistent 
-  unit systems, bound-aware physical quantities, consistent tangent
-  operators, and others.
-- a set of high-quality `MFront` implementations.
+- A [`CMake`](https://cmake.org) infrastructure that can be replicated
+  in (academic or industrial) derived projects, which allows for:
+  - compiling `MFront` sources using all supported interfaces.
+  - executing unit tests based on `MTest` which generate `XML` result
+    files conforming to the `JUnit` standard, compatible with continuous
+    integration platforms such as [jenkins](https://www.jenkins.io/).
+  - generating documentation associated with the stored implementations.
+- A documentation of best practices for handling material knowledge
+  implemented with `MFront`, such as use of consistent unit systems,
+  bound-aware physical quantities, consistent tangent operators, and
+  others.
+- A set of high-quality `MFront` implementations. Those implementations
+  are not discussed in this paper which is thus focused on the two
+  previous points.
 
-This paper aims to describe the project and is organized as follows:
+This paper aims to describe the `MFrontGallery` project and is organized
+as follows:
 
-Section \ref{sec:mfm:introduction:statement_of_need} discusses why a
-new approach to material knowledge management is needed in the context
-of safety-criticial studies.
+Section \ref{sec:mfm:introduction:statement_of_need} discusses the
+necessity for a new approach to material knowledge management, particularly
+in the context of safety-critical studies.
 
 Section \ref{sec:mfm:introduction:cmake_infrastructure} provides an
-overview of the `CMake` infrastructure of the project, and describes how
-to create a derived project based on the same `CMake` infrastructure as
+overview of the `CMake` infrastructure of the project, and details the
+process for creating derivative projects using the same `CMake` framework as
 the `MFrontGallery`.
 
 # Statement of need : material knowledge management for safety - criticial studies
@@ -131,74 +138,64 @@ the `MFrontGallery`.
 ## Role of material knowledge in numerical simulations of solids
 
 Numerical simulations of solids are based on the description of the
-evolution of the thermodynamical state of the materials of interest. In
+evolution of the thermodynamic state of materials. In
 the context of the `MFrontGallery` project, this thermodynamical state
-is described at each point in space by a set of internal state variables
-which can evolve with time due to various physical phenomena.
+is represented at each point in space by a set of internal state variables
+that evolve over time due to various physical phenomena.
 
-The knowledge that one may have about a given material can be represented
-in different forms. In `MFront`, the following categorization is employed:
+In `MFront`, material knowledge can be categorized as follows:
 
-- **Material properties** are defined here as functions of the current
-  state of the material. A typical example is the Young modulus of a
-  material.
+- **Material properties** are defined as functions of the current
+  state of the material such as the Young's modulus or Poisson's ratio.
 - **Behaviours** describe how a material evolves and reacts locally due
-  to gradients inside the material. Here, the material reaction is
+  to internal gradients. The material reaction is
   associated with fluxes (or forces) thermodynamically conjugated to
   gradients. For instance, Fourier's law relates the heat flux to the
   temperature gradient. Mechanical behaviour in infinitesimal strain
   theory relates the stress and the strain and may describe (visco)elasticity,
   (visco)plasticity, or damage.
 - **Point-wise models** describe the evolution of some internal state
-  variables with the evolution of other state variables. Point-wise
-  models may be seen as behaviours without gradients. Phase transition,
-  swelling under irradiation or shrinkage due to dessication are
-  examples of point-wise models.
+  variables without considering gradients (i.e. with the evolution of
+  other state variables), such as phase transition, swelling under
+  irradiation or shrinkage due to dessication.
 
 ## Requirements related to safety-critical studies
+
 \label{sec:mfm:introduction:safety_critical_studies}
 
 The `MFrontGallery` project has been developed to address various
-issues related to material knowledge management for safety-critical
+issues related to material knowledge management in safety-critical
 studies:
 
-- **Intellectual property**: Frequently, material knowledge reflects 
-  the know-how of industrials and shall be kept private for various reasons. 
-  For example, some mechanical behaviours result from years of experimental
-  testing in dedicated facilities and are thus highly valuable. In some
-  cases, material knowledge can be a competitive advantage. To solve
-  this issue, the `MFrontGallery` allows to create private derived
-  projects, as detailled in Section
-  \ref{sec:mfm:creating_derived_project}.
+- **Intellectual property**: Material knowledge often embodies
+  industrial know-how that must be kept confidential. This includes
+  highly valuable mechanical behaviours derived from extensive
+  experimental testing in dedicated facilities. `MFrontGallery` supports
+  creating private derived projects to protect such valuable knowledge,
+  as detailed in Section \ref{sec:mfm:creating_derived_project}.
 - **Portability**: safety-critical studies may involve several partners
   which use different solvers for independent assessment and review.
-  From the same `MFront` source file, the `MFrontGallery` can generate
-  shared libraries for all the solvers of interest. Moreover, the
-  project employs [best practices
-  guidelines](https://thelfer.github.io/MFrontGallery/web/best-practices.html)[^mfm:best_practices]
+  From a single `MFront` source file, `MFrontGallery` can generate
+  shared libraries compatible with all the solvers of interest. Moreover, the
+  project uses best practices
+  guidelines[^mfm:best_practices]
   to ensure that a given `MFront` implementation can be shared among
   several teams while assuring quality.
-- **Maintainability over decades**: Some safety-critical studies involve
-  the design of buildings, plants, or technological systems for
-  operation periods of decades or more. Over such periods of time, both
-  the solvers and the material knowledge will evolve. The
-  safety-critical studies, however, on which design choices or decisions
-  were based, need to remain accessible and reproducible. In the authors'
-  experience, maintainability is more easily achieved by having a
+- **Maintainability over decades**: Long-term projects require that both
+  solvers and material knowledge evolve while ensuring past studies remain
+  accessible and reproducible. In the authors'
+  experience, having a
   dedicated material knowledge project based on *self-contained*
-  implementations, as discussed in Section
+  implementations, facilitate maintainability as discussed in Section
   \ref{sec:mfm:introduction:implementations}.
-- **Progression of the state of the art**: Safety-critical studies need
-  to reflect the state of the art. As such, the material knowledge per se,
-  numerical methods and software engineering need to evolve while at the same
-  time ensuring the other principles listed here are not violated in order
-  to maintain quality assurance of past, present and future analyses.
-- **Continuous integration and unit testing**: Each implementation has
-  associated unit tests which can check no-regression during the
-  development of `MFront`.
-- **Documentation**: the project can generate the documentation
-  associated with the various implementations in an automated manner.
-  Implementations of material knowledge can be associated to essential
+- **Progression of the state of the art**: Safety-critical studies must
+  reflect current scientific and engineering advancements. Thus,
+  material knowledge, numerical methods, and software engineering need
+  to evolve while guaranteeing the quality assurance of past, present
+  and future simulations.
+- **Continuous integration and unit testing**: Each implementation includes unit tests to prevent regression during during the `MFront` development.
+- **Documentation**: the project can automatically generate the documentation
+  associated with the various implementations. Implementations of material knowledge can be associated to essential
   meta data.
 
 [^mfm:best_practices]: <https://thelfer.github.io/MFrontGallery/web/best-practices.html>
@@ -206,27 +203,24 @@ studies:
 ## Implementations and classification
 \label{sec:mfm:introduction:implementations}
 
-`MFront` implementations can be classified in two main categories:
+`MFront` implementations can be classified into two main categories:
 
-- **self-contained implementations** that contain all the
+- **self-contained implementations** that contain all necessary
   physical information (e.g., model equations and parameters).
-- **generic implementations** for which the solver is 
-  required to provide additional physical information to the material 
+- **generic implementations** for which the solver is
+  required to provide additional physical information to the material
   treated, e.g. the values of certain parameters. Those "generic"
-  implementations are usually shipped with solvers as ready-to-use
+  implementations are usually provided with solvers as ready-to-use
   behaviours.
 
-An alternative way of expressing the distinction between self-contained
-and generic implementations is to consider that self-contained
-implementations describes a set of constitutive equations
-**and** the material coefficients[^mfm:about_material_coefficients]
-  identified on a well-defined set of experiments for a particular
-  material while generic implementations
-only describe a set of constitutive equations.
+Thus, self-contained implementations describe both constitutive
+equations **and** material coefficients identified on a well-defined set
+of experiments for a particular material, while generic implementations
+describe only the constitutive equations.
 
-[^mfm:about_material_coefficients]: In practice, the physical
+In practice, the physical
 information described by self-contained implementations may be more
-complex than a set of material coefficients. For example, the Young
+complex than a set of material coefficients. For example, the Young's
 modulus of a material may be defined by an analytical formula and cannot
 thus be reduced to a set of constants. This analytical formula shall be
 part of a self-contained mechanical behaviour implementation. Of course,
@@ -248,7 +242,7 @@ In the authors' experience, self-contained behaviours allows to
 \label{sec:mfm:introduction:cmake_infrastructure}
 
 This section provides an overview of the [`CMake`](https://cmake.org)
-infrastructure of the `MFrontGallery` and `MFrontMaterials` projects.
+infrastructure of the `MFrontGallery` project.
 
 This infrastructure is fully contained in the `cmake/modules` directory,
 the file `cmake/modules/mfm.cmake` being the main entry point.
@@ -271,12 +265,24 @@ The [`CMake`](https://cmake.org) infrastructure provides:
 - functions related to documentation and website generation. Those
   functions will not be described in this paper.
 
+The following snipet shows how the `mfront_properties_library`
+introduces a set of libraries describing the material properties of
+Uranium dioxide:
+
+~~~{.cmake}
+mfront_properties_library(UO2
+  UO2_YoungModulus_Martin1989
+)
+~~~~
+
+The `mfront_behaviours_library` and `mfront_models_library` are
+available for behaviours and point-wise models respectively.
+
 ## Creation of a derived project
 \label{sec:mfm:creating_derived_project}
 
-This section describes how to setup a new project based on the [`CMake`
-infrastructure](cmake-infrastructure.html) of the `MFrontGallery` and
-`MFrontMaterials` projects.
+This section describes the process for setting up a new project based on the [`CMake`
+infrastructure](cmake-infrastructure.html) of the `MFrontGallery` project.
 
 ### Fetching `cmake/modules` directory
 
@@ -314,7 +320,6 @@ set(CTEST_CONFIGURATION_TYPE "${JOB_BUILD_CONFIGURATION}")
 enable_testing()
 
 # add subdirectories here
-
 add_subdirectory(materials)
 ~~~~
 

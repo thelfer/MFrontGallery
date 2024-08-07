@@ -1,0 +1,64 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Spack
+      uses: spack/setup-spack@v2
+      with:
+        ref: develop      # Spack version (examples: develop, releases/v0.21)
+        buildcache: true  # Configure oci://ghcr.io/spack/github-actions-buildcache
+        color: true       # Force color output (SPACK_COLOR=always)
+        path: ${{github.workspace}}/spack       # Where to clone Spack
+
+    - name: Install TFEL
+      shell: spack-sh {0}
+      run: |
+        spack install tfel@rliv-4.2
+
+    - name: Config MFrontGallery
+      shell: spack-sh {0}    
+      run: |
+        spack load tfel
+        cmake -B ${{github.workspace}}/build                             \
+              -DCMAKE_BUILD_TYPE=Release                                 \
+              -DCMAKE_C_COMPILER=gcc                                     \
+              -DCMAKE_CXX_COMPILER=g++                                   \
+              -DCMAKE_FORTRAN_COMPILER=gfortran                          \
+              -Denable-c=ON -Denable-c++=ON -Denable-excel=ON            \
+              -Denable-fortran=ON -Denable-python=ON -Denable-java=OFF   \
+              -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON \
+              -Denable-castem-behaviours=ON -Denable-aster=ON            \
+              -Denable-cyrano=ON -Denable-ansys=ON                       \
+              -Denable-europlexus=ON -Denable-calculix=ON                \
+              -Denable-abaqus=ON -Denable-diana-fea=ON                   \
+              -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON  \
+              -Denable-mfront-documentation-generation=OFF
+
+    - name: Build MFrontGallery
+      run: cmake --build ${{github.workspace}}/build --config Release
+
+    - name: Run tests 
+      shell: spack-sh {0}    
+      working-directory: ${{github.workspace}}/build
+      run: | 
+        spack load tfel
+        make check
+        
+    # - name: Test Report
+    #   uses: dorny/test-reporter@v1
+    #   if: success() || failure()    # run this step even if previous step failed
+    #   with:
+    #     name: Tests reports         # Name of the check run which will be created
+    #     path: build/**/*.xml        # Path to test results
+    #     reporter: jest-junit
