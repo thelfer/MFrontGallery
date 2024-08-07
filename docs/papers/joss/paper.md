@@ -242,7 +242,7 @@ In the authors' experience, self-contained behaviours allows to
 \label{sec:mfm:introduction:cmake_infrastructure}
 
 This section provides an overview of the [`CMake`](https://cmake.org)
-infrastructure of the `MFrontGallery` and `MFrontMaterials` projects.
+infrastructure of the `MFrontGallery` project.
 
 This infrastructure is fully contained in the `cmake/modules` directory,
 the file `cmake/modules/mfm.cmake` being the main entry point.
@@ -282,8 +282,7 @@ available for behaviours and point-wise models respectively.
 \label{sec:mfm:creating_derived_project}
 
 This section describes the process for setting up a new project based on the [`CMake`
-infrastructure](cmake-infrastructure.html) of the `MFrontGallery` and
-`MFrontMaterials` projects.
+infrastructure](cmake-infrastructure.html) of the `MFrontGallery` project.
 
 ### Fetching `cmake/modules` directory
 
