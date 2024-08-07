@@ -1,4 +1,4 @@
-name: Cmake
+name: Continuous Integration
 
 on:
   push:
@@ -20,11 +20,6 @@ jobs:
         buildcache: true  # Configure oci://ghcr.io/spack/github-actions-buildcache
         color: true       # Force color output (SPACK_COLOR=always)
         path: ${{github.workspace}}/spack       # Where to clone Spack
-
-    - name: Install TFEL dependencies
-      run: |
-        sudo apt-get install cmake
-        sudo apt-get install octave default-jdk
 
     - name: Install TFEL
       shell: spack-sh {0}
