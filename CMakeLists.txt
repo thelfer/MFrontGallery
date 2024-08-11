@@ -33,3 +33,8 @@ add_subdirectory(unit-tests/tfel-check)
 if(enable-website)
   add_subdirectory(docs/web)
 endif(enable-website)
+
+set(CPACK_VERBATIM_VARIABLES YES)
+set(CPACK_SOURCE_GENERATOR "TGZ")
+set(CPACK_SOURCE_IGNORE_FILES "build;/\\.git/;.*~")
+include(CPack)
