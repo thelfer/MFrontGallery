@@ -30,7 +30,7 @@ The file `docs/web/install.md` details how to use the project.
 
 ## Versions
 
-- the tag `MFrontGallery-2.0` is associated with `TFEL-4.2`.
+- the tags `MFrontGallery-2.0` and `MFrontGallery-2.1` are associated with `TFEL-4.2`.
 - the tag `MFrontGallery-1.1` is meant to be build against `TFEL 3.3.0`
 - the tag `MFrontGallery-1.0.1` is meant to be build against `TFEL 3.2.1`
 - the tag `MFrontGallery-1.0` is meant to be build against `TFEL 3.2.0`
