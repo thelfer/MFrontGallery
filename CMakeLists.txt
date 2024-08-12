@@ -1,4 +1,14 @@
-project(MFrontGallery)
+cmake_policy(SET CMP0048 NEW)
+string(CONCAT MFrontGalleryDescription
+	"The MFrontGallery project provides "
+	"a cmake infrastructure to build material knowledge "
+    "management projects bases on MFront and illustrates "
+    "its usage by a selected set of MFront implementations")
+set(MFrontGalleryDevelopmentVersion ON)
+project(MFrontGallery
+        VERSION 3.0.0
+        DESCRIPTION  "${MFrontGalleryDescription}"
+        HOMEPAGE_URL "https://thelfer.github.io/MFrontGallery/web/index.html")
 set(PACKAGE mfront-gallery)
 
 cmake_minimum_required(VERSION 3.12.0)
@@ -35,3 +45,15 @@ add_subdirectory(unit-tests/tfel-check)
 if(enable-website)
   add_subdirectory(docs/web)
 endif(enable-website)
+
+# Packaging
+if(MFrontGalleryDevelopmentVersion)
+  set(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_PROJECT_VERSION_PATCH}-dev")
+endif()
+set(CPACK_RESOURCE_FILE_LICENSE "LGPL-3.0.txt")
+set(CPACK_VERBATIM_VARIABLES YES)
+if(NOT CPACK_SOURCE_GENERATOR)
+  set(CPACK_SOURCE_GENERATOR "TGZ")
+endif(NOT CPACK_SOURCE_GENERATOR)
+set(CPACK_SOURCE_IGNORE_FILES "build;/\\.git/;.*~")
+include(CPack)
