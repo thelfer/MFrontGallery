@@ -342,9 +342,10 @@ in similar contexts where these concepts are considered relevant.
 This research was conducted in the framework of the `PLEIADES` project,
 which is supported financially by the French Alternative Energies and
 Atomic Energy Commission (CEA), Électricité de France (EDF) and
-Framatome. 
-TN acknowledges funding provided by the Federal Ministry for 
-Education and Research (BMBF) under grant 03G0927B for the DigBen project
-and thanks Projektträger Jülich (PtJ) for support.
+Framatome.
+
+Thomas Nagel acknowledges funding provided by the Federal Ministry for
+Education and Research (BMBF) under grant 03G0927B for the DigBen
+project and thanks Projektträger Jülich (PtJ) for support.
 
 # References
