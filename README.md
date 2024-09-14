@@ -26,6 +26,8 @@ The file `docs/web/index.md` contains a full description of the project.
 
 The file `docs/web/install.md` details how to use the project.
 
+The official website is accessible here: <https://thelfer.github.io/MFrontGallery/web/index.html>
+
 # Versions, branches, tags
 
 ## Versions
