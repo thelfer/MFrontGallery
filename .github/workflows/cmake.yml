@@ -24,7 +24,7 @@ jobs:
     - name: Install TFEL
       shell: spack-sh {0}
       run: |
-        spack install tfel@master
+        spack install tfel@master~python_bindings
 
     - name: Config MFrontGallery
       shell: spack-sh {0}    
