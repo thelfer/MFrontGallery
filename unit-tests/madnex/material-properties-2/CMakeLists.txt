@@ -1,2 +1,2 @@
-mfront_properties_library(TestMadnexMaterialProperties2
-   mdnx:MaterialProperty.mdnx:material_property:TestMadnexMaterialProperties2:YoungModulus_SRMA)
+ mfront_properties_library(TestMadnexMaterialProperties2
+    mdnx:MaterialProperty.mdnx:material_property:TestMadnexMaterialProperties2:YoungModulus_SRMA)
