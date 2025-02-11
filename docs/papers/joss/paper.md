@@ -160,7 +160,6 @@ In `MFront`, material knowledge can be categorized as follows:
   irradiation or shrinkage due to dessication.
 
 ## Requirements related to safety-critical studies
-
 \label{sec:mfm:introduction:safety_critical_studies}
 
 The `MFrontGallery` project has been developed to address various
@@ -347,5 +346,16 @@ Framatome.
 Thomas Nagel acknowledges funding provided by the Federal Ministry for
 Education and Research (BMBF) under grant 03G0927B for the DigBen
 project and thanks Projektträger Jülich (PtJ) for support.
+
+# State of the field
+
+The project is focused on Quality Assurance issues related to material
+knowledge management which is, in the authors' experience, seldom a
+major concern in most open-source thermomechanical solvers. Several
+libraries providing high quality implementations of constitutive
+equations are available, but generally dedicated to one specific solver.
+The implementations are generally generic (as opposed to
+self-contained). The `MFrontGallery` project thus provide a unique
+approach.
 
 # References
