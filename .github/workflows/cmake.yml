@@ -24,7 +24,7 @@ jobs:
     - name: Install TFEL
       shell: spack-sh {0}
       run: |
-        spack install tfel@master~python_bindings
+        spack install tfel@master~python~python_bindings
 
     - name: Config MFrontGallery
       shell: spack-sh {0}    
@@ -36,7 +36,7 @@ jobs:
               -DCMAKE_CXX_COMPILER=g++                                   \
               -DCMAKE_FORTRAN_COMPILER=gfortran                          \
               -Denable-c=ON -Denable-c++=ON -Denable-excel=ON            \
-              -Denable-fortran=ON -Denable-python=ON -Denable-java=OFF   \
+              -Denable-fortran=ON -Denable-python=OFF -Denable-java=OFF  \
               -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON \
               -Denable-castem-behaviours=ON -Denable-aster=ON            \
               -Denable-cyrano=ON -Denable-ansys=ON                       \
