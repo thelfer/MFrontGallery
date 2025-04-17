@@ -18,6 +18,7 @@ authors:
     orcid: 0000-0001-8459-4616
     affiliation: "3, 4"
   - name: Christian B. Silbermann
+    orcid: 0000-0002-5474-0165
     affiliation: "3"
   - name: Lorenzo Riparbelli
     affiliation: "5"
@@ -343,9 +344,13 @@ which is supported financially by the French Alternative Energies and
 Atomic Energy Commission (CEA), Électricité de France (EDF) and
 Framatome.
 
-Thomas Nagel acknowledges funding provided by the Federal Ministry for
+TN acknowledges funding provided by the Federal Ministry for
 Education and Research (BMBF) under grant 03G0927B for the DigBen
-project and thanks Projektträger Jülich (PtJ) for support.
+project and thanks Projektträger Jülich (PtJ) for support. CBS acknowledges
+the German Federal Ministry for Economic Affairs and Energy and the Federal
+Ministry for the Environment, Nature Conservation, Nuclear Safety and Consumer 
+Protection for funding the projects Sandwich-HP (02E11799C) and Sandwich-HP2
+(02E12163C) and thanks the project management agency of Karlsruhe.
 
 # State of the field
 
