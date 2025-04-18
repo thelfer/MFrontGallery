@@ -20,7 +20,8 @@ authors:
   - name: Christian B. Silbermann
     orcid: 0000-0002-5474-0165
     affiliation: "3"
-  - name: Lorenzo Riparbelli
+  - name: Lorenzo Riparbelli 
+    orcid: 0000-0001-6096-2488
     affiliation: "5"
 affiliations:
   - name: CEA, DES, IRESNE, DEC, Cadarache F-13108 Saint-Paul-Lez-Durance, France
