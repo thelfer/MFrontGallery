@@ -345,7 +345,9 @@ which is supported financially by the French Alternative Energies and
 Atomic Energy Commission (CEA), Électricité de France (EDF) and
 Framatome.
 
-TN acknowledges funding provided by the Federal Ministry for
+TN acknowledges funding provided by the European Joint Programme on Radioactive 
+Waste Management EURAD “European Partnership on Radioactive Waste Management” 
+(Grant Agreement No 101166718), the Federal Ministry for
 Education and Research (BMBF) under grant 03G0927B for the DigBen
 project and thanks Projektträger Jülich (PtJ) for support. CBS acknowledges
 the German Federal Ministry for Economic Affairs and Energy and the Federal
