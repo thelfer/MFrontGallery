@@ -15,24 +15,26 @@ mfront_behaviours_library(ChemicalReaction
   ChemicalReaction7)
 
 # tests based on the generic interface
-genericmtest(ChemicalReaction ChemicalReaction1
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
-genericmtest(ChemicalReaction ChemicalReaction2
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
-genericmtest(ChemicalReaction ChemicalReaction3
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
-genericmtest(ChemicalReaction ChemicalReaction4
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+if(enable-generic-models)
+  genericmtest(ChemicalReaction ChemicalReaction1
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+  genericmtest(ChemicalReaction ChemicalReaction2
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+  genericmtest(ChemicalReaction ChemicalReaction3
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
+  genericmtest(ChemicalReaction ChemicalReaction4
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>)
 
-genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature2
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
-  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
-genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature3
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
-  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
-genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature4
-  LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
-  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+  genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature2
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+    REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+  genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature3
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+    REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+  genericmtest(ChemicalReaction ChemicalReactionVaryingTemperature4
+    LIBRARY $<TARGET_FILE:ChemicalReactionModels-generic>
+    REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ChemicalReactionVaryingTemperature.ref)
+endif(enable-generic-models)
 
 genericmtest(ChemicalReaction ChemicalReaction3b
   LIBRARY $<TARGET_FILE:ChemicalReactionBehaviours-generic>)
