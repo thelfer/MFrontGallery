@@ -13,6 +13,7 @@ authors:
     orcid: 0000-0002-3431-5081
     affiliation: 1
   - name: Eric Simo
+    orcid: 0000-0003-4657-0028
     affiliation: 2, 3
   - name: Thomas Nagel
     orcid: 0000-0001-8459-4616
