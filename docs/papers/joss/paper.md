@@ -17,7 +17,7 @@ authors:
     affiliation: 2, 3
   - name: Thomas Nagel
     orcid: 0000-0001-8459-4616
-    affiliation: "3, 4"
+    affiliation: "2, 3"
   - name: Christian B. Silbermann
     orcid: 0000-0002-5474-0165
     affiliation: "3"
@@ -82,9 +82,10 @@ projet](https://thelfer.github.io/mgis/web/index.html) (MGIS)
 [@helfer_mfrontgenericinterfacesupport_2020], including:
 [`OpenGeoSys`](https://www.opengeosys.org/) [@Bilke2019],
 [`MFEM-MGIS`](https://thelfer.github.io/mfem-mgis/web/index.html),
-`MANTA`,
+`MANTA` [@jamond_manta_2024],
 [`mgis.fenics`](https://thelfer.github.io/mgis/web/mgis_fenics.html),
-[`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER, etc.
+[`MoFEM`](http://mofem.eng.gla.ac.uk/mofem/html), XPER
+[@perales_xper_2022], etc.
 
 The `MFrontGallery` project addresses the management of
 `MFront` implementations including their compilation, unit testing and
