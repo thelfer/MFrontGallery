@@ -241,6 +241,17 @@ In the authors' experience, self-contained behaviours allows to
   requirements depicted on Section
   \ref{sec:mfm:introduction:safety_critical_studies}.
 
+## State of the field
+
+The project is focused on Quality Assurance issues related to material
+knowledge management which is, in the authors' experience, seldom a
+major concern in most open-source thermomechanical solvers. Several
+libraries providing high quality implementations of constitutive
+equations are available, but generally dedicated to one specific solver.
+The implementations are generally generic (as opposed to
+self-contained). The `MFrontGallery` project thus provide a unique
+approach.
+
 # The `CMake` infrastructure
 \label{sec:mfm:introduction:cmake_infrastructure}
 
@@ -356,16 +367,5 @@ the German Federal Ministry for Economic Affairs and Energy and the Federal
 Ministry for the Environment, Nature Conservation, Nuclear Safety and Consumer 
 Protection for funding the projects Sandwich-HP (02E11799C) and Sandwich-HP2
 (02E12163C) and thanks the project management agency of Karlsruhe.
-
-# State of the field
-
-The project is focused on Quality Assurance issues related to material
-knowledge management which is, in the authors' experience, seldom a
-major concern in most open-source thermomechanical solvers. Several
-libraries providing high quality implementations of constitutive
-equations are available, but generally dedicated to one specific solver.
-The implementations are generally generic (as opposed to
-self-contained). The `MFrontGallery` project thus provide a unique
-approach.
 
 # References
