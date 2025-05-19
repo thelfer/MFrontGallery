@@ -17,7 +17,7 @@ authors:
     affiliation: 2, 3
   - name: Thomas Nagel
     orcid: 0000-0001-8459-4616
-    affiliation: "2, 3"
+    affiliation: "3, 4"
   - name: Christian B. Silbermann
     orcid: 0000-0002-5474-0165
     affiliation: "3"
