@@ -104,8 +104,7 @@ has two main, almost orthogonal, objectives:
 
 While the first objective is common to all (mechanical) solvers, the
 originality of the `MFrontGallery` project is to address the second goal
-which is discussed in Section
-\ref{sec:mfm:introduction:statement_of_need}.
+which is discussed in Section "Statement of need".
 
 In summary, the project provides:
 
@@ -127,17 +126,16 @@ In summary, the project provides:
 This paper aims to describe the `MFrontGallery` project and is organized
 as follows:
 
-Section \ref{sec:mfm:introduction:statement_of_need} discusses the
-necessity for a new approach to material knowledge management, particularly
-in the context of safety-critical studies.
+Section "Statement Of Need" discusses the necessity for a new approach to
+material knowledge management, particularly in the context of
+safety-critical studies.
 
-Section \ref{sec:mfm:introduction:cmake_infrastructure} provides an
-overview of the `CMake` infrastructure of the project, and details the
-process for creating derivative projects using the same `CMake` framework as
-the `MFrontGallery`.
+Section "CMake Infrastructure provides an overview of the `CMake`
+infrastructure of the project, and details the process for creating
+derivative projects using the same `CMake` framework as the
+`MFrontGallery`.
 
 # Statement of need : material knowledge management for safety - criticial studies
-\label{sec:mfm:introduction:statement_of_need}
 
 ## Role of material knowledge in numerical simulations of solids
 
@@ -164,7 +162,6 @@ In `MFront`, material knowledge can be categorized as follows:
   irradiation or shrinkage due to dessication.
 
 ## Requirements related to safety-critical studies
-\label{sec:mfm:introduction:safety_critical_studies}
 
 The `MFrontGallery` project has been developed to address various
 issues related to material knowledge management in safety-critical
@@ -175,7 +172,7 @@ studies:
   highly valuable mechanical behaviours derived from extensive
   experimental testing in dedicated facilities. `MFrontGallery` supports
   creating private derived projects to protect such valuable knowledge,
-  as detailed in Section \ref{sec:mfm:creating_derived_project}.
+  as detailed in Section "Creation of a derived project".
 - **Portability**: safety-critical studies may involve several partners
   which use different solvers for independent assessment and review.
   From a single `MFront` source file, `MFrontGallery` can generate
@@ -190,8 +187,8 @@ studies:
   experience, having a
   dedicated material knowledge project based on *self-contained*
   implementations, facilitate maintainability as discussed in Section
-  \ref{sec:mfm:introduction:implementations}.
-- **Progression of the state of the art**: Safety-critical studies must
+  "Implementations and classification".
+- **Progression of the state of the art**: safety-critical studies must
   reflect current scientific and engineering advancements. Thus,
   material knowledge, numerical methods, and software engineering need
   to evolve while guaranteeing the quality assurance of past, present
@@ -204,7 +201,6 @@ studies:
 [^mfm:best_practices]: <https://thelfer.github.io/MFrontGallery/web/best-practices.html>
 
 ## Implementations and classification
-\label{sec:mfm:introduction:implementations}
 
 `MFront` implementations can be classified into two main categories:
 
@@ -238,8 +234,8 @@ In the authors' experience, self-contained behaviours allows to
 **decouple the material knowledge management from the development
   (source code) of the solvers of interest** and thus allow a proper
   material knowledge management strategy suitable to meet the
-  requirements depicted on Section
-  \ref{sec:mfm:introduction:safety_critical_studies}.
+  requirements depicted on Section "Requirements related to
+  safety-critical studies".
 
 ## State of the field
 
@@ -252,8 +248,7 @@ The implementations are generally generic (as opposed to
 self-contained). The `MFrontGallery` project thus provide a unique
 approach.
 
-# The `CMake` infrastructure
-\label{sec:mfm:introduction:cmake_infrastructure}
+# The CMake infrastructure
 
 This section provides an overview of the [`CMake`](https://cmake.org)
 infrastructure of the `MFrontGallery` project.
@@ -261,14 +256,13 @@ infrastructure of the `MFrontGallery` project.
 This infrastructure is fully contained in the `cmake/modules` directory,
 the file `cmake/modules/mfm.cmake` being the main entry point.
 
-Section \ref{sec:mfm:cmake:main_functions} describes the main `CMake`
+Section "Main functions" describes the main `CMake`
 functions provided by the project.
 
-Section \ref{sec:mfm:creating_derived_project} shows how to create a
-derived project.
+Section "Creation of a derived project" shows how to create a derived
+project.
 
 ## Main functions
-\label{sec:mfm:cmake:main_functions}
 
 The [`CMake`](https://cmake.org) infrastructure provides:
 
@@ -293,7 +287,6 @@ The `mfront_behaviours_library` and `mfront_models_library` are
 available for behaviours and point-wise models respectively.
 
 ## Creation of a derived project
-\label{sec:mfm:creating_derived_project}
 
 This section describes the process for setting up a new project based on the [`CMake`
 infrastructure](cmake-infrastructure.html) of the `MFrontGallery` project.
