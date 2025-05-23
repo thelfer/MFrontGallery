@@ -1,5 +1,5 @@
 ---
-title: The `MFrontGallery` project
+title: The MFrontGallery project
 tags:
   - MFront
   - Mechanical solvers
