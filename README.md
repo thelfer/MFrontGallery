@@ -4,6 +4,10 @@ This project aims at gathering high quality, thoroughly tested, well
 written, efficient and **ready-to-use** `MFront` implementations of
 various material properties, behaviours and models.
 
+The goals of the project is described in depth in this JOSS paper:
+
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07742/status.svg)](https://doi.org/10.21105/joss.07742)
+
 It is mainly decomposed in two parts:
 
 - `generic-behaviours`: this part is dedicated to various mechanical
