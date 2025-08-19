@@ -28,6 +28,21 @@ function(check_ansys_compatibility mat search_paths source)
       set(file_OK OFF PARENT_SCOPE)
     endif(nb_modelling_hypotheses EQUAL 0)
     foreach(h ${modelling_hypotheses})
+      if(h STREQUAL "PlaneStress")
+        if(behaviour_type STREQUAL "1")
+          mfront_query(behaviour_has_strain_measure
+                       ${mat} "${search_paths}" ${source} "--is-strain-measure-defined")
+          if(behaviour_has_strain_measure STREQUAL "true")
+             mfront_query(behaviour_strain_measure
+                         ${mat} "${search_paths}" ${source} "--strain-measure")
+             if(behaviour_strain_measure STREQUAL "Hencky")
+     	       # small strain behaviours are not supported, skipping
+	       set(file_OK OFF PARENT_SCOPE)
+               set(compatibility_failure "Hencky strain are not supported in plane stress yet" PARENT_SCOPE)
+             endif(behaviour_strain_measure STREQUAL "Hencky")
+          endif(behaviour_has_strain_measure STREQUAL "true")
+        endif(behaviour_type STREQUAL "1")
+      endif(h STREQUAL "PlaneStress")
       if(NOT h STREQUAL "AxisymmetricalGeneralisedPlaneStress")
         set(_external_state_variable_test OFF)
         mfront_query(external_state_variables
