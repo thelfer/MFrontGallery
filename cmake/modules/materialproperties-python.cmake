@@ -36,14 +36,14 @@ macro(mfront_properties_python_library mat)
   target_include_directories(${lib}
     PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/python/include"
     PRIVATE "${TFEL_INCLUDE_PATH}"
-    PRIVATE "${PYTHON_INCLUDE_DIRS}")
+    PRIVATE "${Python_INCLUDE_DIRS}")
   if(WIN32)
     set_target_properties(${lib} PROPERTIES
       COMPILE_FLAGS "-DHAVE_ROUND")
   endif(WIN32)
-  target_link_libraries(${lib} ${PYTHON_LIBRARIES})
+  target_link_libraries(${lib} ${Python_LIBRARIES})
   install(TARGETS ${lib} DESTINATION
-    lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/mfm)
+    lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/mfm)
   set_target_properties(${lib} PROPERTIES PREFIX "")
   if(WIN32)
     set_target_properties(${lib} PROPERTIES SUFFIX ".pyd")
@@ -61,7 +61,7 @@ macro(python_property_test mat file)
     set(test_file "${CMAKE_CURRENT_SOURCE_DIR}/${file}.py")
     set(test_name "${file}-python")
     add_test(NAME ${test_name}
-      COMMAND ${PYTHON_EXECUTABLE} ${test_file}
+      COMMAND ${Python_EXECUTABLE} ${test_file}
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/python")
     if((CMAKE_HOST_WIN32) AND (NOT MSYS))
       set_property(TEST ${test_name}

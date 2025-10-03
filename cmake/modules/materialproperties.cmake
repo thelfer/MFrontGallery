@@ -11,8 +11,8 @@ function(add_mfront_material_property_source lib mat interface search_paths mfro
   set(file_OK ON PARENT_SCOPE)
 endfunction(add_mfront_material_property_source)
 
-function(add_mfront_property_sources lib mat interface search_paths file)
-  get_mfront_source_location(${file})
+function(add_mfront_property_sources lib mat interface search_paths source)
+  get_mfront_source_location(${source})
   if(NOT mfront_path)
     list(APPEND ${lib}_OTHER_SOURCES "${source}")
     set(${lib}_OTHER_SOURCES
@@ -37,7 +37,7 @@ function(add_mfront_property_sources lib mat interface search_paths file)
         list(APPEND ${lib}_MFRONT_SOURCES ${mfront_path})
         set(${lib}_MFRONT_SOURCES ${${lib}_MFRONT_SOURCES} PARENT_SCOPE)
       else(TFEL_MADNEX_SUPPORT)
-        message(STATUS "file '${file}' has been discarded since "
+        message(STATUS "source '${source}' has been discarded since "
 	                   "madnex support has not been enabled")
       endif(TFEL_MADNEX_SUPPORT)
     else()
@@ -55,11 +55,11 @@ function(add_mfront_property_sources lib mat interface search_paths file)
           if(NOT _n_path_tokens EQUAL 5)
             message(FATAL_ERROR "invalid mdnx path '${source}'")
           endif()
-         list(GET _path_tokens 1 _madnex_source_file)
-         if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")
-           message(FATAL_ERROR "invalide madnex file: "
-                   "no file named '${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}'")
-         endif()
+          list(GET _path_tokens 1 _madnex_source_file)
+           if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")
+             message(FATAL_ERROR "invalide madnex file: "
+                     "no file named '${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}'")
+           endif()
           list(APPEND ${lib}_MFRONT_SOURCES
               "${CMAKE_CURRENT_SOURCE_DIR}/${_madnex_source_file}")
         else("${mdnx_prefix}" EQUAL 0)

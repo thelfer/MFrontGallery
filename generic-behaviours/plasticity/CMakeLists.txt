@@ -19,7 +19,9 @@ endif(NOT MSVC)
 mfront_behaviours_library(Plasticity
   ${MFRONT_BEHAVIOURS_PLASTICITY_SOURCES})
 
-astermtest(Plasticity asteriwan)
+astermtest(Plasticity asteriwan
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/iwan.ref)
+  
 #
 castemmtest(Plasticity SemiImplicitModifiedCamClay_OpenGeoSys2020_Triax
   BEHAVIOUR umatsemiimplicitmodifiedcamclay_opengeosys2020

@@ -466,7 +466,9 @@ macro(install_generic_behaviour dir file)
 endmacro(install_generic_behaviour)
 
 macro(install_mfront file mat type)
-  install(FILES ${file} DESTINATION "share/${PACKAGE_NAME}/materials/${mat}/${type}")
+  if(EXISTS ${file})
+    install(FILES ${file} DESTINATION "share/${PACKAGE_NAME}/materials/${mat}/${type}")
+  endif(EXISTS ${file})
 endmacro(install_mfront)
 
 # function(mfmtg_generate target input)

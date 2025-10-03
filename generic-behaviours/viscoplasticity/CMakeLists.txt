@@ -17,5 +17,8 @@ endif(NOT MSVC)
 mfront_behaviours_library(Viscoplasticity
  ${MFRONT_BEHAVIOURS_VISCOPLASTICITY_SOURCES})
 
-astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-uniaxial)
-astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-biaxial)
+astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-uniaxial
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/LoadInducedThermalStrain_Torelli2018-uniaxial.ref)
+astermtest(Viscoplasticity asterLoadInducedThermalStrain_Torelli2018-biaxial
+  REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/LoadInducedThermalStrain_Torelli2018-biaxial.ref)
+

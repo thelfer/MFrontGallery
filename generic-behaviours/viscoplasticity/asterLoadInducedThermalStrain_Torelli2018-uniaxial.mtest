@@ -1,0 +1,13 @@
+@Behaviour<aster> @library@ 'asterloadinducedthermalstrain_torelli2018';
+
+@ImposedStress 'SXX' {-10.: 0., 0.: -20, 300.: -20};
+@ImposedStress 'SYY' {-10.: 0., 0.: 0.0, 300.: 0.0};
+@ImposedStress 'SZZ' {-10.: 0., 0.: 0.0, 300.: 0.0};
+
+@ExternalStateVariable 'Temperature' {-10.:20.,0.:20.,100.:500.,200.:20.,300.:500.};
+
+@Times {-10.,0. in 500.,100. in 500.,200. in 500.,300. in 500.};
+
+@Test<file> @reference_file@ {'EXX':2} 2.e-7; 
+@Test<file> @reference_file@ {'EYY':3} 2.e-7; 
+@Test<file> @reference_file@ {'EZZ':4} 2.e-7; 
