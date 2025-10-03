@@ -146,6 +146,9 @@ function(add_mtest interface lib)
       endif()
     endif()
   endforeach()
+  if(NOT _LIBRARY)
+    set(_LIBRARY "--@library@='$<TARGET_FILE:${lib}>'")
+  endif(NOT _LIBRARY)
   if(NOT _TESTS)
     message(FATAL_ERROR "add_mtest : no test specified")
   endif(NOT _TESTS)
@@ -220,19 +223,6 @@ function(add_mtest interface lib)
     if(CMAKE_CONFIGURATION_TYPES)
       foreach(conf ${CMAKE_CONFIGURATION_TYPES})
         set(file "${_TEST_NAME}-${conf}.mtest")
-        if(NOT _LIBRARY)
-          get_property(
-            ${lib}BuildPath
-            TARGET ${lib}
-            PROPERTY LOCATION_${conf})
-          set(_LIBRARY "--@library@='${${lib}BuildPath}'")
-        endif(NOT _LIBRARY)
-        foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
-          get_property(
-            ${mplib}BuildPath
-            TARGET ${mplib}
-            PROPERTY LOCATION_${conf})
-        endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
         if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FULL_PATH}.mtest.in)
           configure_file(${_MTEST_FULL_PATH}.mtest.in ${_MTEST_FULL_PATH}-${conf}.mtest
                          @ONLY)
@@ -257,19 +247,6 @@ function(add_mtest interface lib)
         endforeach(rm ${IEEE754_ROUNDING_MODES})
       endforeach(conf ${CMAKE_CONFIGURATION_TYPES})
     else(CMAKE_CONFIGURATION_TYPES)
-      get_property(
-        ${lib}BuildPath
-        TARGET ${lib}
-        PROPERTY LOCATION)
-      if(NOT _LIBRARY)
-        set(_LIBRARY --@library@="${${lib}BuildPath}")
-      endif(NOT _LIBRARY)
-      foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
-        get_property(
-          ${mplib}BuildPath
-          TARGET ${mplib}
-          PROPERTY LOCATION)
-      endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
       if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_MTEST_FULL_PATH}.mtest.in)
         configure_file(${_MTEST_FULL_PATH}.mtest.in ${_MTEST_FULL_PATH}.mtest @ONLY)
         set(test_file ${_MTEST_FULL_PATH}.mtest)
@@ -609,7 +586,7 @@ function(add_python_test interface lib)
           PROPERTY LOCATION)
       endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
       configure_file(${test}.py.in ${test}.py @ONLY)
-      add_test(NAME ${test}_py COMMAND ${PYTHON_EXECUTABLE} ${test}.py)
+      add_test(NAME ${test}_py COMMAND ${Python_EXECUTABLE} ${test}.py)
       set_tests_properties(${test}_py PROPERTIES DEPENDS ${lib})
     endforeach(test ${_TESTS})
   endif(TFEL_PYTHON_BINDINGS)
