@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.10.0)
+
 cmake_policy(SET CMP0048 NEW)
 string(CONCAT MFrontGalleryDescription
 	"The MFrontGallery project provides "
@@ -10,8 +12,6 @@ project(MFrontGallery
         DESCRIPTION  "${MFrontGalleryDescription}"
         HOMEPAGE_URL "https://thelfer.github.io/MFrontGallery/web/index.html")
 set(PACKAGE mfront-gallery)
-
-cmake_minimum_required(VERSION 3.12.0)
 
 include(cmake/modules/mfm.cmake)
 

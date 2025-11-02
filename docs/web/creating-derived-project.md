@@ -37,9 +37,9 @@ The next step consist of creating a top level `CMakeLists.txt` file.
 Here is a minimal example:
 
 ~~~~{.cmake}
+cmake_minimum_required(VERSION 3.10.0)
 project(NewMaterialManagementProject)
 set(PACKAGE new-material-management-project)
-cmake_minimum_required(VERSION 3.0.2)
 
 include(cmake/modules/mfm.cmake)
 

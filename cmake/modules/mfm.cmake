@@ -1,7 +1,11 @@
 cmake_policy(SET CMP0007 NEW)
 cmake_policy(SET CMP0053 NEW)
-cmake_policy(VERSION 3.31)
-cmake_policy(SET CMP0177 NEW)
+cmake_policy(VERSION 3.10)
+cmake_policy(SET CMP0054 NEW)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.31")
+  cmake_policy(VERSION 3.31)
+  cmake_policy(SET CMP0177 NEW)
+endif(CMAKE_VERSION VERSION_GREATER_EQUAL "3.31")
 
 set(MFM_USE_FORTRAN OFF)
 
