@@ -220,6 +220,13 @@ function(add_mtest interface lib)
       endif(NOT _MDNX_BEHAVIOUR)
       list(APPEND _mdnx_args "--behaviour=${_MDNX_BEHAVIOUR}")
     endif(${_mdnx_file})
+    set(_material_properties_libraries_args)
+    set(_index 0)
+    foreach(_mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
+      list(APPEND _material_properties_libraries_args
+	   "--@mplibrary${_index}@='$<TARGET_FILE:${_mplib}>'")
+      math(EXPR _index "${_index}+1")
+    endforeach()
     if(CMAKE_CONFIGURATION_TYPES)
       foreach(conf ${CMAKE_CONFIGURATION_TYPES})
         set(file "${_TEST_NAME}-${conf}.mtest")
@@ -239,6 +246,7 @@ function(add_mtest interface lib)
               --@XMLOutputFile="${_TEST_NAME}_${conf}_${rm}_mtest.xml"
               ${_mdnx_args}
               ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE} ${_REFERENCE_FILE}
+     	      ${_material_properties_libraries_args}
               ${_ACCELERATION_ALGORITHM} ${_STIFFNESS_MATRIX_TYPE} ${test_file}
             CONFIGURATIONS ${conf})
           set_property(
@@ -262,6 +270,7 @@ function(add_mtest interface lib)
             --result-file-output=false
             ${_mdnx_args}
             ${_LIBRARY} ${_BEHAVIOUR} ${_INTERFACE}
+	    ${_material_properties_libraries_args}
             ${_REFERENCE_FILE} ${_ACCELERATION_ALGORITHM}
             ${_STIFFNESS_MATRIX_TYPE} ${test_file})
         set_property(TEST ${_TEST_NAME}_${rm}_mtest
@@ -575,25 +584,27 @@ function(add_python_test interface lib)
       message(FATAL_ERROR "add_python_test : no test specified")
     endif(${_TESTS_LENGTH} LESS 1)
     foreach(test ${_TESTS})
-      get_property(
-        ${lib}BuildPath
-        TARGET ${lib}
-        PROPERTY LOCATION)
+      set(_args )
+      list(APPEND _args $<TARGET_FILE:${lib}>)
       foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
-        get_property(
-          ${mplib}BuildPath
-          TARGET ${mplib}
-          PROPERTY LOCATION)
+        list(APPEND _args $<TARGET_FILE:${mplib}>)
       endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
-      configure_file(${test}.py.in ${test}.py @ONLY)
-      add_test(NAME ${test}_py COMMAND ${Python_EXECUTABLE} ${test}.py)
+      if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${test}.py.in")
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${test}.py.in"
+                       "${CMAKE_CURRENT_BINARY_DIR}/${test}.py" @ONLY)
+        add_test(NAME ${test}_py COMMAND ${Python_EXECUTABLE}
+                  ${CMAKE_CURRENT_BINARY_DIR}/${test}.py ${_args})
+      else()
+        add_test(NAME ${test}_py COMMAND ${Python_EXECUTABLE}
+                 ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py ${_args})
+      endif()
       set_tests_properties(${test}_py PROPERTIES DEPENDS ${lib})
+      foreach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
+        set_tests_properties(${test}_py PROPERTIES DEPENDS ${mplib})
+      endforeach(mplib ${_MATERIAL_PROPERTIES_LIBRARIES})
     endforeach(test ${_TESTS})
   endif(TFEL_PYTHON_BINDINGS)
-endfunction(
-  add_python_test
-  interface
-  lib)
+endfunction(add_python_test)
 
 function(castempythontest mat)
   if(MFM_CASTEM_BEHAVIOUR_INTERFACE)
