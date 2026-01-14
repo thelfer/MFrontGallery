@@ -1,0 +1,86 @@
+@DSL ImplicitII;
+@Behaviour PonteCastaneda1992;
+@Author Martin Antoine;
+@Date 12 / 12 / 25;
+@Description{"Ponte Castaneda second-order estimates for homogenization of non-linear elasticity (one potential), based on second-moments computation"};
+@UseQt true;
+@Algorithm NewtonRaphson_NumericalJacobian;
+@PerturbationValueForNumericalJacobianComputation 1e-10;
+@Epsilon 1e-14;
+
+@TFELLibraries {"Material"};
+@Includes{
+#include "TFEL/Material/IsotropicModuli.hxx"
+#include "TFEL/Material/HomogenizationSecondMoments.hxx"
+#include "TFEL/Material/LinearHomogenizationBounds.hxx"
+}
+
+@MaterialProperty stress sig0;
+sig0.setEntryName("sig0");
+@MaterialProperty real n_;
+n_.setEntryName("n_");
+@MaterialProperty stress k_m;
+k_m.setEntryName("k_m");
+@MaterialProperty stress kar;
+kar.setEntryName("kar");
+@MaterialProperty stress mur;
+mur.setEntryName("mur");
+@MaterialProperty real fr;
+fr.setEntryName("fr");
+
+@ModellingHypothesis Tridimensional;
+@PhysicalBounds T in [0. : *[;
+
+@StateVariable real e_0;
+e_0.setEntryName("MatrixSquaredEquivalentStrain");
+@StateVariable real e_r;
+e_r.setEntryName("InclusionSquaredEquivalentStrain");
+
+@LocalVariable StiffnessTensor Chom;
+@LocalVariable Stensor4 I;
+@LocalVariable Stensor4 J;
+@LocalVariable Stensor4 K;
+
+@InitLocalVariables{
+I=tfel::math::st2tost2<3u,real>::Id();
+J=tfel::math::st2tost2<3u,real>::J();
+K=tfel::math::st2tost2<3u,real>::K();
+}
+
+@Integrator {
+//secant modulus/////////////////////////////////
+const auto po = std::pow(max(e_0+de_0,real(1e-10)),0.5*(n_-1));
+const auto mu0 = sig0/3.*po;
+
+//second moments/////////////////////////////////
+const auto em2 = tfel::math::trace(eto+deto)/3.;
+const auto ed = tfel::math::deviator(eto+deto);
+const auto eeq2 = 2./3.*(ed|ed);
+using namespace tfel::material;
+const auto kg0 = KGModuli<stress>(k_m,mu0);
+const auto kgr = KGModuli<stress>(kar,mur);
+using namespace tfel::material::homogenization::elasticity;
+const auto eeq2_ = computeMeanSquaredEquivalentStrain(kg0,fr,kgr,em2,eeq2);
+const auto eeq20=std::get<0>(eeq2_);
+const auto eeq2r=std::get<1>(eeq2_);
+
+//residues/////////////////////////////////////
+fe_0 = e_0+de_0 - eeq20;
+fe_r = e_r+de_r - eeq2r;
+
+//sigma//////////////////////////////////////
+vector<real> tab_f={1-fr,fr};
+vector<stress> tab_k = {k_m,kar};
+vector<stress> tab_mu = {mu0,mur};
+const auto HSB=computeIsotropicHashinShtrikmanBounds<3,stress>(tab_f,tab_k,tab_mu);
+const auto LB=std::get<0>(HSB);
+const auto kHS=std::get<0>(LB);
+const auto muHS=std::get<1>(LB);
+Chom=3*kHS*J+2*muHS*K;
+sig = Chom*(eto+deto);
+}
+
+
+@TangentOperator{
+Dt=Chom;
+}
