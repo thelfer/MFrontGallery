@@ -1,0 +1,32 @@
+@ModellingHypothesis 'Tridimensional';
+@Behaviour<@interface@> @library@ @behaviour@;
+//@Behaviour<generic> 'src/libBehaviour.so' 'BetaRule';
+@MaterialProperty<constant> 'FirstPhaseFraction' 0.5;
+@MaterialProperty<constant> 'FirstPhaseE_'               208000;
+@MaterialProperty<constant> 'FirstPhasenu_'               0.3;
+@MaterialProperty<constant> 'FirstPhasemu_'               80000;
+@MaterialProperty<constant> 'SecondPhaseE_'               104000;
+@MaterialProperty<constant> 'SecondPhasenu_'               0.3;
+@MaterialProperty<constant> 'SecondPhasemu_'               40000;
+@MaterialProperty<constant> 'FirstPhasetau0'               36.;
+@MaterialProperty<constant> 'SecondPhasetau0'               25.;
+@MaterialProperty<constant> 'FirstPhasen'               10.;
+@MaterialProperty<constant> 'SecondPhasen'               5.;
+@ExternalStateVariable 'Temperature' 293.15;
+@ImposedStrain 'EXX' {0 : 0, 5 :1e-2};
+@ImposedStress 'SYY' {0 : 0, 1 : 0};
+@ImposedStress 'SZZ' {0 : 0, 1 : 0};
+@ImposedStress 'SXY' {0 : 0, 1 : 0};
+@ImposedStress 'SXZ' {0 : 0, 1 : 0};
+@ImposedStress 'SYZ' {0 : 0, 1 : 0};
+@Times {0, 3 in 400};
+
+//@OutputFilePrecision 14;
+
+@Test<file> @reference_file@ 'EXX' 2 1.e-14;
+@Test<file> @reference_file@ 'SXX' 8 1e-3;
+@Test<file> @reference_file@ 'SYY' 9 1e-3;
+@Test<file> @reference_file@ 'SZZ' 10 1e-3;
+@Test<file> @reference_file@ 'SXY' 11 1e-3;
+@Test<file> @reference_file@ 'SXZ' 12 1e-3;
+@Test<file> @reference_file@ 'SYZ' 13 1e-3;

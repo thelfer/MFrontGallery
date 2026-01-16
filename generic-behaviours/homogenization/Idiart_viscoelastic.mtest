@@ -1,0 +1,30 @@
+@ModellingHypothesis 'Tridimensional';
+
+@Behaviour<@interface@> @library@ @behaviour@;
+
+@ExternalStateVariable 'Temperature' {0 : 1000,1:1000};
+@MaterialProperty<constant> 'ka0' 2.e9;
+@MaterialProperty<constant> 'mu0' 1.e9;
+@MaterialProperty<constant> 'kav0' 0.4e9;
+@MaterialProperty<constant> 'muv0' 0.2e9;
+@MaterialProperty<constant> 'kar' 20.e9;
+@MaterialProperty<constant> 'mur' 10.e9;
+@MaterialProperty<constant> 'kavr' 4e6;
+@MaterialProperty<constant> 'muvr' 2e6;
+@MaterialProperty<constant> 'tau0' 0.2;
+@MaterialProperty<constant> 'fr' 0.06557;
+@MaterialProperty<constant> 'e' 10.;
+@ImposedStrain 'EXX' {0 : 0, 6 : 6e-1};
+@ImposedStrain 'EYY' {0 : 0, 6 : 0};
+@ImposedStrain 'EZZ' {0 : 0, 6 : 0};
+@ImposedStrain 'EXY' {0 : 0, 6 : 0};
+@ImposedStrain 'EXZ' {0 : 0, 6 : 0};
+@ImposedStrain 'EYZ' {0 : 0, 6 : 0};
+@Times {0,5 in 200};
+
+@Test<file> @reference_file@ 'EXX' 2 1.e-14;
+@Test<file> @reference_file@ 'EYY' 3 1e-14;
+@Test<file> @reference_file@ 'EZZ' 4 1e-14;
+@Test<file> @reference_file@ 'EXY' 5 1e-14;
+@Test<file> @reference_file@ 'EXZ' 6 1e-14;
+@Test<file> @reference_file@ 'EYZ' 7 1e-14;

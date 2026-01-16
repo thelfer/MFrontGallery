@@ -1,0 +1,59 @@
+@DSL Default;
+@Behaviour Taylor;
+@Author Thomas Helfer / Antoine Martin;
+
+
+@ModellingHypothesis Tridimensional;
+@PhysicalBounds T in [0. : *[;
+
+@BehaviourVariable b1 {
+file: "Plasticity.mfront",
+variables_suffix: "1",
+external_names_prefix: "FirstPhase",
+shared_external_state_variables: {".+"}
+};
+
+@BehaviourVariable b2 {
+file: "Plasticity.mfront",
+variables_suffix: "2",
+external_names_prefix: "SecondPhase",
+shared_external_state_variables: {".+"}
+};
+
+@MaterialProperty real f;
+f.setEntryName("FirstPhaseFraction");
+
+@ProvidesTangentOperator;
+
+@Integrator{
+  // integrating the first phase
+  
+  b1.deto=deto;
+  
+  constexpr auto b1_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r1 = b1.integrate(b1_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r1 != 0) && (r1 != 1)) {
+    return false;
+  }
+  //auto Dt1 = {};
+  StiffnessTensor Dt1 = b1.getTangentOperator();
+ 
+  // integrating the second phase
+  
+  b2.deto=deto;
+  constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r2 != 0) && (r2 != 1)) {
+    return false;
+  }
+  auto Dt2 = StiffnessTensor{};
+  Dt2 = b2.getTangentOperator();
+  
+  // mise à jour des variables internes
+  updateAuxiliaryStateVariables(b1);
+  updateAuxiliaryStateVariables(b2);
+
+ 
+  sig = f * sig1 + (1 - f) * sig2;
+  Dt = f * Dt1 + (1 - f) * Dt2;
+}
