@@ -35,7 +35,7 @@ evp2.setEntryName("SecondPhaseViscoplasticStrain");
 
 
 @BehaviourVariable b1 {
-file: "MericCailletaudSingleCrystalViscoPlasticity.mfront",
+file: "MericCailletaud.mfront",
 variables_suffix: "1",
 store_gradients: false,
 external_names_prefix: "FirstPhase",
@@ -43,7 +43,7 @@ shared_external_state_variables: {".+"}
 };
 
 @BehaviourVariable b2 {
-file: "MericCailletaudSingleCrystalViscoPlasticity.mfront",
+file: "MericCailletaud.mfront",
 variables_suffix: "2",
 store_gradients: false,
 external_names_prefix: "SecondPhase",
