@@ -55,7 +55,6 @@ eto1.setEntryName("FirstPhaseTotalStrain");
     return false;
   }
   Dt1 = b1.getTangentOperator();
-  std::cout<<"hellooo " << Dt1(0,0)<<std::endl;
   iDt1= invert(Dt1);
   
   // integrating the second phase 
