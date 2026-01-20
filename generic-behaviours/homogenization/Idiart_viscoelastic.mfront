@@ -1,0 +1,113 @@
+@DSL Default;
+@Behaviour Idiart_viscoelastic;
+@Author Martin Antoine;
+@Date 06 / 05 / 25;
+@UseQt false;
+
+@TFELLibraries {"Material"};
+@Includes{
+#include "TFEL/Material/IsotropicEshelbyTensor.hxx"
+#include "TFEL/Material/StiffnessTensor.hxx"
+#include "TFEL/Material/IsotropicModuli.hxx"}
+
+@MaterialProperty real ka0;
+ka0.setEntryName("ka0");
+@MaterialProperty real mu0;
+mu0.setEntryName("mu0");
+@MaterialProperty real kav0;
+kav0.setEntryName("kav0");
+@MaterialProperty real muv0;
+muv0.setEntryName("muv0");
+@MaterialProperty real kar;
+kar.setEntryName("kar");
+@MaterialProperty real mur;
+mur.setEntryName("mur");
+@MaterialProperty real kavr;
+kavr.setEntryName("kavr");
+@MaterialProperty real muvr;
+muvr.setEntryName("muvr");
+@MaterialProperty real tau0;
+tau0.setEntryName("tau0");
+@MaterialProperty real fr;
+fr.setEntryName("fr");
+@MaterialProperty real e;
+e.setEntryName("e");
+
+@ModellingHypothesis Tridimensional;
+@PhysicalBounds T in [0. : *[;
+
+@StateVariable Stensor alpha_;
+alpha_.setEntryName("MacroscopicViscousStrain");
+@StateVariable Stensor alpha_s_r;
+alpha_s_r.setEntryName("InclusionSolenoidalViscousStrain");
+
+@LocalVariable Stensor4 C0;
+@LocalVariable Stensor4 M0;
+@LocalVariable Stensor4 C_;
+@LocalVariable Stensor4 M_;
+@LocalVariable Stensor4 Cs;
+@LocalVariable Stensor4 Ms;
+@LocalVariable Stensor4 P0v;
+@LocalVariable Stensor4 P0e;
+@LocalVariable Stensor4 D0;
+@LocalVariable Stensor4 I;
+@LocalVariable tfel::math::tmatrix<12,12,real> mat;
+@LocalVariable tfel::math::tmatrix<12,1,real> f_;
+
+@InitLocalVariables{
+I=tfel::math::st2tost2<3u,real>::Id();
+const auto J=tfel::math::st2tost2<3u,real>::J();
+const auto K=tfel::math::st2tost2<3u,real>::K();
+C0=3*ka0*J+2*mu0*K;
+M0=3*kav0*J+2*muv0*K;
+const auto Cr=3*kar*J+2*mur*K;
+const auto Mr=3*kavr*J+2*muvr*K;
+const auto f0=1-fr;
+const auto invdC=invert(Cr-C0);
+const auto invdM=invert(Mr-M0);
+
+using namespace tfel::material::homogenization::elasticity;
+const auto kg0=KGModuli<stress>(ka0,mu0);
+const auto kgv0=KGModuli<stress>(kav0,muv0);
+tfel::math::tvector<3u,real> n={1.,0.,0.};
+P0e=computeAxisymmetricalHillPolarisationTensor(kg0,n,e);
+P0v=computeAxisymmetricalHillPolarisationTensor(kgv0,n,e);
+
+C_=C0+fr*invert(invdC+P0e-fr*P0e);
+M_=M0+fr*invert(invdM+P0v-fr*P0v);
+Cs=fr/f0*invert(invert(C0)-P0e);
+D0=M0-tau0*C0;
+Ms=tau0*Cs+fr/f0*(D0-D0*P0v*D0);
+}
+
+@Integrator {
+//jacobian
+tfel::math::map_derivative<0,0,Stensor,Stensor>(mat) =(M_/dt+C_);
+tfel::math::map_derivative<6,0,Stensor,Stensor>(mat)=((M0+D0*P0v*(M_-M0))/dt+C0);
+tfel::math::map_derivative<0,6,Stensor,Stensor>(mat)=((M_-M0)*(I-P0v*D0)/dt+C_-C0);
+tfel::math::map_derivative<6,6,Stensor,Stensor>(mat)=-((Ms-D0*P0v*(M_-M0)*(I-P0v*D0))/dt+Cs);
+
+tfel::math::map_derivative<0,0,Stensor,real>(f_)=C_*(eto+deto)-C_*(alpha_)-(C_-C0)*(alpha_s_r);
+tfel::math::map_derivative<6,0,Stensor,real>(f_)=-(C0*alpha_-Cs*alpha_s_r-C0*(eto+deto));
+
+TinyMatrixInvert<12,real>::exe(mat);
+tfel::math::tmatrix<12,1,real> dv=mat*f_;
+
+dalpha_=tfel::math::map_derivative<0,0,Stensor,real>(dv);
+dalpha_s_r=tfel::math::map_derivative<6,0,Stensor,real>(dv);
+
+sig+=C_*(deto-dalpha_-dalpha_s_r)+C0*dalpha_s_r;
+}
+
+@TangentOperator{
+if (smt){
+Stensor4 iJ_alpha__alpha_=tfel::math::map_derivative<0,0,Stensor,Stensor>(mat);
+Stensor4 iJ_alpha__alpha_s_r=tfel::math::map_derivative<0,6,Stensor,Stensor>(mat);
+Stensor4 iJ_alpha_s_r_alpha_=tfel::math::map_derivative<6,0,Stensor,Stensor>(mat);
+Stensor4 iJ_alpha_s_r_alpha_s_r=tfel::math::map_derivative<6,6,Stensor,Stensor>(mat);
+
+const auto dalpha_deto=(iJ_alpha__alpha_*C_+iJ_alpha__alpha_s_r*C0);
+const auto dalphar_deto=(iJ_alpha_s_r_alpha_*C_+iJ_alpha_s_r_alpha_s_r*C0);
+Dt=C_-C_*(dalpha_deto+dalphar_deto)+C0*dalphar_deto;
+}
+}

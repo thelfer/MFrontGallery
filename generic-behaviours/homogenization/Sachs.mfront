@@ -1,0 +1,101 @@
+@DSL Implicit;
+@Behaviour Sachs;
+@Author Thomas Helfer / Antoine Martin;
+
+@Algorithm NewtonRaphson;
+@Epsilon 1.e-14;
+@Theta 1;
+
+@ModellingHypothesis Tridimensional;
+@PhysicalBounds T in [0. : *[;
+
+@Includes{
+#include "MFront/GenericBehaviour/BehaviourData.hxx"
+}
+
+@BehaviourVariable b1 {
+file: "Plasticity.mfront",
+variables_suffix: "1",
+store_gradients: false,
+external_names_prefix: "FirstPhase",
+shared_external_state_variables: {".+"}
+};
+
+@BehaviourVariable b2 {
+file: "Plasticity.mfront",
+variables_suffix: "2",
+external_names_prefix: "SecondPhase",
+shared_external_state_variables: {".+"}
+};
+
+@MaterialProperty real f;
+f.setEntryName("PhaseFraction");
+
+@StateVariable StrainStensor eto1;
+eto1.setEntryName("FirstPhaseTotalStrain");
+
+@LocalVariable StrainStensor A;
+@LocalVariable StiffnessTensor Dt1;
+@LocalVariable StiffnessTensor Dt2;
+@LocalVariable StiffnessTensor iDt1;
+@LocalVariable StiffnessTensor iDt2;
+
+
+
+@Integrator {
+  // integrating the first phase
+  const auto i1=initialize(b1);
+  if ((i1 != 0) && (i1 != 1)) {
+    return false;
+  }
+  b1.eto=eto1;
+  b1.deto=deto1;
+  
+  Dt1 = StiffnessTensor{};
+  constexpr auto b1_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r1 = b1.integrate(b1_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r1 != 0) && (r1 != 1)) {
+    return false;
+  }
+  
+  Dt1 = b1.getTangentOperator();
+  iDt1= invert(Dt1);
+  
+  // integrating the second phase 
+  const auto i2=initialize(b2);
+  if ((i2 != 0) && (i2 != 1)) {
+    return false;
+  }
+  Dt2 = StiffnessTensor{};
+  constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r2 != 0) && (r2 != 1)) {
+    return false;
+  }
+  
+  Dt2 = b2.getTangentOperator();
+  iDt2= invert(Dt2);
+  
+  A=iDt2*(b1.sig-b2.sig);
+  auto rE=deto-f*deto1-(1-f)*b2.deto;
+  feto1=rE-(1-f)*A;
+  auto Id=st2tost2<3u,real>::Id();
+  dfeto1_ddeto1 = (-f*Id-(1-f)*iDt2*Dt1);
+}
+
+
+@ProcessNewCorrection {
+  // static decondensation
+    b2.deto += A+iDt2*Dt1*delta_deto1;
+  }
+
+@ComputeFinalStress{
+sig = b1.sig;
+}
+
+@TangentOperator{
+if (smt){
+  Dt = invert(f*iDt1+(1-f)*iDt2);
+  }
+}
+

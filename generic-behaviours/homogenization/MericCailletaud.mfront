@@ -1,0 +1,105 @@
+@DSL Implicit;
+@Behaviour MericCailletaud;
+@Author Thomas Helfer;
+@Date 17 / 10 / 2019;
+@Description {
+}
+
+@ModellingHypothesis Tridimensional;
+@OrthotropicBehaviour;
+
+@Algorithm NewtonRaphson;
+@Epsilon 1.e-14;
+@Theta 1;
+
+@MaterialProperty stress tau0;
+@MaterialProperty real n;
+@MaterialProperty stress E_;
+@MaterialProperty real nu_;
+@MaterialProperty stress mu_;
+
+@Brick StandardElasticity{
+  young_modulus1 : E_,
+  young_modulus2 : E_,
+  young_modulus3 : E_,
+  poisson_ratio12 : nu_,
+  poisson_ratio23 : nu_,
+  poisson_ratio13 : nu_,
+  shear_modulus12 : mu_,
+  shear_modulus23 : mu_,
+  shear_modulus13 : mu_
+};
+
+@CrystalStructure FCC;
+@SlidingSystem<0, 1, -1>{1, 1, 1};
+@InteractionMatrix{1, 1, 0.6, 1.8, 1.6, 12.3, 1.6};
+
+@Parameter K = 25.;
+@Parameter Q = 11.43;
+@Parameter b = 2.1;
+@Parameter d = 494.0;
+@Parameter C = 14363;
+
+@IntegrationVariable strain g[Nss];
+g.setEntryName("ViscoplasticSlip");
+
+@AuxiliaryStateVariable strain p[Nss];
+p.setEntryName("EquivalentViscoplasticSlip");
+
+@AuxiliaryStateVariable strain a[Nss];
+a.setEntryName("BackStrain");
+
+@Integrator {
+  using size_type = unsigned short;
+  const auto& ss = MericCailletaudSlipSystems<real>::getSlipSystems();
+  const auto& m = ss.him;
+  constexpr const auto eeps = 1.e-12;
+  const auto seps = eeps * D(0, 0);
+  real exp_bp[Nss];
+  for (size_type i = 0; i != Nss; ++i) {
+      const auto p_ = p[i] + theta * abs(dg[i]);
+      exp_bp[i] = exp(-b * p_);
+  }
+  for (size_type i = 0; i != Nss; ++i) {
+    const auto tau = sig | ss.mus[i];
+    auto r = tau0;
+    for (size_type j = 0; j != Nss; ++j) {
+      r += Q * m(i, j) * (1 - exp_bp[j]);
+    }
+    const auto da =  //
+        (dg[i] - d * a[i] * abs(dg[i])) / (1 + theta * d * abs(dg[i]));
+    const auto x = C * (a[i] + theta * da);
+    const auto f = max(abs(tau - x) - r, stress(0));
+    if (f > 1.1 * K) {
+      return false;
+    }
+    const auto sgn = tau - x > 0 ? 1 : -1;
+    // elasticity
+    feel += dg[i] * ss.mus[i];
+    dfeel_ddg(i) = ss.mus[i];
+    // viscoplasticity
+    const auto v = pow(f / K, n);
+    const auto dv = n * v / (max(f, seps));
+    fg[i] -= dt * pow(f / K, n) * sgn;
+    dfg_ddeel(i) = -dt * dv * theta * (ss.mus[i] | D);
+    const auto sgn_gi = dg(i) > 0 ? 1 : -1;
+    const auto dda_ddg =
+        (1 - d * a[i] * sgn_gi) / (power<2>(1 + theta * d * abs(dg[i])));
+    dfg_ddg(i, i) += dt * dv * C * theta * dda_ddg;
+    for (size_type j = 0; j != Nss; ++j) {
+      const auto sgn_gj = dg(j) > 0 ? 1 : -1;
+      const auto dr = Q * m(i, j) * theta * b * exp_bp[j] * sgn_gj;
+      dfg_ddg(i, j) += dt * dv * dr * sgn;
+    }
+  }
+}
+
+@UpdateAuxiliaryStateVariables {
+  using size_type = unsigned short;
+  for (size_type i = 0; i != Nss; ++i) {
+    p[i] += abs(dg[i]);
+    const auto da =  //
+        (dg[i] - d * a[i] * abs(dg[i])) / (1 + theta * d * abs(dg[i]));
+    a[i] += da;
+  }
+}

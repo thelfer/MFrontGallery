@@ -1,0 +1,163 @@
+@DSL ImplicitII;
+@Behaviour BetaRule;
+@Author Antoine Martin;
+
+@Algorithm NewtonRaphson;
+@Epsilon 1.e-14;
+@Theta 1;
+
+@ModellingHypothesis Tridimensional;
+@PhysicalBounds T in [0. : *[;
+
+//parameters of beta-rule
+@Parameter real c = 50e3;
+@Parameter real DD = 1e2;
+@Parameter stress sig_0=1e4;
+
+@MaterialProperty real f;
+f.setEntryName("FirstPhaseFraction");
+
+
+@StateVariable Stensor Sig;
+Sig.setEntryName("MacroscopicStress");
+@StateVariable Stensor eto1;
+eto1.setEntryName("FirstPhaseTotalStrain");
+@StateVariable Stensor eto2;
+eto2.setEntryName("SecondPhaseTotalStrain");
+@StateVariable Stensor beta1;
+beta1.setEntryName("FirstPhaseBetaStrain");
+@StateVariable Stensor beta2;
+beta2.setEntryName("SecondPhaseBetaStrain");
+@AuxiliaryStateVariable Stensor evp1;
+evp1.setEntryName("FirstPhaseViscoPlasticStrain");
+@AuxiliaryStateVariable Stensor evp2;
+evp2.setEntryName("SecondPhaseViscoplasticStrain");
+
+
+@BehaviourVariable b1 {
+file: "MericCailletaud.mfront",
+variables_suffix: "1",
+store_gradients: false,
+external_names_prefix: "FirstPhase",
+shared_external_state_variables: {".+"}
+};
+
+@BehaviourVariable b2 {
+file: "MericCailletaud.mfront",
+variables_suffix: "2",
+store_gradients: false,
+external_names_prefix: "SecondPhase",
+shared_external_state_variables: {".+"}
+};
+
+@LocalVariable Stensor4 S1;
+@LocalVariable Stensor4 S2;
+@LocalVariable Stensor devp1;
+@LocalVariable Stensor devp2;
+
+@InitLocalVariables<Append> {
+    auto lambda1 = computeLambda(E_1,nu_1);
+    auto mu1 = computeMu(E_1,nu_1);
+    auto kap1= lambda1+real(2)/3*mu1;
+    auto J=st2tost2<3u,real>::J();
+    auto K=st2tost2<3u,real>::K();
+    S1=stress(1)/(3*kap1)*J+stress(1)/(2*mu1)*K;
+    
+    auto lambda2 = computeLambda(E_2,nu_2);
+    auto mu2 = computeMu(E_2,nu_2);
+    auto kap2= lambda2+real(2)/3*mu2;
+    S2=stress(1)/(3*kap2)*J+stress(1)/(2*mu2)*K;
+}
+
+@Integrator {
+  constexpr const auto eeps = strain(1.e-14);
+  auto Id=Stensor4::Id();
+  
+  const auto i1=initialize(b1);
+  if ((i1 != 0) && (i1 != 1)) {
+    return false;
+  }
+  b1.eto=eto1;
+  b1.deto=deto1;
+  constexpr auto b1_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r1 = b1.integrate(b1_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r1 != 0) && (r1 != 1)) {
+    return false;
+  }
+  StiffnessTensor Dt1 = b1.getTangentOperator();
+  
+  auto dsig1=b1.sig-sig1;
+  auto deel1=b1.eel-eel1;
+  devp1=deto1-deel1;
+  auto ndevp_1=sqrt(real(2)/3*devp1|devp1);
+  auto beta_mts_1=beta1+theta*dbeta1;
+  
+  const auto i2=initialize(b2);
+  if ((i2 != 0) && (i2 != 1)) {
+    return false;
+  }
+  b2.eto=eto2;
+  b2.deto=deto2;
+  constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
+  const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r2 != 0) && (r2 != 1)) {
+    return false;
+  }
+  StiffnessTensor Dt2 = b2.getTangentOperator();
+  
+  auto dsig2=b2.sig-sig2;
+  auto deel2=b2.eel-eel2;
+  devp2=deto2-deel2;
+  real ndevp_2=sqrt(real(2)/3*devp2|devp2);
+  Stensor beta_mts_2=beta2+theta*dbeta2;
+
+  //residues
+  auto dB=(1-f)*dbeta1+f*dbeta2;
+  fSig = -deto+ (1-f)*deto1+f*deto2;
+  feto1 = (dsig1-dSig-c*(dB-dbeta1))/sig_0;
+  feto2 = (dsig2-dSig-c*(dB-dbeta2))/sig_0;
+  fbeta1 = dbeta1-devp1+DD*ndevp_1*beta_mts_1;
+  fbeta2 = dbeta2-devp2+DD*ndevp_2*beta_mts_2;
+  
+
+  //jacobian matrix
+  auto Null = Stensor4{real{}};
+  dfSig_ddSig=Null;
+  dfSig_ddeto1 = (1-f)*Id;
+  dfSig_ddeto2 = f*Id;
+  
+  dfeto1_ddSig = -Id/sig_0;
+  dfeto2_ddSig = -Id/sig_0;
+  
+  dfeto1_ddeto1 = Dt1/sig_0;
+  dfeto2_ddeto2 = Dt2/sig_0;
+  
+  dfeto1_ddbeta1 = c/sig_0*f*Id;
+  dfeto1_ddbeta2 = -c/sig_0*f*Id;
+  dfeto2_ddbeta1 = c/sig_0*(f-1)*Id;
+  dfeto2_ddbeta2 = c/sig_0*(1-f)*Id;
+  
+  
+  dfbeta1_ddeto1 = -(Id-S1*Dt1) + 2*DD/3*Stensor4(beta_mts_1^devp1)*Stensor4(Id-S1*Dt1)/max(ndevp_1,eeps);
+  dfbeta2_ddeto2 = -(Id-S2*Dt2) + 2*DD/3*Stensor4(beta_mts_2^devp2)*Stensor4(Id-S2*Dt2)/max(ndevp_2,eeps);
+  
+  dfbeta1_ddbeta1 =Id+ theta*DD*ndevp_1*Id;
+  dfbeta2_ddbeta2 =Id+ theta*DD*ndevp_2*Id;
+}
+
+@UpdateAuxiliaryStateVariables{
+evp1+=devp1;
+evp2+=devp2;
+}
+
+@ComputeFinalStress{
+sig += dSig;
+}
+
+@TangentOperator{
+if (smt){
+  Stensor4 iJs;
+  getPartialJacobianInvert(iJs);
+  Dt=iJs;
+  }
+}

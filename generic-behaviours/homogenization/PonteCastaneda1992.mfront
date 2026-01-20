@@ -82,5 +82,7 @@ sig = Chom*(eto+deto);
 
 
 @TangentOperator{
+if (smt){
 Dt=Chom;
+}
 }
