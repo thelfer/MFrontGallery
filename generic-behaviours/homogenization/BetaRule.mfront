@@ -73,11 +73,17 @@ shared_external_state_variables: {".+"}
   constexpr const auto eeps = strain(1.e-14);
   auto Id=Stensor4::Id();
   
-  initialize(b1);
+  const auto i1=initialize(b1);
+  if ((i1 != 0) && (i1 != 1)) {
+    return false;
+  }
   b1.eto=eto1;
   b1.deto=deto1;
   constexpr auto b1_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
   const auto r1 = b1.integrate(b1_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r1 != 0) && (r1 != 1)) {
+    return false;
+  }
   StiffnessTensor Dt1 = b1.getTangentOperator();
   
   auto dsig1=b1.sig-sig1;
@@ -86,11 +92,17 @@ shared_external_state_variables: {".+"}
   auto ndevp_1=sqrt(real(2)/3*devp1|devp1);
   auto beta_mts_1=beta1+theta*dbeta1;
   
-  initialize(b2);
+  const auto i2=initialize(b2);
+  if ((i2 != 0) && (i2 != 1)) {
+    return false;
+  }
   b2.eto=eto2;
   b2.deto=deto2;
   constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
   const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
+  if ((r2 != 0) && (r2 != 1)) {
+    return false;
+  }
   StiffnessTensor Dt2 = b2.getTangentOperator();
   
   auto dsig2=b2.sig-sig2;
@@ -143,7 +155,9 @@ sig += dSig;
 }
 
 @TangentOperator{
+if (smt){
   Stensor4 iJs;
   getPartialJacobianInvert(iJs);
   Dt=iJs;
+  }
 }

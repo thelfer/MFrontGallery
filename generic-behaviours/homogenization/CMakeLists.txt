@@ -1,6 +1,5 @@
 mfront_behaviours_library(Homogenization
   PonteCastaneda1992
-  MericCailletaud
   Taylor
   Sachs
   BetaRule

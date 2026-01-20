@@ -100,6 +100,7 @@ sig+=C_*(deto-dalpha_-dalpha_s_r)+C0*dalpha_s_r;
 }
 
 @TangentOperator{
+if (smt){
 Stensor4 iJ_alpha__alpha_=tfel::math::map_derivative<0,0,Stensor,Stensor>(mat);
 Stensor4 iJ_alpha__alpha_s_r=tfel::math::map_derivative<0,6,Stensor,Stensor>(mat);
 Stensor4 iJ_alpha_s_r_alpha_=tfel::math::map_derivative<6,0,Stensor,Stensor>(mat);
@@ -108,4 +109,5 @@ Stensor4 iJ_alpha_s_r_alpha_s_r=tfel::math::map_derivative<6,6,Stensor,Stensor>(
 const auto dalpha_deto=(iJ_alpha__alpha_*C_+iJ_alpha__alpha_s_r*C0);
 const auto dalphar_deto=(iJ_alpha_s_r_alpha_*C_+iJ_alpha_s_r_alpha_s_r*C0);
 Dt=C_-C_*(dalpha_deto+dalphar_deto)+C0*dalphar_deto;
+}
 }

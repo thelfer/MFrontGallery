@@ -44,7 +44,10 @@ eto1.setEntryName("FirstPhaseTotalStrain");
 
 @Integrator {
   // integrating the first phase
-  initialize(b1);
+  const auto i1=initialize(b1);
+  if ((i1 != 0) && (i1 != 1)) {
+    return false;
+  }
   b1.eto=eto1;
   b1.deto=deto1;
   
@@ -54,18 +57,22 @@ eto1.setEntryName("FirstPhaseTotalStrain");
   if ((r1 != 0) && (r1 != 1)) {
     return false;
   }
+  
   Dt1 = b1.getTangentOperator();
   iDt1= invert(Dt1);
   
   // integrating the second phase 
-  initialize(b2);
-
+  const auto i2=initialize(b2);
+  if ((i2 != 0) && (i2 != 1)) {
+    return false;
+  }
   Dt2 = StiffnessTensor{};
   constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
   const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
   if ((r2 != 0) && (r2 != 1)) {
     return false;
   }
+  
   Dt2 = b2.getTangentOperator();
   iDt2= invert(Dt2);
   
@@ -87,7 +94,8 @@ sig = b1.sig;
 }
 
 @TangentOperator{
-// Calcul de l'opérateur tangent cohérent
+if (smt){
   Dt = invert(f*iDt1+(1-f)*iDt2);
+  }
 }
 

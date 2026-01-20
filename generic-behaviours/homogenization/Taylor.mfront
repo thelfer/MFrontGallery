@@ -23,11 +23,11 @@ shared_external_state_variables: {".+"}
 @MaterialProperty real f;
 f.setEntryName("FirstPhaseFraction");
 
-@ProvidesTangentOperator;
+@LocalVariable StiffnessTensor Dt1;
+@LocalVariable StiffnessTensor Dt2;
 
 @Integrator{
   // integrating the first phase
-  
   b1.deto=deto;
   
   constexpr auto b1_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
@@ -35,18 +35,15 @@ f.setEntryName("FirstPhaseFraction");
   if ((r1 != 0) && (r1 != 1)) {
     return false;
   }
-  //auto Dt1 = {};
-  StiffnessTensor Dt1 = b1.getTangentOperator();
+  Dt1 = b1.getTangentOperator();
  
   // integrating the second phase
-  
   b2.deto=deto;
   constexpr auto b2_smflag = TangentOperatorTraits<MechanicalBehaviourBase::STANDARDSTRAINBASEDBEHAVIOUR>::STANDARDTANGENTOPERATOR;
   const auto r2 = b2.integrate(b2_smflag,CONSISTENTTANGENTOPERATOR);
   if ((r2 != 0) && (r2 != 1)) {
     return false;
   }
-  auto Dt2 = StiffnessTensor{};
   Dt2 = b2.getTangentOperator();
   
   // mise à jour des variables internes
@@ -55,5 +52,10 @@ f.setEntryName("FirstPhaseFraction");
 
  
   sig = f * sig1 + (1 - f) * sig2;
-  Dt = f * Dt1 + (1 - f) * Dt2;
+}
+
+@TangentOperator{
+if (smt){
+Dt = f * Dt1 + (1 - f) * Dt2;
+}
 }
