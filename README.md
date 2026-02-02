@@ -19,6 +19,7 @@ It is mainly decomposed in two parts:
     - `plasticity`
     - `viscoelasticity`
     - `viscoplasticity`
+    - `homogenization`
 - `materials`: this part gathers to specific materials.
 
 The last purpose of this project is to show how to build a compilation

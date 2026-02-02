@@ -25,3 +25,5 @@ genericmtest(Homogenization BetaRule
 genericmtest(Homogenization Idiart_viscoelastic
   BEHAVIOUR Idiart_viscoelastic
   REFERENCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/references/Idiart_viscoelastic.ref)
+  
+add_subdirectory(MassonAffineFormulation)
