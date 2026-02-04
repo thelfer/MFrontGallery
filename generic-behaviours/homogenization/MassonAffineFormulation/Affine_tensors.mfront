@@ -11,7 +11,7 @@
 @TFELLibraries {"Material"};
 
 @Includes{
-#include "TFEL/Material/tensors.hxx"
+#include "extra-headers/TFEL/Material/tensors.hxx"
 #include "TFEL/Material/ExtendedPolyCrystalsSlidingSystems.hxx"}
 
 //! number of phases
