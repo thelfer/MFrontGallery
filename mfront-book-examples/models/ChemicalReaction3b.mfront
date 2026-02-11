@@ -30,7 +30,13 @@ theta.setEntryName("Theta");
 }
 
 @Integrator {
-  constexpr auto zero = quantity<real, 0, 0, 0, 0, 0, 0, 1>{};
+  constexpr auto zero = [] {
+    if constexpr (use_qt) {
+      return quantity<real, 0, 0, 0, 0, 0, 0, 1>{};
+    } else {
+      return real{};
+    }
+  }();
   const auto K = dt * (k1_mts + k2_mts);
   const auto sum = ca + cb;
   ca += B / (1 + K * theta);
@@ -47,7 +53,13 @@ theta.setEntryName("Theta");
 }
 
 @APosterioriTimeStepScalingFactor{
-  constexpr auto eps = quantity<real, 0, 0, 0, 0, 0, 0, 1>{1e-10};
+  constexpr auto eps = [] {
+    if constexpr (use_qt) {
+      return quantity<real, 0, 0, 0, 0, 0, 0, 1>{1e-10};
+    } else {
+      return real{1e-10};
+    }
+  }();
   const auto K = dt * (k1_mts + k2_mts);
   // increment for theta = 1/2
   const auto dca_1 = 2 * B / (2 + K);
