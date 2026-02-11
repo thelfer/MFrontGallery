@@ -12,7 +12,7 @@
 
 @Includes{
 #include "TFEL/Material/tensors.hxx"
-#include "TFEL/Material/ExtendedPolyCrystalsSlidingSystems.hxx"}
+#include "TFEL/Material/PolyCrystalsSlidingSystems.hxx"}
 
 //! number of phases
 @IntegerConstant Np =10;

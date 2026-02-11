@@ -15,7 +15,7 @@
 #include "TFEL/Material/AnisotropicEshelbyTensor.hxx"
 #include "TFEL/Material/MicrostructureDescription.hxx"
 #include "TFEL/Material/MicrostructureLinearHomogenization.hxx"
-#include "TFEL/Material/ExtendedPolyCrystalsSlidingSystems.hxx"}
+#include "TFEL/Material/PolyCrystalsSlidingSystems.hxx"}
 
 //! number of phases
 @IntegerConstant Np = 10;
