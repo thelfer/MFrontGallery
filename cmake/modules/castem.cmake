@@ -17,31 +17,23 @@ function(check_castem_behaviour_compatibility mat search_paths source)
       # point wise models are supported
     else()
       # unsupported behaviour type
-      set(file_OK
-          OFF
-          PARENT_SCOPE)
-      set(compatibility_failure
-          "unsupported behaviour type"
-          PARENT_SCOPE)
+      set(file_OK OFF PARENT_SCOPE)
+      set(compatibility_failure "unsupported behaviour type" PARENT_SCOPE)
     endif()
   endif(behaviour_type STREQUAL "1")
   if(file_OK)
-    mfront_behaviour_check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
-                                                       ${source})
-    if(NOT file_OK)
-      set(file_OK
-          OFF
-          PARENT_SCOPE)
-      set(compatibility_failure
-          "${compatibility_failure}"
-          PARENT_SCOPE)
-    endif(NOT file_OK)
+    if(NOT behaviour_type STREQUAL "0")
+      mfront_behaviour_check_temperature_is_first_external_state_variable(
+         ${mat} "${search_paths}" ${source})
+      if(NOT file_OK)
+        set(file_OK OFF PARENT_SCOPE)
+        set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
+      endif(NOT file_OK)
+    endif(NOT behaviour_type STREQUAL "0")
   endif(file_OK)
 endfunction(check_castem_behaviour_compatibility)
 
 function(check_castem_model_compatibility mat search_paths source)
-  mfront_model_check_temperature_is_first_external_state_variable(${mat} "${search_paths}"
-                                                                        ${source})
   if(NOT file_OK)
     set(file_OK OFF PARENT_SCOPE)
     set(compatibility_failure "${compatibility_failure}" PARENT_SCOPE)
