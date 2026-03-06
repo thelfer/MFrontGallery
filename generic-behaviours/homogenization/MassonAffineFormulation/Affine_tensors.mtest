@@ -3,11 +3,10 @@
 @ExternalStateVariable 'Temperature' {0 : 1000,1:1000};
 
 @MaterialProperty<function> 'nexp' "1+0.9*(exp(2.4*t)-1)";
-@MaterialProperty<constant> 'tau1' 10.;
-@MaterialProperty<constant> 'tau2' 50.;
+@MaterialProperty<constant> 'tau1' 5.;
+@MaterialProperty<constant> 'tau2' 1;
 
-@MaterialProperty<function> 'kap' "0.001";
-@MaterialProperty<function> 'r0' "1";
+@MaterialProperty<function> 'kap' "0.05";
 
 @ImposedStrain 'EXX' {0 : 1, 1 : 1};
 @ImposedStrain 'EYY' {0 : -1, 1 : -1};
@@ -15,7 +14,7 @@
 @ImposedStrain 'EXY' {0 : 0, 1 : 0};
 @ImposedStrain 'EXZ' {0 : 0, 1 : 0};
 @ImposedStrain 'EYZ' {0 : 0, 1 : 0};
-@Times {0.,1 in 50};
+@Times {0.,1 in 100};
 
 @OutputFilePrecision 14;
 
