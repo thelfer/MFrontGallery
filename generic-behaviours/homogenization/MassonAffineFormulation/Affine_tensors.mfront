@@ -132,6 +132,7 @@ for (int r=0;r<Np;r++){
 
 auto KGhom=tfel::material::computeKGModuli(Chom);
 muhom=KGhom.mu;
+r0=muhom/mu0;
 
 auto tau_eff=Stensor::zero();
 //residues/////////////////////////////////////
@@ -153,7 +154,6 @@ sig=Chom*(eto+deto)+tau_eff;
 
 
 @TangentOperator{
-r0=muhom/mu0;
 for (int r=0;r<Np;r++){
 map_derivative<Stensor,Stensor>(A,6*r,0)=L[r]*Ar[r];
 }
