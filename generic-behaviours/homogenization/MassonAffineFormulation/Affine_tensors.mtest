@@ -10,10 +10,10 @@
 
 @ImposedStrain 'EXX' {0 : 1, 1 : 1};
 @ImposedStrain 'EYY' {0 : -1, 1 : -1};
-@ImposedStrain 'EZZ' {0 : 0, 1 : 0};
-@ImposedStrain 'EXY' {0 : 0, 1 : 0};
-@ImposedStrain 'EXZ' {0 : 0, 1 : 0};
-@ImposedStrain 'EYZ' {0 : 0, 1 : 0};
+@ImposedStrain 'EZZ' 0;
+@ImposedStrain 'EXY' 0;
+@ImposedStrain 'EXZ' 0;
+@ImposedStrain 'EYZ' 0;
 @Times {0.,1 in 100};
 
 @OutputFilePrecision 14;
