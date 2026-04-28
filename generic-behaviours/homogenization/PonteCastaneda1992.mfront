@@ -53,8 +53,9 @@ const auto po = std::pow(max(e_0+de_0,real(1e-10)),0.5*(n_-1));
 const auto mu0 = sig0/3.*po;
 
 //second moments/////////////////////////////////
-const auto em2 = tfel::math::trace(eto+deto)/3.;
+const auto em = tfel::math::trace(eto+deto)/3.;
 const auto ed = tfel::math::deviator(eto+deto);
+const auto em2 = em*em;
 const auto eeq2 = 2./3.*(ed|ed);
 using namespace tfel::material;
 const auto kg0 = KGModuli<stress>(k_m,mu0);
