@@ -33,7 +33,7 @@ jobs:
     - name: Install TFEL
       shell: spack-sh {0}
       run: |
-        spack install tfel@master~python~python_bindings  ${{ matrix.jobs_flag }}
+        spack install tfel@master~python~python_bindings
 
     - name: Config MFrontGallery
       shell: spack-sh {0}    
