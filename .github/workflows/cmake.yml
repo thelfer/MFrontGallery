@@ -41,20 +41,21 @@ jobs:
       shell: spack-sh {0}    
       run: |
         spack load tfel
-        cmake -B ${{github.workspace}}/build                             \
-              -DCMAKE_BUILD_TYPE=Release                                 \
-              -DCMAKE_C_COMPILER=gcc                                     \
-              -DCMAKE_CXX_COMPILER=g++                                   \
-              -DCMAKE_FORTRAN_COMPILER=gfortran                          \
-              -Denable-c=ON -Denable-c++=ON -Denable-excel=ON            \
-              -Denable-fortran=${{ matrix.fortran_support }}             \
-              -Denable-python=OFF -Denable-java=OFF                      \
-              -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON \
-              -Denable-castem-behaviours=ON -Denable-aster=ON            \
-              -Denable-cyrano=ON -Denable-ansys=ON                       \
-              -Denable-calculix=ON                                       \
-              -Denable-abaqus=ON -Denable-diana-fea=ON                   \
-              -Denable-zmat=OFF -Denable-fortran-behaviours-wrappers=ON  \
+        cmake -B ${{github.workspace}}/build                                     \
+              -DCMAKE_BUILD_TYPE=Release                                         \
+              -DCMAKE_C_COMPILER=gcc                                             \
+              -DCMAKE_CXX_COMPILER=g++                                           \
+              -DCMAKE_FORTRAN_COMPILER=gfortran                                  \
+              -Denable-c=ON -Denable-c++=ON -Denable-excel=ON                    \
+              -Denable-fortran=${{ matrix.fortran_support }}                     \
+              -Denable-python=OFF -Denable-java=OFF                              \
+              -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON         \
+              -Denable-castem-behaviours=ON -Denable-aster=ON                    \
+              -Denable-cyrano=ON -Denable-ansys=ON                               \
+              -Denable-calculix=ON                                               \
+              -Denable-abaqus=ON -Denable-diana-fea=ON                           \
+              -Denable-zmat=OFF                                                  \
+              -Denable-fortran-behaviours-wrappers=${{ matrix.fortran_support }} \
               -Denable-mfront-documentation-generation=OFF
 
     - name: Build MFrontGallery
