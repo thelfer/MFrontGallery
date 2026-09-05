@@ -15,8 +15,10 @@ jobs:
         include:
           - os: ubuntu-latest
             jobs_flag: '-j $(nproc)'
+            fortran_support: 'ON'
           - os: macos-latest
             jobs_flag: '-j $(sysctl -n hw.ncpu)'
+            fortran_support: 'OFF'
 
     runs-on: ${{ matrix.os }}
 
@@ -45,7 +47,8 @@ jobs:
               -DCMAKE_CXX_COMPILER=g++                                   \
               -DCMAKE_FORTRAN_COMPILER=gfortran                          \
               -Denable-c=ON -Denable-c++=ON -Denable-excel=ON            \
-              -Denable-fortran=ON -Denable-python=OFF -Denable-java=OFF  \
+              -Denable-fortran=${{ matrix.fortran_support }}             \
+              -Denable-python=OFF -Denable-java=OFF                      \
               -Denable-octave=OFF -Denable-generic=ON -Denable-castem=ON \
               -Denable-castem-behaviours=ON -Denable-aster=ON            \
               -Denable-cyrano=ON -Denable-ansys=ON                       \
