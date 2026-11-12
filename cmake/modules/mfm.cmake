@@ -29,6 +29,7 @@ include(cmake/modules/generalmacros.cmake)
 include(cmake/modules/ieee754.cmake)
 
 option(enable-developer-warnings "add warnings mostly useful for TFEL developers" OFF)
+option(enable-mfront-file-installation "enable the installation of MFront'files" OFF)
 
 #find the tfel package
 include(cmake/modules/tfel.cmake)
