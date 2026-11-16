@@ -185,6 +185,8 @@ function(check_model_compatibility mat interface search_paths mfront_file)
   set(compatibility_failure)
   if(${interface} STREQUAL "castem")
     check_castem_model_compatibility(${mat} "${search_paths}" ${mfront_file})
+  elseif(${interface} STREQUAL "licos")
+    check_licos_model_compatibility(${mat} "${search_paths}" ${mfront_file})
   elseif(${interface} STREQUAL "generic")
   else()
     message(FATAL_ERROR "unsupported interface ${interface}")
@@ -320,6 +322,11 @@ function(mfront_models_library mat)
       elseif(${interface} STREQUAL "generic")
         target_link_libraries(${mfront_model_library_name}
                               PRIVATE ${TFEL_MFRONT_LIBRARIES})
+      elseif(${interface} STREQUAL "licos")
+        set_target_properties(${mfront_model_library_name}
+                              PROPERTIES COMPILE_FLAGS "${LICOS_MODEL_CPPFLAGS}")
+        target_link_directories(${mfront_model_library_name}
+                                PRIVATE ${LICOS_MODEL_LIBRARIES})
       else(${interface} STREQUAL "generic")
         message(FATAL_ERROR "mfront_models_library : "
                             "unsupported interface ${interface}")

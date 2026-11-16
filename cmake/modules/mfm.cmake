@@ -319,6 +319,20 @@ if(enable-zmat)
   set(mfront-behaviours-interfaces "zmat" ${mfront-behaviours-interfaces})
 endif(enable-zmat)
 
+# castem
+option(enable-licos "generate licos interface for material properties and mechanical behaviours" OFF)
+option(enable-licos-models "generate licos interface for models"  OFF)
+if(enable-licos)
+  set(enable-licos-models ON)
+endif(enable-licos)
+if(enable-licos-models)
+  check_if_model_interface_is_supported("licos")
+endif(enable-licos-models)
+if(enable-licos-material-properties OR enable-licos-models)
+  include(cmake/modules/licos.cmake)
+  set(mfront-models-interfaces "licos" ${mfront-models-interfaces})
+endif(enable-licos-material-properties OR enable-licos-models)
+
 # summary
 if(mfront-properties-interfaces)
   message(STATUS "Material properties interfaces : ${mfront-properties-interfaces}")
