@@ -320,7 +320,7 @@ if(enable-zmat)
   set(mfront-behaviours-interfaces "zmat" ${mfront-behaviours-interfaces})
 endif(enable-zmat)
 
-# castem
+# licos
 option(enable-licos "generate licos interface for material properties and mechanical behaviours" OFF)
 option(enable-licos-models "generate licos interface for models"  OFF)
 if(enable-licos)
