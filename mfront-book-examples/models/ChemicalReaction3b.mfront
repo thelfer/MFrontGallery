@@ -55,9 +55,9 @@ theta.setEntryName("Theta");
 @APosterioriTimeStepScalingFactor{
   constexpr auto eps = [] {
     if constexpr (use_qt) {
-      return quantity<real, 0, 0, 0, 0, 0, 0, 1>{1e-10};
+      return quantity<real, 0, 0, 0, 0, 0, 0, 1>{5e-7};
     } else {
-      return real{1e-10};
+      return real{5e-7};
     }
   }();
   const auto K = dt * (k1_mts + k2_mts);
