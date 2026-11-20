@@ -230,6 +230,11 @@ be generated. This requires `pandoc` (mandatory) and `pandoc-crossref`
 - `enable-developer-warnings`: This option appends additional warnings,
   mostly meaningful for the developpers.
 
+### Options related to installation
+
+- `enable-mfront-file-installation`: This option enables or disables the
+  installation of the `MFront` files.
+
 ### Compilers and compile flag selections
 
 The `CC` and `CC` environment variables are used respectively to 
