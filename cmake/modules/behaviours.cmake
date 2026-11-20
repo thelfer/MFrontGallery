@@ -41,6 +41,22 @@ function(mfront_behaviour_check_temperature_is_first_external_state_variable mat
   endforeach(h ${modelling_hypotheses})
 endfunction(mfront_behaviour_check_temperature_is_first_external_state_variable)
 
+function(mfront_behaviour_check_not_compute_stress_free_expansion mat search_paths
+         source)
+  mfront_query(_stress_free_expansion ${mat} "${search_paths}" ${source}
+               "--compute-stress-free-expansion")
+  message(STATUS "${_stress_free_expansion}")
+  if("${_stress_free_expansion}" STREQUAL "true")
+    set(msg "the behaviour computes stress free expansions")
+    set(compatibility_failure
+        ${msg}
+        PARENT_SCOPE)
+    set(file_OK
+        OFF
+        PARENT_SCOPE)
+  endif()
+endfunction(mfront_behaviour_check_not_compute_stress_free_expansion)
+
 function(mfront_behaviour_check_compatibility mat interface search_paths mfront_file)
   set(file_OK ON)
   set(compatibility_failure)
